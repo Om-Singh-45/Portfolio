@@ -1406,7 +1406,7 @@
             box-shadow: 0 6px 8px rgba(37, 99, 235, 0.2);
         }
 
-        /* Optimized cosmic background styles */
+        /* Optimized cosmic background styles with subtle blur */
         .cosmic-background {
             position: fixed;
             top: 0;
@@ -1417,6 +1417,41 @@
             z-index: -100;
             overflow: hidden;
             pointer-events: none; /* Ensure background doesn't interfere with interactions */
+            filter: blur(1.5px); /* Very subtle blur to improve content visibility */
+        }
+        
+        /* Add a semi-transparent overlay to improve content visibility */
+        .cosmic-background::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.15); /* Very subtle darkening to improve contrast */
+            z-index: -90;
+        }
+        
+        /* Adjust text containers to improve readability */
+        .hero .content, 
+        .about .text, 
+        .contact-info, 
+        .contact-form, 
+        .skill-category,
+        .project-card {
+            backdrop-filter: blur(3px);
+            -webkit-backdrop-filter: blur(3px);
+            background-color: rgba(15, 15, 25, 0.65); /* Slightly more opaque for better readability */
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        
+        /* Increase text readability throughout the site */
+        p, .project-description, .contact-info-item .content p {
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+        }
+        
+        h1, h2, h3, h4, .section-title {
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.7);
         }
         
         .stars-container {
