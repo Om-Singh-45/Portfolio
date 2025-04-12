@@ -36,7 +36,7 @@
         body {
             line-height: 1.6;
             color: var(--text-color);
-            background-color: #030308; /* Darker background */
+            background-color: #030308; /* Keep darker background */
             background-image: none;
             overflow-x: hidden;
             position: relative;
@@ -424,9 +424,9 @@
             padding: 120px 0;
             position: relative;
             overflow: hidden;
-            background-color: rgba(5, 5, 12, 0.7) !important; /* Darker, slightly more transparent */
-            backdrop-filter: blur(5px);
-            -webkit-backdrop-filter: blur(5px);
+            background-color: transparent !important;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
             border-top: 1px solid rgba(255, 255, 255, 0.05);
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
@@ -574,9 +574,9 @@
         /* Skills Section */
         .skills {
             padding: 120px 0;
-            background-color: rgba(5, 5, 12, 0.7) !important; /* Darker, slightly more transparent */
-            backdrop-filter: blur(5px);
-            -webkit-backdrop-filter: blur(5px);
+            background-color: transparent !important;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
             border-top: 1px solid rgba(255, 255, 255, 0.05);
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
             position: relative;
@@ -697,9 +697,9 @@
         .projects {
             padding: 120px 0;
             position: relative;
-            background-color: rgba(5, 5, 12, 0.7) !important; /* Darker, slightly more transparent */
-            backdrop-filter: blur(5px);
-            -webkit-backdrop-filter: blur(5px);
+            background-color: transparent !important;
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
             border-top: 1px solid rgba(255, 255, 255, 0.05);
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
             overflow: hidden;
@@ -746,14 +746,13 @@
         }
 
         .project-card {
-            background-color: rgba(15, 15, 25, 0.85);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+            background-color: rgba(15, 15, 25, 0.9); /* Increase opacity for better visibility */
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            will-change: auto; /* Remove will-change to improve performance */
+            transition: transform 0.3s ease, box-shadow 0.3s ease; /* Simplify transitions */
             border-radius: 16px;
             overflow: hidden;
-            transition: all 0.4s ease;
             height: 100%;
             display: flex;
             flex-direction: column;
@@ -922,9 +921,9 @@
         /* Contact Section */
         .contact {
             padding: 120px 0;
-            background-color: rgba(5, 5, 12, 0.7) !important; /* Darker, slightly more transparent */
-            backdrop-filter: blur(5px);
-            -webkit-backdrop-filter: blur(5px);
+            background-color: transparent !important;
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
             border-top: 1px solid rgba(255, 255, 255, 0.05);
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
             position: relative;
@@ -1402,14 +1401,9 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: #000223;
             background: linear-gradient(145deg, #000223 0%, #090230 30%, #0c053d 60%, #130553 100%);
             z-index: -100;
             overflow: hidden;
-            /* Performance optimizations */
-            transform: translateZ(0);
-            will-change: transform;
-            backface-visibility: hidden;
         }
         
         .stars-container {
@@ -1417,10 +1411,6 @@
             width: 100%;
             height: 100%;
             z-index: 1;
-            /* Performance optimizations */
-            transform: translateZ(0);
-            will-change: transform;
-            backface-visibility: hidden;
         }
         
         /* Star base styles - optimized for performance */
@@ -1607,9 +1597,9 @@
         
         /* Section background optimization */
         section {
-            background-color: rgba(13, 12, 44, 0.5);
-            backdrop-filter: blur(3px);
-            -webkit-backdrop-filter: blur(3px);
+            background-color: transparent;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
             position: relative;
             z-index: 1;
         }
@@ -1621,11 +1611,9 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: #000223;
             background: linear-gradient(145deg, #000223 0%, #090230 30%, #0c053d 60%, #130553 100%);
             z-index: -100;
             overflow: hidden;
-            transform: translateZ(0);
         }
 
         /* Planet styles */
@@ -1725,8 +1713,8 @@
         }
         
         @keyframes twinkle {
-            0%, 100% { opacity: var(--opacity, 0.85); transform: scale(1); filter: blur(0px); }
-            50% { opacity: 0.2; transform: scale(0.8); filter: blur(1px); }
+            0%, 100% { opacity: var(--opacity, 0.85); }
+            50% { opacity: 0.2; }
         }
         
         /* Enhanced falling star styles */
@@ -2083,7 +2071,7 @@
         function createStars() {
             console.log("Creating stars");
             const starsContainer = document.getElementById('starsContainer');
-            const numberOfStars = 800;
+            const numberOfStars = 300; // Reduced number of stars
             
             if (!starsContainer) {
                 console.error("Stars container not found");
@@ -2097,122 +2085,31 @@
             const fragment = document.createDocumentFragment();
             
             for (let i = 0; i < numberOfStars; i++) {
-                // Create main stars
-                if (i < 600) {
-                    const star = document.createElement('div');
-                    star.classList.add('star');
-                    
-                    // Random size (0.5px to 4px)
-                    const size = Math.random() * 3.5 + 0.5;
-                    star.style.width = `${size}px`;
-                    star.style.height = `${size}px`;
-                    
-                    // Random position
-                    star.style.left = `${Math.random() * 100}%`;
-                    star.style.top = `${Math.random() * 100}%`;
-                    
-                    // Random twinkle duration and opacity
-                    const duration = Math.random() * 5 + 3; // 3 to 8 seconds
-                    const opacity = Math.random() * 0.7 + 0.3; // 0.3 to 1.0
-                    
-                    star.style.setProperty('--duration', `${duration}s`);
-                    star.style.setProperty('--opacity', opacity);
-                    
-                    // Add a delay to create more natural twinkling
-                    star.style.animationDelay = `${Math.random() * 8}s`;
-                    
-                    // Add larger stars with stronger glow (about 15% of all stars)
-                    if (Math.random() < 0.15) {
-                        const largeSize = Math.random() * 4 + 3; // 3 to 7px
-                        star.style.width = `${largeSize}px`;
-                        star.style.height = `${largeSize}px`;
-                        star.style.boxShadow = '0 0 25px 3px rgba(255, 255, 255, 0.9)';
-                        star.style.zIndex = '2';
-                    }
-                    
-                    fragment.appendChild(star);
-                } else {
-                    // Create tiny background stars (no animation)
-                    const tinyStar = document.createElement('div');
-                    tinyStar.classList.add('tiny-star');
-                    
-                    tinyStar.style.left = `${Math.random() * 100}%`;
-                    tinyStar.style.top = `${Math.random() * 100}%`;
-                    tinyStar.style.opacity = Math.random() * 0.7 + 0.3;
-                    
-                    fragment.appendChild(tinyStar);
-                }
+                const star = document.createElement('div');
+                star.classList.add('star');
+                
+                // Random position
+                star.style.left = `${Math.random() * 100}%`;
+                star.style.top = `${Math.random() * 100}%`;
+                
+                // Random twinkle duration and opacity
+                const duration = Math.random() * 3 + 2; // 2 to 5 seconds
+                const opacity = Math.random() * 0.7 + 0.3; // 0.3 to 1.0
+                
+                star.style.setProperty('--duration', `${duration}s`);
+                star.style.setProperty('--opacity', opacity);
+                
+                fragment.appendChild(star);
             }
             
             // Add all stars at once for better performance
             starsContainer.appendChild(fragment);
         }
         
-        // Create falling stars with enhanced visibility
-        function createFallingStars() {
-            const starsContainer = document.getElementById('starsContainer');
-            const numberOfFallingStars = 20; // Increased number for more visibility
-            
-            if (!starsContainer) {
-                console.error("Stars container not found");
-                return;
-            }
-            
-            // Clear any existing falling stars
-            const existingFallingStars = starsContainer.querySelectorAll('.falling-star');
-            existingFallingStars.forEach(star => star.remove());
-            
-            // Use document fragment for better performance
-            const fragment = document.createDocumentFragment();
-            
-            for (let i = 0; i < numberOfFallingStars; i++) {
-                const fallingStar = document.createElement('div');
-                fallingStar.classList.add('falling-star');
-                
-                // Random position across the entire page
-                fallingStar.style.left = `${Math.random() * 100}%`;
-                fallingStar.style.top = `${Math.random() * 80}%`; // Distribute across 80% of screen height
-                
-                // Random fall properties
-                const fallDuration = Math.random() * 3 + 2; // 2-5 seconds
-                const fallDistance = 200 + Math.random() * 500; // 200-700px
-                const fallXDistance = (Math.random() - 0.5) * 300; // -150 to 150px
-                const tailLength = 50 + Math.random() * 80; // 50-130px
-                const fallAngle = Math.random() * 30 + 70; // 70-100 degrees
-                
-                fallingStar.style.setProperty('--fall-duration', `${fallDuration}s`);
-                fallingStar.style.setProperty('--fall-distance', `${fallDistance}px`);
-                fallingStar.style.setProperty('--fall-x-distance', `${fallXDistance}px`);
-                fallingStar.style.setProperty('--tail-length', `${tailLength}px`);
-                fallingStar.style.setProperty('--fall-angle', `${fallAngle}deg`);
-                
-                // Staggered delays for constant falling stars
-                fallingStar.style.animationDelay = `${i * 0.5 + Math.random() * 3}s`;
-                
-                // Create star fragments when a falling star completes
-                fallingStar.addEventListener('animationend', function() {
-                    createStarFragments(
-                        parseFloat(this.style.left), 
-                        parseFloat(this.style.top) + fallDistance,
-                        5 // Increased fragment count
-                    );
-                    this.remove();
-                });
-                
-                fragment.appendChild(fallingStar);
-            }
-            
-            // Add all stars at once for better performance
-            starsContainer.appendChild(fragment);
-            
-            // Continuously create new falling stars more frequently
-            setTimeout(createFallingStars, 8000); // Create new stars every 8 seconds
-        }
-        
-        // Performance-optimized shooting stars
+        // Simplified shooting stars for better performance
         function createShootingStars() {
             const shootingStarsContainer = document.getElementById('shootingStarsContainer');
-            const numberOfShootingStars = 15; // Increased number for more visibility
+            const numberOfShootingStars = 5; // Reduced number for better performance
             
             if (!shootingStarsContainer) {
                 console.error("Shooting stars container not found");
@@ -2229,40 +2126,19 @@
                 const star = document.createElement('div');
                 star.classList.add('shooting-star');
                 
-                // Define random start and end positions across the entire viewport
+                // Define random start and end positions
                 const startX = Math.random() * window.innerWidth;
-                const startY = Math.random() * window.innerHeight * 0.7; // Top 70% of screen
-                const distance = 400 + Math.random() * 600; // 400-1000px travel distance
-                const angle = (Math.random() * 60 - 30) - 45; // -75 to -15 degrees
-                const angleRad = angle * Math.PI / 180;
-                
-                // Calculate end position based on angle and distance
-                const endX = startX + Math.cos(angleRad) * distance;
-                const endY = startY + Math.sin(angleRad) * distance;
-                
-                // Varied shooting star styles
-                const width = Math.random() * 2 + 2; // 2-4px width
-                const height = 100 + Math.random() * 100; // 100-200px tail length
-                
-                star.style.width = `${width}px`;
-                star.style.height = `${height}px`;
-                
-                // More vibrant glow effect
-                const glowColor = Math.random() > 0.7 ? 'rgba(135, 206, 250, 0.7)' : 'rgba(255, 255, 255, 0.7)';
-                star.style.boxShadow = `0 0 15px ${glowColor}`;
-                
-                // Set animation properties
-                const duration = Math.random() * 2 + 1.5; // 1.5-3.5 seconds
+                const startY = Math.random() * (window.innerHeight / 3);
+                const distance = 300 + Math.random() * 300;
+                const angle = (Math.random() * 60 - 30) - 45;
                 
                 star.style.setProperty('--start-x', startX);
                 star.style.setProperty('--start-y', startY);
-                star.style.setProperty('--end-x', endX);
-                star.style.setProperty('--end-y', endY);
-                star.style.setProperty('--duration', `${duration}s`);
+                star.style.setProperty('--duration', `${Math.random() * 2 + 2}s`);
                 star.style.setProperty('--angle', `${angle}deg`);
                 
-                // Staggered delays for constant shooting stars
-                star.style.animationDelay = `${i * 0.7 + Math.random() * 5}s`;
+                // Longer delays to reduce simultaneous animations
+                star.style.animationDelay = `${i * 3 + Math.random() * 10}s`;
                 
                 fragment.appendChild(star);
             }
@@ -2270,68 +2146,20 @@
             // Add all stars at once for better performance
             shootingStarsContainer.appendChild(fragment);
             
-            // Create new shooting stars more frequently
-            setTimeout(createShootingStars, 6000);
+            // Create new shooting stars less frequently
+            setTimeout(createShootingStars, 15000);
         }
-        
-        // Create star fragments effect - optimized
-        function createStarFragments(x, y, count) {
-            const starsContainer = document.getElementById('starsContainer');
-            
-            if (!starsContainer) return;
-            
-            // Use document fragment for better performance
-            const fragment = document.createDocumentFragment();
-            
-            for (let i = 0; i < count; i++) {
-                const starFragment = document.createElement('div');
-                starFragment.classList.add('star-fragment');
-                
-                // Position at breaking point
-                starFragment.style.left = `${x}%`;
-                starFragment.style.top = `${y}px`;
-                
-                // Random fragment movement
-                const duration = 0.5 + Math.random() * 1; // 0.5-1.5 seconds
-                const fragmentX = (Math.random() - 0.5) * 50; // -25px to 25px
-                const fragmentY = (Math.random() - 0.5) * 50; // -25px to 25px
-                
-                starFragment.style.setProperty('--fragment-duration', `${duration}s`);
-                starFragment.style.setProperty('--fragment-x', `${fragmentX}px`);
-                starFragment.style.setProperty('--fragment-y', `${fragmentY}px`);
-                
-                // Remove fragment after animation
-                starFragment.addEventListener('animationend', function() {
-                    this.remove();
-                });
-                
-                fragment.appendChild(starFragment);
-            }
-            
-            // Add all fragments at once for better performance
-            starsContainer.appendChild(fragment);
+
+        // Simplified parallax effect to reduce lag
+        function handleScroll() {
+            // Disable heavy parallax effects
+            return;
         }
-        
-        // Create occasional random star bursts - optimized for performance
-        function createRandomStarBurst() {
-            // Skip on mobile
-            if (window.innerWidth < 768) return;
-            
-            const x = Math.random() * 100;
-            const y = Math.random() * window.innerHeight;
-            const fragmentCount = 5; // Reduced fragment count
-            
-            createStarFragments(x, y, fragmentCount);
-            
-            // Schedule next burst - less frequent
-            setTimeout(createRandomStarBurst, Math.random() * 10000 + 8000); // 8-18 seconds
-        }
-        
-        // Optimized dust particles
+
+        // Create fewer dust particles
         function createDustParticles() {
             const dustContainer = document.getElementById('dustParticlesContainer');
-            const isMobile = window.innerWidth < 768;
-            const numberOfParticles = isMobile ? 30 : 60; // Fewer on mobile
+            const numberOfParticles = 20; // Reduced number for better performance
             
             if (!dustContainer) {
                 console.error("Dust particles container not found");
@@ -2348,26 +2176,12 @@
                 const particle = document.createElement('div');
                 particle.classList.add('dust-particle');
                 
-                // Random size
-                const size = Math.random() * 2 + 1;
-                particle.style.width = `${size}px`;
-                particle.style.height = `${size}px`;
-                
                 // Random position
                 particle.style.left = `${Math.random() * 100}%`;
                 particle.style.bottom = '0';
                 
-                // Random animation properties
-                const duration = Math.random() * 20 + 20; // 20 to 40 seconds
-                const opacity = Math.random() * 0.3 + 0.1; // 0.1 to 0.4
-                const translateX = (Math.random() - 0.5) * 200; // -100px to 100px
-                
-                particle.style.setProperty('--duration', `${duration}s`);
-                particle.style.setProperty('--opacity', opacity);
-                particle.style.setProperty('--translate-x', `${translateX}px`);
-                
-                // Add a delay
-                particle.style.animationDelay = `${Math.random() * duration}s`;
+                // Simplify animation properties
+                particle.style.setProperty('--duration', `${Math.random() * 10 + 20}s`);
                 
                 fragment.appendChild(particle);
             }
@@ -2375,137 +2189,28 @@
             // Add all particles at once for better performance
             dustContainer.appendChild(fragment);
         }
-        
-        // Enhanced parallax effect for cosmic background
-        function setupParallax() {
-            const planets = document.querySelectorAll('.planet');
-            const nebula = document.querySelector('.nebula');
-            const aurora = document.querySelector('.aurora');
-            const starsContainer = document.getElementById('starsContainer');
-            
-            document.addEventListener('mousemove', (e) => {
-                const x = e.clientX / window.innerWidth;
-                const y = e.clientY / window.innerHeight;
-                
-                // Enhanced parallax effect for planets
-                planets.forEach((planet, index) => {
-                    const speed = (index + 1) * 20;
-                    const xOffset = (x - 0.5) * speed;
-                    const yOffset = (y - 0.5) * speed;
-                    
-                    planet.style.transform = `translate(${xOffset}px, ${yOffset}px)`;
-                });
-                
-                // Enhanced star movement
-                if (starsContainer) {
-                    starsContainer.style.transform = `translate(${(x - 0.5) * 10}px, ${(y - 0.5) * 10}px)`;
-                }
-                
-                // Enhanced nebula movement
-                if (nebula) {
-                    nebula.style.transform = `translate(${(x - 0.5) * 15}px, ${(y - 0.5) * 15}px)`;
-                    nebula.style.filter = `blur(60px) hue-rotate(${(x * 10)}deg)`;
-                }
-                
-                // Enhanced aurora movement
-                if (aurora) {
-                    aurora.style.transform = `translateX(${(x - 0.5) * 20}px)`;
+
+        // Disable animation on scroll to improve performance
+        const animationObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animate');
                 }
             });
-        }
+        }, { threshold: 0.1 });
         
-        // Initialize cosmic background with performance considerations
-        function initCosmicBackground() {
-            // Create basic elements
+        // Initialize with optimized settings for performance
+        document.addEventListener('DOMContentLoaded', () => {
             createStars();
             createShootingStars();
-            createFallingStars();
             createDustParticles();
             
-            // Setup parallax
-            setupParallax();
+            // Remove scroll handling to improve performance
+            window.removeEventListener('scroll', handleScroll);
             
-            // Start random star bursts after a delay
-            setTimeout(createRandomStarBurst, 3000);
-            
-            // Add scroll handler
-            window.addEventListener('scroll', handleScroll);
-            
-            // Recreate shooting stars periodically
-            setInterval(createShootingStars, 10000);
-            
-            // Recreate dust particles periodically
-            setInterval(createDustParticles, 30000);
-        }
-        
-        // Initialize animations when DOM is loaded
-        document.addEventListener('DOMContentLoaded', () => {
-            console.log("DOM content loaded");
-            
-            // Initialize cosmic background immediately
-            initCosmicBackground();
-            
-            // Add animation classes to elements on load
-            const elementsToAnimate = document.querySelectorAll('.skill-category, .project-card, .contact-info, .contact-form');
-            elementsToAnimate.forEach((element, index) => {
-                setTimeout(() => {
-                    element.classList.add('animate');
-                }, index * 100);
-            });
+            const animateElements = document.querySelectorAll('.animate, .skill-category, .project-card');
+            animateElements.forEach(el => animationObserver.observe(el));
         });
-
-        // Enhanced scroll effects for cosmic elements
-        function handleScroll() {
-            const scrollY = window.scrollY;
-            const windowHeight = window.innerHeight;
-            const documentHeight = document.body.scrollHeight;
-            const scrollProgress = scrollY / (documentHeight - windowHeight);
-            
-            // Parallax effect for planets based on scroll
-            const planets = document.querySelectorAll('.planet');
-            planets.forEach((planet, index) => {
-                const parallaxSpeed = 0.1 * (index + 1);
-                const yOffset = scrollY * parallaxSpeed;
-                
-                // Calculate rotation based on scroll
-                const rotation = scrollY * 0.02 * (index + 1);
-                
-                // Apply transformations
-                planet.style.transform = `translateY(${yOffset}px) rotate(${rotation}deg)`;
-            });
-            
-            // Rotate Saturn's rings based on scroll
-            const saturnRing = document.querySelector('.saturn-ring');
-            if (saturnRing) {
-                saturnRing.style.transform = `rotateX(70deg) rotateZ(${scrollY * 0.1}deg)`;
-            }
-            
-            // Move stars at different speeds for parallax depth effect
-            const starsContainer = document.getElementById('starsContainer');
-            if (starsContainer) {
-                starsContainer.style.transform = `translateY(${-scrollY * 0.05}px)`;
-            }
-            
-            // Change nebula color with scroll
-            const nebula = document.querySelector('.nebula');
-            if (nebula) {
-                nebula.style.filter = `blur(60px) hue-rotate(${scrollY * 0.05}deg)`;
-                nebula.style.transform = `scale(${1 + scrollProgress * 0.1}) rotate(${scrollY * 0.01}deg)`;
-            }
-            
-            // Move aurora with scroll
-            const aurora = document.querySelector('.aurora');
-            if (aurora) {
-                aurora.style.transform = `translateY(${-scrollY * 0.2}px) skewX(${scrollY * 0.01}deg)`;
-                aurora.style.filter = `blur(40px) hue-rotate(${scrollY * 0.1}deg)`;
-            }
-            
-            // Add subtle zoom effect to background with scroll
-            const cosmicBackground = document.querySelector('.cosmic-background');
-            if (cosmicBackground) {
-                cosmicBackground.style.transform = `scale(${1 + scrollProgress * 0.05})`;
-            }
-        }
 
         // Navbar Scroll Effect
         window.addEventListener('scroll', () => {
