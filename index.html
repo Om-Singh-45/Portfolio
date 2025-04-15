@@ -681,7 +681,7 @@
             height: 80px;
             background: url('https://via.placeholder.com/80x80.png?text=UFO') no-repeat center;
             background-size: contain;
-            animation: orbit 60s linear infinite;
+            animation: orbit 30s linear infinite; /* Faster movement */
         }
 
         @keyframes float {
@@ -773,7 +773,7 @@
             }
 
             .spaceship {
-                animation-duration: 30s; /* Faster movement on mobile */
+                animation-duration: 15s; /* Faster movement on mobile */
             }
         }
 
@@ -1156,11 +1156,13 @@
 
             // Update spaceship position on scroll
             const spaceship = document.querySelector('.spaceship');
-            const viewportWidth = window.innerWidth;
-            const viewportHeight = window.innerHeight;
-            const newX = Math.random() * (viewportWidth - 80);
-            const newY = Math.random() * (viewportHeight - 80);
-            spaceship.style.transform = `translate(${newX}px, ${newY}px)`;
+            if (spaceship) {
+                const viewportWidth = window.innerWidth;
+                const viewportHeight = window.innerHeight;
+                const newX = Math.random() * (viewportWidth - 80);
+                const newY = Math.random() * (viewportHeight - 80);
+                spaceship.style.transform = `translate(${newX}px, ${newY}px)`;
+            }
         });
 
         // Mobile Menu Toggle
