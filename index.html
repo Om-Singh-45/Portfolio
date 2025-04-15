@@ -633,6 +633,7 @@
             background: radial-gradient(circle at 30% 30%, #ffffff, #4b5e91, #2b3a67);
             box-shadow: 0 0 20px var(--planet-glow);
             animation: float 20s infinite linear;
+            display: block; /* Ensure planets are visible on mobile */
         }
 
         .planet.ring {
@@ -668,12 +669,25 @@
 
         .satellite {
             position: absolute;
-            width: 20px;
-            height: 20px;
+            width: 40px;
+            height: 40px;
             background: linear-gradient(45deg, #aaaaaa, #ffffff);
             border-radius: 50%;
             box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
             animation: orbit 60s linear infinite;
+        }
+
+        .satellite.ring::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 120%;
+            height: 10%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transform: translate(-50%, -50%) rotate(45deg);
+            border-radius: 50%;
+            animation: rotate-ring 10s linear infinite;
         }
 
         @keyframes float {
@@ -685,6 +699,20 @@
         @keyframes orbit {
             0% { transform: translate(0, 0); }
             100% { transform: translate(100vw, 100vh); }
+        }
+
+        @keyframes rotate-ring {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        @keyframes scrollAnimation {
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        .cosmic-element {
+            animation: scrollAnimation 1s ease-out forwards;
         }
 
         /* Mobile Responsive */
@@ -701,7 +729,7 @@
             }
 
             .planet {
-                display: none;
+                display: block; /* Ensure planets are visible on mobile */
             }
         }
 
@@ -1064,7 +1092,8 @@
             const satelliteContainer = document.getElementById('satelliteContainer');
             const isMobile = window.innerWidth <= 768;
             const numberOfStars = isMobile ? 50 : 100;
-            const numberOfPlanets = isMobile ? 2 : 4;
+            const numberOfPlanets = isMobile ? 3 : 5; // Increased planets for mobile visibility
+            const numberOfSatellites = 3; // Added 2-3 more satellites
 
             // Clear containers
             starsContainer.innerHTML = '';
@@ -1073,7 +1102,7 @@
 
             const fragmentStars = document.createDocumentFragment();
             const fragmentPlanets = document.createDocumentFragment();
-            const fragmentSatellite = document.createDocumentFragment();
+            const fragmentSatellites = document.createDocumentFragment();
 
             // Create twinkling stars
             for (let i = 0; i < numberOfStars; i++) {
@@ -1091,35 +1120,52 @@
                 { left: '10%', top: '20%' },
                 { left: '80%', top: '30%' },
                 { left: '20%', top: '70%' },
-                { left: '70%', top: '80%' }
+                { left: '70%', top: '80%' },
+                { left: '40%', top: '40%' }
             ];
 
             for (let i = 0; i < numberOfPlanets; i++) {
                 const planet = document.createElement('div');
                 planet.classList.add('planet', planetSizes[Math.floor(Math.random() * 3)]);
-                if (i === 0 && !isMobile) planet.classList.add('ring');
-                planet.style.left = planetPositions[i].left;
-                planet.style.top = planetPositions[i].top;
+                if (i === 0 || (isMobile && i === 1)) planet.classList.add('ring'); // Added ring to more planets
+                planet.style.left = planetPositions[i % planetPositions.length].left;
+                planet.style.top = planetPositions[i % planetPositions.length].top;
                 planet.style.animationDelay = `${Math.random() * 10}s`;
                 fragmentPlanets.appendChild(planet);
             }
 
-            // Create satellite
-            const satellite = document.createElement('div');
-            satellite.classList.add('satellite');
-            satellite.style.left = '0%';
-            satellite.style.top = '0%';
-            fragmentSatellite.appendChild(satellite);
+            // Create satellites with rings
+            const satellitePositions = [
+                { left: '5%', top: '5%' },
+                { left: '50%', top: '30%' },
+                { left: '90%', top: '70%' }
+            ];
+
+            for (let i = 0; i < numberOfSatellites; i++) {
+                const satellite = document.createElement('div');
+                satellite.classList.add('satellite', 'ring');
+                satellite.style.left = satellitePositions[i].left;
+                satellite.style.top = satellitePositions[i].top;
+                satellite.style.animationDelay = `${Math.random() * 5}s`;
+                fragmentSatellites.appendChild(satellite);
+            }
 
             starsContainer.appendChild(fragmentStars);
             planetsContainer.appendChild(fragmentPlanets);
-            satelliteContainer.appendChild(fragmentSatellite);
+            satelliteContainer.appendChild(fragmentSatellites);
         }
 
         // Navbar Scroll Effect
         window.addEventListener('scroll', () => {
             const navbar = document.querySelector('.navbar');
             navbar.classList.toggle('scrolled', window.scrollY > 50);
+
+            // Add scroll animation to cosmic elements
+            const cosmicElements = document.querySelectorAll('.planet, .satellite, .star');
+            cosmicElements.forEach(element => {
+                element.classList.add('cosmic-element');
+                element.style.animationDelay = `${Math.random() * 1}s`; // Stagger animation
+            });
         });
 
         // Mobile Menu Toggle
@@ -1181,7 +1227,7 @@
             createCosmicBackground();
         });
 
-        // Recreate stars on resize
+        // Recreate cosmic elements on resize
         window.addEventListener('resize', () => {
             createCosmicBackground();
         });
