@@ -8,18 +8,14 @@
     <style>
         :root {
             --primary-color: #2563eb;
-            --primary-glow: rgba(37, 99, 235, 0.5);
             --secondary-color: #4f46e5;
             --accent-color: #06b6d4;
             --dark-color: #111111;
-            --darker-color: #090909;
-            --light-color: #f3f4f6;
             --text-color: #e2e8f0;
             --text-muted: #94a3b8;
             --card-bg: rgba(17, 24, 39, 0.7);
             --card-border: rgba(255, 255, 255, 0.05);
-            --success-color: #10b981;
-            --star-color: #ffffff;
+            --planet-glow: rgba(255, 255, 255, 0.2);
         }
 
         * {
@@ -36,8 +32,7 @@
         body {
             line-height: 1.6;
             color: var(--text-color);
-            background-color: transparent; /* Change from #030308 to transparent */
-            background-image: none;
+            background: linear-gradient(145deg, #000110, #07032a);
             overflow-x: hidden;
             position: relative;
         }
@@ -68,7 +63,7 @@
             border: none;
             border-radius: 5px;
             font-weight: 600;
-            transition: all 0.3s ease;
+            transition: transform 0.3s ease, background-color 0.3s ease;
             font-size: 16px;
         }
 
@@ -80,7 +75,6 @@
         .btn-primary:hover {
             background-color: var(--secondary-color);
             transform: translateY(-3px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
         }
 
         .btn-outline {
@@ -93,27 +87,21 @@
             background-color: var(--primary-color);
             color: white;
             transform: translateY(-3px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
         }
 
         /* Navbar */
         .navbar {
             background-color: rgba(9, 9, 15, 0.9);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
             color: white;
-            padding: 20px 0;
+            padding: 15px 0;
             position: fixed;
             top: 0;
             width: 100%;
             z-index: 100;
-            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.6);
-            transition: all 0.4s ease;
-            border-bottom: 1px solid var(--card-border);
+            transition: background-color 0.3s ease;
         }
 
         .navbar.scrolled {
-            padding: 15px 0;
             background-color: rgba(7, 7, 15, 0.95);
         }
 
@@ -127,30 +115,10 @@
             font-size: 24px;
             font-weight: 700;
             color: white;
-            position: relative;
-            overflow: hidden;
         }
 
         .navbar .logo span {
             color: var(--primary-color);
-            position: relative;
-            display: inline-block;
-        }
-
-        .navbar .logo span::after {
-            content: '';
-            position: absolute;
-            width: 100%;
-            height: 3px;
-            background-color: var(--accent-color);
-            bottom: 0;
-            left: 0;
-            transform: translateX(-100%);
-            transition: transform 0.3s ease;
-        }
-
-        .navbar .logo:hover span::after {
-            transform: translateX(0);
         }
 
         .navbar ul {
@@ -158,34 +126,17 @@
         }
 
         .navbar ul li {
-            margin-left: 30px;
+            margin-left: 20px;
         }
 
         .navbar ul li a {
             color: var(--text-muted);
             font-weight: 500;
-            transition: all 0.3s;
-            position: relative;
-            padding: 5px 0;
+            transition: color 0.3s;
         }
 
         .navbar ul li a:hover {
             color: white;
-        }
-
-        .navbar ul li a::after {
-            content: '';
-            position: absolute;
-            width: 0;
-            height: 2px;
-            background-color: var(--primary-color);
-            left: 0;
-            bottom: 0;
-            transition: all 0.3s;
-        }
-
-        .navbar ul li a:hover::after {
-            width: 100%;
         }
 
         .mobile-menu-btn {
@@ -195,7 +146,6 @@
 
         /* Hero Section */
         .hero {
-            background-color: transparent !important;
             background-size: cover;
             background-position: center;
             height: 100vh;
@@ -204,1055 +154,433 @@
             color: white;
             text-align: center;
             position: relative;
-            overflow: hidden;
-        }
-
-        .hero::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle at center, rgba(37, 99, 235, 0.2), transparent 70%);
-        }
-
-        .hero-background {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 0;
-        }
-
-        .floating-shape {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(60px);
-            opacity: 0.15;
-            animation: float 15s infinite ease-in-out;
-        }
-
-        .shape-1 {
-            width: 300px;
-            height: 300px;
-            background: var(--primary-color);
-            top: 20%;
-            left: 15%;
-            animation-delay: 0s;
-        }
-
-        .shape-2 {
-            width: 200px;
-            height: 200px;
-            background: var(--accent-color);
-            bottom: 10%;
-            right: 20%;
-            animation-delay: -5s;
-        }
-
-        .shape-3 {
-            width: 250px;
-            height: 250px;
-            background: var(--secondary-color);
-            bottom: 30%;
-            left: 25%;
-            animation-delay: -8s;
-        }
-
-        @keyframes float {
-            0%, 100% {
-                transform: translateY(0) scale(1);
-            }
-            50% {
-                transform: translateY(-20px) scale(1.05);
-            }
+            z-index: 10;
         }
 
         .hero .content {
             max-width: 800px;
             margin: 0 auto;
-            padding: 30px;
-            position: relative;
-            z-index: 1;
-            background-color: rgba(9, 9, 12, 0.3);
-            backdrop-filter: blur(5px);
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            background-color: rgba(9, 9, 12, 0.5);
+            border-radius: 10px;
         }
 
         .hero h1 {
-            font-size: 60px;
-            margin-bottom: 20px;
-            line-height: 1.2;
-            letter-spacing: -1px;
-            text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            font-size: 48px;
+            margin-bottom: 15px;
         }
 
         .hero p {
-            font-size: 20px;
-            margin-bottom: 30px;
+            font-size: 18px;
+            margin-bottom: 20px;
             color: var(--text-muted);
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
-            text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
         }
 
         .hero .name {
             color: var(--primary-color);
             font-weight: 700;
-            position: relative;
-            display: inline-block;
-        }
-
-        .hero .name::before {
-            content: '';
-            position: absolute;
-            width: 100%;
-            height: 12px;
-            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
-            opacity: 0.3;
-            bottom: 5px;
-            left: 0;
-            z-index: -1;
-            transform: skewX(-15deg);
         }
 
         .hero .social-links {
-            margin-top: 30px;
+            margin-top: 20px;
         }
 
         .hero .social-links a {
-            margin: 0 15px;
-            font-size: 24px;
+            margin: 0 10px;
+            font-size: 20px;
             color: var(--text-muted);
-            transition: all 0.3s;
-            position: relative;
-            display: inline-block;
+            transition: color 0.3s, transform 0.3s;
         }
 
         .hero .social-links a:hover {
             color: white;
-            transform: translateY(-5px);
-        }
-
-        .hero .social-links a::after {
-            content: '';
-            position: absolute;
-            bottom: -8px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 0;
-            height: 2px;
-            background: var(--primary-color);
-            transition: width 0.3s ease;
-        }
-
-        .hero .social-links a:hover::after {
-            width: 100%;
+            transform: translateY(-3px);
         }
 
         .hero .btn-group {
-            margin-top: 30px;
+            margin-top: 20px;
         }
 
         .hero .btn-group .btn {
-            margin: 0 10px;
-            position: relative;
-            overflow: hidden;
-            z-index: 1;
-        }
-
-        .btn {
-            display: inline-block;
-            padding: 15px 30px;
-            cursor: pointer;
-            border: none;
-            border-radius: 8px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            font-size: 16px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .btn-primary {
-            background-color: var(--primary-color);
-            color: white;
-            box-shadow: 0 4px 20px rgba(37, 99, 235, 0.3);
-        }
-
-        .btn-primary:hover {
-            background-color: var(--secondary-color);
-            transform: translateY(-3px);
-            box-shadow: 0 10px 20px rgba(37, 99, 235, 0.4);
-        }
-
-        .btn-primary::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transition: 0.5s;
-        }
-
-        .btn-primary:hover::before {
-            left: 100%;
-        }
-
-        .btn-outline {
-            background: transparent;
-            border: 2px solid var(--primary-color);
-            color: white;
-            position: relative;
-        }
-
-        .btn-outline:hover {
-            background-color: var(--primary-color);
-            color: white;
-            transform: translateY(-3px);
-            box-shadow: 0 10px 20px rgba(37, 99, 235, 0.3);
+            margin: 0 8px;
         }
 
         /* About Section */
         .about {
-            padding: 120px 0;
+            padding: 80px 0;
             position: relative;
-            overflow: hidden;
-            background-color: transparent !important;
-            backdrop-filter: none !important;
-            -webkit-backdrop-filter: none !important;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            z-index: 10;
         }
 
         .section-title {
             text-align: center;
-            font-size: 40px;
-            margin-bottom: 60px;
-            position: relative;
+            font-size: 32px;
+            margin-bottom: 40px;
             color: white;
-            text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-        }
-
-        .section-title::after {
-            content: '';
-            position: absolute;
-            width: 80px;
-            height: 4px;
-            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
-            bottom: -15px;
-            left: 50%;
-            transform: translateX(-50%);
-            border-radius: 5px;
-        }
-
-        .about h2 {
-            text-align: center;
-            font-size: 40px;
-            margin-bottom: 60px;
-            position: relative;
-            color: white;
-            text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-        }
-
-        .about h2::after {
-            content: '';
-            position: absolute;
-            width: 80px;
-            height: 4px;
-            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
-            bottom: -15px;
-            left: 50%;
-            transform: translateX(-50%);
-            border-radius: 5px;
         }
 
         .about .container {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 50px;
-            margin-top: 60px;
+            gap: 30px;
             align-items: center;
-            background-color: transparent !important;
-            backdrop-filter: none !important;
-            -webkit-backdrop-filter: none !important;
-            z-index: 5;
         }
 
         .about .image {
-            position: relative;
-            border-radius: 20px;
+            border-radius: 10px;
             overflow: hidden;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-            transition: all 0.5s ease;
-            height: 400px;
-            width: 400px;
+            height: 300px;
+            width: 300px;
             margin: 0 auto;
-            border: 2px solid rgba(37, 99, 235, 0.3);
-            background-color: rgba(255, 255, 255, 0.05);
-            z-index: 10;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
-        
-        .about .image::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(45deg, rgba(37, 99, 235, 0.3), transparent);
-            opacity: 0.4;
-            z-index: 1;
-            pointer-events: none;
-        }
-        
+
         .about .image img {
-            transition: transform 0.5s ease;
             width: 100%;
             height: 100%;
             object-fit: cover;
-            object-position: center;
-            display: block;
-        }
-        
-        .about .image:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
-        }
-        
-        .about .image:hover img {
-            transform: scale(1.05);
         }
 
         .about .text {
-            color: var(--text-color);
-            background-color: rgba(15, 15, 25, 0.6);
-            backdrop-filter: blur(5px);
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            z-index: 10;
+            background-color: rgba(15, 15, 25, 0.7);
+            border-radius: 10px;
+            padding: 20px;
         }
-        
+
         .about .text h3 {
-            font-size: 28px;
-            margin-bottom: 25px;
+            font-size: 24px;
+            margin-bottom: 15px;
             color: white;
-            position: relative;
-            display: inline-block;
-        }
-        
-        .about .text h3::after {
-            content: '';
-            position: absolute;
-            width: 40px;
-            height: 3px;
-            background-color: var(--accent-color);
-            bottom: -8px;
-            left: 0;
         }
 
         .about .text p {
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             color: var(--text-muted);
-            font-size: 17px;
-            line-height: 1.8;
+            font-size: 16px;
         }
 
         .about .info-item {
             display: flex;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
             align-items: center;
         }
 
         .about .info-item i {
-            margin-right: 15px;
+            margin-right: 10px;
             color: var(--primary-color);
-            font-size: 20px;
-            min-width: 20px;
+            font-size: 18px;
         }
 
         .about .btn {
-            margin-top: 30px;
+            margin-top: 20px;
         }
 
         /* Skills Section */
         .skills {
-            padding: 120px 0;
-            background-color: transparent !important;
-            backdrop-filter: none !important;
-            -webkit-backdrop-filter: none !important;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 80px 0;
             position: relative;
-            overflow: hidden;
-        }
-        
-        .skills::before {
-            content: '';
-            position: absolute;
-            width: 300px;
-            height: 300px;
-            background: var(--primary-color);
-            border-radius: 50%;
-            top: -150px;
-            right: -150px;
-            opacity: 0.05;
-            filter: blur(80px);
-        }
-
-        .skills h2 {
-            text-align: center;
-            font-size: 40px;
-            margin-bottom: 60px;
-            position: relative;
-            color: white;
-            text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-        }
-
-        .skills h2::after {
-            content: '';
-            position: absolute;
-            width: 80px;
-            height: 4px;
-            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
-            bottom: -15px;
-            left: 50%;
-            transform: translateX(-50%);
-            border-radius: 5px;
+            z-index: 10;
         }
 
         .skills .container {
-            max-width: 1100px;
+            max-width: 1000px;
         }
 
         .skills-container {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 30px;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
         }
 
         .skill-category {
-            background-color: rgba(15, 15, 25, 0.85);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
-            border-radius: 16px;
-            padding: 30px;
-            transition: all 0.4s ease;
-            opacity: 0;
-            transform: translateY(30px);
-        }
-
-        .skill-category.animate {
-            opacity: 1;
-            transform: translateY(0);
+            background-color: rgba(15, 15, 25, 0.7);
+            border-radius: 10px;
+            padding: 20px;
+            transition: transform 0.3s ease;
         }
 
         .skill-category:hover {
-            transform: translateY(-10px) scale(1.02);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-            border-color: rgba(255, 255, 255, 0.1);
+            transform: translateY(-5px);
         }
 
         .skill-category h3 {
-            font-size: 22px;
-            margin-bottom: 25px;
+            font-size: 20px;
+            margin-bottom: 15px;
             color: white;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            padding-bottom: 15px;
-            position: relative;
-        }
-
-        .skill-category h3 i {
-            margin-right: 10px;
-            color: var(--primary-color);
-            background: rgba(37, 99, 235, 0.1);
-            padding: 8px;
-            border-radius: 10px;
-            font-size: 18px;
         }
 
         .skill-list {
             display: flex;
             flex-wrap: wrap;
-            gap: 12px;
+            gap: 8px;
         }
 
         .skill-item {
             background-color: rgba(255, 255, 255, 0.05);
-            border-radius: 8px;
-            padding: 10px 18px;
-            font-size: 15px;
-            font-weight: 500;
+            border-radius: 5px;
+            padding: 8px 12px;
+            font-size: 14px;
             color: var(--text-muted);
-            transition: all 0.3s;
-            border: 1px solid rgba(255, 255, 255, 0.02);
+            transition: background-color 0.3s;
         }
 
         .skill-item:hover {
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            background-color: var(--primary-color);
             color: white;
-            transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(37, 99, 235, 0.4);
         }
 
         /* Projects Section */
         .projects {
-            padding: 120px 0;
+            padding: 80px 0;
             position: relative;
-            background-color: transparent !important;
-            backdrop-filter: none !important;
-            -webkit-backdrop-filter: none !important;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            overflow: hidden;
-        }
-        
-        .projects::after {
-            content: '';
-            position: absolute;
-            width: 400px;
-            height: 400px;
-            background: var(--secondary-color);
-            border-radius: 50%;
-            bottom: -200px;
-            left: -200px;
-            opacity: 0.05;
-            filter: blur(80px);
-        }
-
-        .projects h2 {
-            text-align: center;
-            font-size: 40px;
-            margin-bottom: 60px;
-            position: relative;
-            color: white;
-            text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-        }
-
-        .projects h2::after {
-            content: '';
-            position: absolute;
-            width: 80px;
-            height: 4px;
-            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
-            bottom: -15px;
-            left: 50%;
-            transform: translateX(-50%);
-            border-radius: 5px;
+            z-index: 10;
         }
 
         .projects-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-            gap: 40px;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
         }
 
         .project-card {
-            background-color: rgba(15, 15, 25, 0.9); /* Increase opacity for better visibility */
-            backdrop-filter: none;
-            -webkit-backdrop-filter: none;
-            will-change: auto; /* Remove will-change to improve performance */
-            transition: transform 0.3s ease, box-shadow 0.3s ease; /* Simplify transitions */
-            border-radius: 16px;
+            background-color: rgba(15, 15, 25, 0.7);
+            border-radius: 10px;
             overflow: hidden;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            transition: all 0.4s ease;
-            opacity: 0;
-            transform: translateY(30px);
-        }
-        
-        .project-card.animate {
-            opacity: 1;
-            transform: translateY(0);
+            transition: transform 0.3s ease;
+            will-change: transform;
         }
 
         .project-card:hover {
-            transform: translateY(-15px) scale(1.02);
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
-            border-color: rgba(37, 99, 235, 0.2);
+            transform: translateY(-5px);
         }
 
         .project-image {
-            height: 220px;
+            height: 180px;
             overflow: hidden;
-            position: relative;
-        }
-        
-        .project-image::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(45deg, rgba(37, 99, 235, 0.3), transparent);
-            opacity: 0;
-            z-index: 2;
-            transition: opacity 0.4s ease;
-        }
-        
-        .project-card:hover .project-image::before {
-            opacity: 0.7;
-        }
-        
-        .project-image::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 100%);
-            z-index: 1;
         }
 
         .project-image img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            transition: transform 0.8s ease;
+            transition: transform 0.5s ease;
         }
 
         .project-card:hover .project-image img {
-            transform: scale(1.1) rotate(2deg);
+            transform: scale(1.05);
         }
 
         .project-content {
-            padding: 30px;
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            position: relative;
+            padding: 20px;
         }
 
         .project-title {
-            font-size: 24px;
-            margin-bottom: 15px;
+            font-size: 20px;
+            margin-bottom: 10px;
             color: white;
-            position: relative;
-            display: inline-block;
-            margin-bottom: 20px;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-        }
-        
-        .project-title::after {
-            content: '';
-            position: absolute;
-            width: 40px;
-            height: 3px;
-            background: var(--accent-color);
-            bottom: -8px;
-            left: 0;
-            transition: width 0.4s ease;
-        }
-        
-        .project-card:hover .project-title::after {
-            width: 80px;
-            background: linear-gradient(90deg, var(--accent-color), var(--primary-color));
         }
 
         .project-description {
-            margin-bottom: 25px;
+            margin-bottom: 15px;
             color: var(--text-muted);
-            line-height: 1.7;
-            flex-grow: 1;
+            font-size: 14px;
         }
 
         .project-tech {
             display: flex;
             flex-wrap: wrap;
-            gap: 10px;
-            margin-bottom: 25px;
+            gap: 8px;
+            margin-bottom: 15px;
         }
 
         .tech-badge {
-            display: inline-flex;
-            align-items: center;
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            background-color: var(--primary-color);
             color: white;
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-size: 14px;
-            margin-right: 8px;
-            margin-bottom: 8px;
-            box-shadow: 0 4px 6px rgba(37, 99, 235, 0.3);
-            transition: all 0.3s;
-            font-weight: 500;
-        }
-
-        .tech-badge:hover {
-            transform: translateY(-3px) scale(1.05);
-            box-shadow: 0 6px 12px rgba(37, 99, 235, 0.5);
-            filter: brightness(1.1);
-        }
-
-        .project-links {
-            display: flex;
-            gap: 15px;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
         }
 
         .project-links a {
-            padding: 10px 18px;
-            border-radius: 8px;
-            font-size: 15px;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            transition: all 0.3s;
-        }
-
-        .project-links a i {
-            margin-right: 8px;
-        }
-
-        .project-links .github-link {
-            background-color: rgba(255, 255, 255, 0.05);
+            padding: 8px 12px;
+            border-radius: 5px;
+            font-size: 14px;
             color: var(--text-muted);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: background-color 0.3s, color 0.3s;
         }
 
-        .project-links .github-link:hover {
-            background-color: rgba(255, 255, 255, 0.1);
-            transform: translateY(-3px);
+        .project-links a:hover {
+            background-color: var(--primary-color);
             color: white;
         }
 
         /* Contact Section */
         .contact {
-            padding: 120px 0;
-            background-color: transparent !important;
-            backdrop-filter: none !important;
-            -webkit-backdrop-filter: none !important;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 80px 0;
             position: relative;
-            overflow: hidden;
-        }
-
-        .contact::before {
-            content: '';
-            position: absolute;
-            width: 350px;
-            height: 350px;
-            background: var(--accent-color);
-            border-radius: 50%;
-            top: -150px;
-            left: -150px;
-            opacity: 0.05;
-            filter: blur(80px);
-        }
-
-        .contact h2 {
-            text-align: center;
-            font-size: 40px;
-            margin-bottom: 60px;
-            position: relative;
-            color: white;
-            text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-        }
-
-        .contact h2::after {
-            content: '';
-            position: absolute;
-            width: 80px;
-            height: 4px;
-            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
-            bottom: -15px;
-            left: 50%;
-            transform: translateX(-50%);
-            border-radius: 5px;
+            z-index: 10;
         }
 
         .contact .container {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 50px;
+            gap: 30px;
         }
 
-        .contact-info {
-            background-color: rgba(15, 15, 25, 0.85);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
-            padding: 40px;
-            border-radius: 16px;
-            transform: translateY(30px);
-            opacity: 0;
+        .contact-info, .contact-form {
+            background-color: rgba(15, 15, 25, 0.7);
+            padding: 20px;
+            border-radius: 10px;
         }
 
-        .contact-info.animate {
-            transform: translateY(0);
-            opacity: 1;
-        }
-
-        .contact-info h3 {
-            font-size: 26px;
-            margin-bottom: 30px;
+        .contact-info h3, .contact-form h3 {
+            font-size: 24px;
+            margin-bottom: 15px;
             color: white;
-            position: relative;
-            display: inline-block;
-        }
-
-        .contact-info h3::after {
-            content: '';
-            position: absolute;
-            width: 40px;
-            height: 3px;
-            background: var(--accent-color);
-            bottom: -10px;
-            left: 0;
         }
 
         .contact-info-item {
             display: flex;
-            margin-bottom: 25px;
+            margin-bottom: 15px;
         }
 
         .contact-info-item i {
-            font-size: 24px;
+            font-size: 20px;
             color: var(--primary-color);
-            margin-right: 20px;
-            min-width: 24px;
+            margin-right: 15px;
         }
 
         .contact-info-item .content h4 {
-            font-size: 18px;
+            font-size: 16px;
             margin-bottom: 5px;
             color: white;
         }
 
         .contact-info-item .content p {
             color: var(--text-muted);
-        }
-
-        .contact-info-item .content a {
-            color: var(--text-muted);
-            transition: all 0.3s;
-        }
-
-        .contact-info-item .content a:hover {
-            color: var(--primary-color);
-        }
-
-        .contact-social {
-            margin-top: 30px;
-        }
-
-        .contact-social h4 {
-            font-size: 18px;
-            margin-bottom: 15px;
-            color: white;
-        }
-
-        .contact-social-links {
-            display: flex;
-            gap: 15px;
+            font-size: 14px;
         }
 
         .contact-social-links a {
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 40px;
-            height: 40px;
+            width: 35px;
+            height: 35px;
             background-color: rgba(255, 255, 255, 0.05);
             border-radius: 50%;
             color: var(--text-muted);
-            font-size: 18px;
-            transition: all 0.3s;
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            font-size: 16px;
+            transition: background-color 0.3s, transform 0.3s;
         }
 
         .contact-social-links a:hover {
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            background-color: var(--primary-color);
             color: white;
-            transform: translateY(-5px);
-            box-shadow: 0 5px 15px rgba(37, 99, 235, 0.3);
-        }
-
-        .contact-form {
-            background-color: rgba(15, 15, 25, 0.85);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
-            padding: 40px;
-            border-radius: 16px;
-            transform: translateY(30px);
-            opacity: 0;
-        }
-
-        .contact-form.animate {
-            transform: translateY(0);
-            opacity: 1;
-        }
-
-        .contact-form h3 {
-            font-size: 26px;
-            margin-bottom: 30px;
-            color: white;
-            position: relative;
-            display: inline-block;
-        }
-
-        .contact-form h3::after {
-            content: '';
-            position: absolute;
-            width: 40px;
-            height: 3px;
-            background: var(--accent-color);
-            bottom: -10px;
-            left: 0;
+            transform: translateY(-3px);
         }
 
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
 
         .form-group label {
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: 5px;
             font-weight: 500;
             color: var(--text-color);
         }
 
         .form-control {
             width: 100%;
-            padding: 15px;
+            padding: 10px;
             background-color: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
-            font-size: 16px;
-            transition: all 0.3s;
+            border-radius: 5px;
+            font-size: 14px;
             color: var(--text-color);
+            transition: border-color 0.3s;
         }
 
         .form-control:focus {
             border-color: var(--primary-color);
             outline: none;
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
-            background-color: rgba(255, 255, 255, 0.08);
         }
 
         textarea.form-control {
             resize: vertical;
-            min-height: 150px;
+            min-height: 100px;
         }
 
         .form-btn {
             width: 100%;
-            padding: 15px;
+            padding: 12px;
             font-size: 16px;
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            background-color: var(--primary-color);
             color: white;
             border: none;
-            border-radius: 8px;
+            border-radius: 5px;
             cursor: pointer;
-            transition: all 0.3s;
-            font-weight: 600;
-            box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
+            transition: background-color 0.3s, transform 0.3s;
         }
 
         .form-btn:hover {
+            background-color: var(--secondary-color);
             transform: translateY(-3px);
-            box-shadow: 0 10px 20px rgba(37, 99, 235, 0.4);
         }
 
         /* Footer */
         .footer {
             background-color: rgba(9, 9, 9, 0.95);
             color: white;
-            padding: 40px 0;
+            padding: 30px 0;
             text-align: center;
             position: relative;
-            border-top: 1px solid var(--card-border);
+            z-index: 10;
         }
 
         .footer p {
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             color: var(--text-muted);
         }
 
         .footer .social-links {
-            margin-bottom: 25px;
+            margin-bottom: 15px;
             display: flex;
             justify-content: center;
-            gap: 20px;
+            gap: 15px;
         }
 
         .footer .social-links a {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 40px;
-            height: 40px;
+            width: 35px;
+            height: 35px;
             background-color: rgba(255, 255, 255, 0.05);
             border-radius: 50%;
             color: var(--text-muted);
-            font-size: 18px;
-            transition: all 0.3s;
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            font-size: 16px;
+            transition: background-color 0.3s, transform 0.3s;
         }
 
         .footer .social-links a:hover {
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            background-color: var(--primary-color);
             color: white;
-            transform: translateY(-5px);
-            box-shadow: 0 5px 15px rgba(37, 99, 235, 0.3);
+            transform: translateY(-3px);
         }
 
         .footer .copyright {
-            font-size: 14px;
+            font-size: 12px;
             color: var(--text-muted);
         }
 
-        .footer .copyright a {
-            color: var(--text-color);
-            transition: all 0.3s;
-            position: relative;
-        }
-
-        .footer .copyright a::after {
-            content: '';
-            position: absolute;
-            width: 0;
-            height: 1px;
-            background-color: var(--primary-color);
-            bottom: -2px;
-            left: 0;
-            transition: width 0.3s ease;
-        }
-
-        .footer .copyright a:hover {
-            color: var(--primary-color);
-        }
-
-        .footer .copyright a:hover::after {
-            width: 100%;
-        }
-
-        /* Scroll to top button */
+        /* Scroll to Top */
         .scroll-top {
             position: fixed;
-            bottom: -60px;
-            right: 30px;
-            width: 50px;
-            height: 50px;
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            bottom: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            background-color: var(--primary-color);
             color: white;
             border-radius: 50%;
             display: flex;
@@ -1260,20 +588,103 @@
             justify-content: center;
             cursor: pointer;
             z-index: 99;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
             opacity: 0;
-            transition: all 0.4s ease;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: opacity 0.3s, transform 0.3s;
         }
 
         .scroll-top.show {
-            bottom: 30px;
             opacity: 1;
         }
 
         .scroll-top:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 25px rgba(37, 99, 235, 0.4);
+            transform: translateY(-3px);
+        }
+
+        /* Cosmic Background */
+        .cosmic-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -100;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background-color: #fff;
+            border-radius: 50%;
+            opacity: 0.7;
+            animation: twinkle 2s infinite alternate;
+        }
+
+        @keyframes twinkle {
+            0% { opacity: 0.7; transform: scale(1); }
+            100% { opacity: 1; transform: scale(1.2); }
+        }
+
+        .planet {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #ffffff, #4b5e91, #2b3a67);
+            box-shadow: 0 0 20px var(--planet-glow);
+            animation: float 20s infinite linear;
+        }
+
+        .planet.ring {
+            background: radial-gradient(circle at 30% 30%, #f4e4bc, #d4a373, #8b5e34);
+        }
+
+        .planet.ring::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 150%;
+            height: 20%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transform: translate(-50%, -50%) rotate(45deg);
+            border-radius: 50%;
+        }
+
+        .planet.small {
+            width: 50px;
+            height: 50px;
+        }
+
+        .planet.medium {
+            width: 80px;
+            height: 80px;
+        }
+
+        .planet.large {
+            width: 120px;
+            height: 120px;
+        }
+
+        .satellite {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: linear-gradient(45deg, #aaaaaa, #ffffff);
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+            animation: orbit 60s linear infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0); }
+        }
+
+        @keyframes orbit {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(100vw, 100vh); }
         }
 
         /* Mobile Responsive */
@@ -1281,65 +692,20 @@
             .about .container,
             .contact .container {
                 grid-template-columns: 1fr;
-                gap: 40px;
+                gap: 20px;
             }
 
-            .about .text {
-                order: -1;
+            .about .image {
+                width: 250px;
+                height: 250px;
             }
 
-            .projects-grid {
-                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            .planet {
+                display: none;
             }
         }
 
         @media (max-width: 768px) {
-            .hero h1 {
-                font-size: 42px;
-            }
-
-            .hero p {
-                font-size: 18px;
-            }
-
-            .navbar ul {
-                position: fixed;
-                top: 0;
-                right: -100%;
-                height: 100vh;
-                width: 70%;
-                max-width: 300px;
-                background-color: #111827;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-                z-index: 999;
-                transition: right 0.3s ease;
-            }
-
-            .navbar ul.active {
-                right: 0;
-            }
-
-            .navbar ul li {
-                margin: 15px 0;
-            }
-
-            .mobile-menu-btn {
-                display: block;
-                font-size: 24px;
-            }
-
-            .mobile-close-btn {
-                position: absolute;
-                top: 20px;
-                right: 20px;
-                font-size: 24px;
-                cursor: pointer;
-            }
-        }
-
-        @media (max-width: 576px) {
             .hero h1 {
                 font-size: 36px;
             }
@@ -1348,561 +714,99 @@
                 font-size: 16px;
             }
 
-            .hero .btn-group .btn {
-                display: block;
-                width: 100%;
+            .navbar ul {
+                position: fixed;
+                top: 0;
+                right: -100%;
+                height: 100vh;
+                width: 60%;
+                background-color: #111827;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                transition: right 0.3s ease;
+            }
+
+            .navbar ul.active {
+                right: 0;
+            }
+
+            .navbar ul li {
                 margin: 10px 0;
             }
 
-            .section-title {
+            .mobile-menu-btn {
+                display: block;
+                font-size: 20px;
+            }
+
+            .mobile-close-btn {
+                position: absolute;
+                top: 15px;
+                right: 15px;
+                font-size: 20px;
+                cursor: pointer;
+            }
+
+            .cosmic-background {
+                display: block;
+            }
+
+            .satellite {
+                animation-duration: 30s;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .hero h1 {
                 font-size: 28px;
             }
 
-            .contact-form,
-            .contact-info {
-                padding: 25px;
+            .hero p {
+                font-size: 14px;
+            }
+
+            .hero .btn-group .btn {
+                display: block;
+                width: 100%;
+                margin: 8px 0;
+            }
+
+            .section-title {
+                font-size: 24px;
+            }
+
+            .about .image {
+                width: 200px;
+                height: 200px;
             }
         }
-        
-        /* Animation effects */
+
+        /* Animation */
         @keyframes fadeInUp {
             from {
                 opacity: 0;
-                transform: translateY(30px);
+                transform: translateY(20px);
             }
             to {
                 opacity: 1;
                 transform: translateY(0);
             }
         }
-        
+
         .animate {
-            animation: fadeInUp 0.6s ease-out forwards;
+            animation: fadeInUp 0.5s ease-out forwards;
         }
-        
-        .skill-category, .project-card {
-            opacity: 0;
-            animation: fadeInUp 0.6s ease-out forwards;
-            animation-delay: calc(var(--delay) * 0.1s);
-        }
-        
-        /* Additional styling for tech badges */
-        .tech-badge {
-            display: inline-flex;
-            align-items: center;
-            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
-            color: white;
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 14px;
-            margin-right: 8px;
-            margin-bottom: 8px;
-            box-shadow: 0 4px 6px rgba(37, 99, 235, 0.1);
-            transition: all 0.3s;
-        }
-        
-        .tech-badge:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 8px rgba(37, 99, 235, 0.2);
-        }
-
-        /* Optimized cosmic background styles with subtle blur */
-        .cosmic-background {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(145deg, #000110 0%, #050118 30%, #07032a 60%, #0a0335 100%);
-            z-index: -100;
-            overflow: hidden;
-            pointer-events: none; /* Ensure background doesn't interfere with interactions */
-            filter: blur(1.5px); /* Very subtle blur to improve content visibility */
-        }
-        
-        /* Add a semi-transparent overlay to improve content visibility */
-        .cosmic-background::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.15); /* Very subtle darkening to improve contrast */
-            z-index: -90;
-        }
-        
-        /* Adjust text containers to improve readability */
-        .hero .content, 
-        .about .text, 
-        .contact-info, 
-        .contact-form, 
-        .skill-category,
-        .project-card {
-            backdrop-filter: blur(3px);
-            -webkit-backdrop-filter: blur(3px);
-            background-color: rgba(15, 15, 25, 0.65); /* Slightly more opaque for better readability */
-            border: 1px solid rgba(255, 255, 255, 0.08);
-        }
-        
-        /* Increase text readability throughout the site */
-        p, .project-description, .contact-info-item .content p {
-            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
-        }
-        
-        h1, h2, h3, h4, .section-title {
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.7);
-        }
-        
-        .stars-container {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            z-index: 1;
-        }
-        
-        /* Star base styles - optimized for performance */
-        .star {
-            position: absolute;
-            width: 2px;
-            height: 2px;
-            background-color: #fff;
-            border-radius: 50%;
-            animation: twinkle var(--duration, 4s) infinite ease-in-out;
-            opacity: var(--opacity, 0.9);
-            z-index: -95;
-            box-shadow: 0 0 3px #fff, 0 0 5px #fff;
-        }
-        
-        /* Optimized star animation with fewer steps */
-        @keyframes twinkle {
-            0%, 100% { opacity: var(--opacity, 0.9); transform: scale(1); filter: blur(0px); }
-            50% { opacity: 0.2; transform: scale(0.8); filter: blur(1px); }
-            100% { opacity: var(--opacity, 0.9); transform: scale(1); filter: blur(0px); }
-        }
-        
-        /* Non-animated tiny stars for improved performance */
-        .tiny-star {
-            position: absolute;
-            width: 1px;
-            height: 1px;
-            background-color: #fff;
-            border-radius: 50%;
-        }
-        
-        /* Optimized shooting star styles */
-        .shooting-star {
-            position: absolute;
-            width: 3px;
-            height: 120px;
-            background: linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 100%);
-            opacity: 0;
-            transform: translateZ(0);
-            animation: shoot var(--duration, 3s) 1 forwards ease-out;
-            transform-origin: top center;
-            top: 0;
-            left: 0;
-            z-index: -85;
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.9);
-        }
-        
-        /* Simplified shoot animation */
-        @keyframes shoot {
-            0% {
-                opacity: 0;
-                transform: translate(var(--start-x, 0), var(--start-y, 0)) rotate(var(--angle, -45deg)) scale(0.5);
-            }
-            5% {
-                opacity: 1;
-            }
-            95% {
-                opacity: 1;
-            }
-            100% {
-                opacity: 0;
-                transform: translate(var(--end-x, 300px), var(--end-y, 300px)) rotate(var(--angle, -45deg)) scale(0.1);
-            }
-        }
-        
-        /* Optimized falling star styles */
-        .falling-star {
-            position: absolute;
-            width: 3px;
-            height: var(--tail-length, 40px);
-            background: linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,0.8) 100%);
-            border-radius: 2px;
-            /* Hardware acceleration */
-            transform: translateZ(0) rotate(var(--fall-angle, 80deg));
-            animation: fall var(--fall-duration, 3s) 1 forwards ease-in;
-            box-shadow: 0 0 5px rgba(255, 255, 255, 0.7);
-        }
-        
-        /* Simplified fall animation */
-        @keyframes fall {
-            0% {
-                opacity: 0;
-                transform: translateZ(0) translateX(0) translateY(0) rotate(var(--fall-angle, 80deg));
-            }
-            10% {
-                opacity: 1;
-            }
-            100% {
-                opacity: 0;
-                transform: translateZ(0) 
-                           translateX(var(--fall-x-distance, 0px)) 
-                           translateY(var(--fall-distance, 300px)) 
-                           rotate(var(--fall-angle, 80deg));
-            }
-        }
-        
-        /* Optimized star fragment styles */
-        .star-fragment {
-            position: absolute;
-            width: 2px;
-            height: 2px;
-            background-color: #fff;
-            border-radius: 50%;
-            box-shadow: 0 0 3px #fff;
-            animation: fragment var(--fragment-duration, 1s) 1 forwards ease-out;
-        }
-        
-        /* Simplified fragment animation */
-        @keyframes fragment {
-            0% {
-                opacity: 1;
-                transform: translate(0, 0) scale(1);
-            }
-            100% {
-                opacity: 0;
-                transform: translate(var(--fragment-x, 0), var(--fragment-y, 0)) scale(0);
-            }
-        }
-        
-        /* Optimize dust particle for better performance */
-        .dust-particle {
-            position: absolute;
-            background-color: rgba(255, 255, 255, 0.4);
-            border-radius: 50%;
-            animation: float var(--duration, 30s) infinite ease-in-out;
-            opacity: var(--opacity, 0.2);
-            /* Hardware acceleration */
-            transform: translateZ(0);
-        }
-        
-        /* Simplified float animation */
-        @keyframes float {
-            0% {
-                transform: translateY(0) translateX(0);
-                opacity: 0;
-            }
-            10% {
-                opacity: var(--opacity, 0.2);
-            }
-            90% {
-                opacity: var(--opacity, 0.2);
-            }
-            100% {
-                transform: translateY(-100vh) translateX(var(--translate-x, 0));
-                opacity: 0;
-            }
-        }
-        
-        /* Media queries for performance optimization */
-        @media (max-width: 768px) {
-            /* Reduce visual effects on mobile */
-            .cosmic-background {
-                background: linear-gradient(145deg, #000223 0%, #090230 30%, #0c053d 60%, #130553 100%);
-            }
-            
-            .star {
-                animation-duration: 4s !important; /* Keep animation speed consistent */
-            }
-            
-            .planet {
-                display: block; /* Show planets */
-            }
-            
-            /* Ensure stars are visible on mobile */
-            .tiny-star {
-                opacity: 0.7;
-            }
-            
-            /* Ensure nebula is visible */
-            .nebula {
-                filter: blur(40px);
-                opacity: 0.4;
-            }
-            
-            /* Keep aurora effect */
-            .aurora {
-                opacity: 0.3;
-            }
-        }
-        
-        /* Project card optimization */
-        .project-card {
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            will-change: transform, box-shadow;
-        }
-        
-        /* Section background optimization */
-        section {
-            background-color: transparent !important;
-            backdrop-filter: none !important;
-            -webkit-backdrop-filter: none !important;
-            position: relative;
-            z-index: 1;
-        }
-        
-        /* Enhanced cosmic background and planets */
-        .cosmic-background {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(145deg, #000110 0%, #050118 30%, #07032a 60%, #0a0335 100%);
-            z-index: -100;
-            overflow: hidden;
-            pointer-events: none; /* Ensure background doesn't interfere with interactions */
-        }
-
-        /* Nebula and Aurora effects for enhanced cosmic background */
-        .nebula {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(ellipse at center, rgba(63, 94, 251, 0.2) 0%, rgba(70, 50, 168, 0.1) 40%, transparent 70%);
-            filter: blur(60px);
-            opacity: 0.3;
-            z-index: -99;
-            pointer-events: none;
-        }
-        
-        .aurora {
-            position: absolute;
-            width: 200%;
-            height: 200%;
-            top: -50%;
-            left: -50%;
-            background: linear-gradient(45deg, rgba(0, 183, 255, 0.1), rgba(59, 0, 255, 0.05), rgba(0, 255, 179, 0.1));
-            filter: blur(80px);
-            opacity: 0.2;
-            z-index: -98;
-            animation: auroraMove 30s infinite alternate ease-in-out;
-            pointer-events: none;
-        }
-        
-        @keyframes auroraMove {
-            0% { transform: rotate(0deg) scale(1); }
-            100% { transform: rotate(360deg) scale(1.1); }
-        }
-
-        /* Planet styles */
-        .planet {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(0.5px);
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
-            opacity: 0.7;
-            z-index: -90;
-            animation: planetPulse 10s infinite ease-in-out;
-        }
-        
-        @keyframes planetPulse {
-            0%, 100% { transform: scale(1); filter: blur(0.5px); }
-            50% { transform: scale(1.05); filter: blur(0.3px); }
-        }
-
-        .jupiter {
-            width: 120px;
-            height: 120px;
-            background: linear-gradient(135deg, #c99039, #704820);
-            top: 15%;
-            right: 10%;
-            animation-delay: 0s;
-        }
-
-        .mars {
-            width: 60px;
-            height: 60px;
-            background: linear-gradient(135deg, #d6723b, #811e15);
-            bottom: 20%;
-            left: 15%;
-            animation-delay: -3s;
-        }
-
-        .saturn {
-            width: 100px;
-            height: 100px;
-            background: linear-gradient(135deg, #dabe88, #a97b46);
-            top: 35%;
-            left: 8%;
-            animation-delay: -5s;
-            position: relative;
-        }
-
-        .saturn-ring {
-            position: absolute;
-            width: 160px;
-            height: 40px;
-            left: -30px;
-            top: 50%;
-            margin-top: -20px;
-            border-radius: 50%;
-            border: 8px solid rgba(225, 204, 155, 0.4);
-            transform: rotateX(70deg);
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
-        }
-        
-        .venus {
-            width: 70px;
-            height: 70px;
-            background: linear-gradient(135deg, #dfca9e, #b8885b);
-            bottom: 40%;
-            right: 25%;
-            animation-delay: -2s;
-        }
-        
-        .mercury {
-            width: 40px;
-            height: 40px;
-            background: linear-gradient(135deg, #ada8a5, #807b73);
-            top: 60%;
-            right: 35%;
-            animation-delay: -7s;
-        }
-        
-        .neptune {
-            width: 85px;
-            height: 85px;
-            background: linear-gradient(135deg, #5b8dbd, #3a5a8f);
-            top: 75%;
-            left: 30%;
-            animation-delay: -4s;
-        }
-
-        /* Increased star visibility */
-        .star {
-            position: absolute;
-            width: 2px;
-            height: 2px;
-            background-color: #fff;
-            border-radius: 50%;
-            animation: twinkle var(--duration, 4s) infinite ease-in-out;
-            opacity: var(--opacity, 0.9);
-            z-index: -95;
-            box-shadow: 0 0 3px #fff, 0 0 5px #fff;
-        }
-        
-        @keyframes twinkle {
-            0%, 100% { opacity: var(--opacity, 0.9); }
-            50% { opacity: 0.2; }
-        }
-        
-        /* Enhanced falling star styles */
-        .falling-star {
-            position: absolute;
-            width: 4px;
-            height: var(--tail-length, 70px);
-            background: linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 100%);
-            border-radius: 2px;
-            transform: translateZ(0) rotate(var(--fall-angle, 80deg));
-            animation: fall var(--fall-duration, 3s) 1 forwards ease-in;
-            box-shadow: 0 0 10px rgba(255, 255, 255, 0.9);
-            z-index: -85;
-        }
-        
-        /* Enhanced shooting star styles */
-        .shooting-star {
-            position: absolute;
-            width: 3px;
-            height: 120px;
-            background: linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 100%);
-            opacity: 0;
-            transform: translateZ(0);
-            animation: shoot var(--duration, 3s) 1 forwards ease-out;
-            transform-origin: top center;
-            top: 0;
-            left: 0;
-            z-index: -85;
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.9);
-        }
-        
-        /* Enhanced Project Cards */
-        .project-card {
-            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.5s ease, border-color 0.5s ease;
-        }
-        
-        .project-card:hover {
-            transform: translateY(-15px) scale(1.03);
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3), 
-                        0 0 20px 5px rgba(37, 99, 235, 0.2);
-            border-color: rgba(37, 99, 235, 0.4);
-        }
-        
-        .project-card:hover .project-title::after {
-            width: 80px;
-            background: linear-gradient(90deg, var(--accent-color), var(--primary-color));
-        }
-        
-        .project-image img {
-            transition: transform 1s cubic-bezier(0.19, 1, 0.22, 1);
-        }
-        
-        .project-card:hover .project-image img {
-            transform: scale(1.12) rotate(3deg);
-        }
-        
-        .project-image::before {
-            transition: opacity 0.6s ease;
-        }
-        
-        .project-card:hover .project-image::before {
-            opacity: 0.8;
-            background: linear-gradient(45deg, rgba(37, 99, 235, 0.5), transparent);
-        }
-        
-        .tech-badge {
-            font-weight: 500;
-        }
-        
-        .tech-badge:hover {
-            transform: translateY(-3px) scale(1.05);
-            box-shadow: 0 6px 12px rgba(37, 99, 235, 0.5);
-            filter: brightness(1.1);
-        }
-
-        /* Fix the project image for movie ticket booking */
-        #project-section .project-card:first-child .project-image img {
-            content: url("images/projects/movie_booking.png");
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        </style>
+    </style>
 </head>
 <body>
-    <!-- Enhanced Cosmic Background -->
+    <!-- Cosmic Background -->
     <div class="cosmic-background">
-        <div class="nebula"></div>
-        <div class="aurora"></div>
-        <div class="stars-container" id="starsContainer"></div>
-        <div id="shootingStarsContainer"></div>
-        <div id="dustParticlesContainer"></div>
-        
-        <!-- Planets -->
-        <div class="planet jupiter"></div>
-        <div class="planet mars"></div>
-        <div class="planet saturn">
-            <div class="saturn-ring"></div>
-        </div>
-        <div class="planet venus"></div>
-        <div class="planet mercury"></div>
-        <div class="planet neptune"></div>
+        <div id="starsContainer"></div>
+        <div id="planetsContainer"></div>
+        <div id="satelliteContainer"></div>
     </div>
-    
+
     <!-- Navbar -->
     <nav class="navbar">
         <div class="container">
@@ -1925,11 +829,6 @@
 
     <!-- Hero Section -->
     <section id="home" class="hero">
-        <div class="hero-background">
-            <div class="floating-shape shape-1"></div>
-            <div class="floating-shape shape-2"></div>
-            <div class="floating-shape shape-3"></div>
-        </div>
         <div class="content">
             <h1>Hi, I'm <span class="name">Om Singh</span></h1>
             <p>Software Developer & Data Analyst</p>
@@ -1948,7 +847,7 @@
 
     <!-- About Section -->
     <section id="about" class="about">
-        <h2>About Me</h2>
+        <h2 class="section-title">About Me</h2>
         <div class="container">
             <div class="image animate">
                 <img src="images/om_image_mnali.jpg" alt="Om Singh">
@@ -1973,10 +872,10 @@
 
     <!-- Skills Section -->
     <section id="skills" class="skills">
-        <h2>My Skills</h2>
+        <h2 class="section-title">My Skills</h2>
         <div class="container">
             <div class="skills-container">
-                <div class="skill-category" style="--delay:1">
+                <div class="skill-category animate">
                     <h3><i class="fas fa-code"></i> Frontend</h3>
                     <div class="skill-list">
                         <div class="skill-item">React.js</div>
@@ -1987,21 +886,21 @@
                         <div class="skill-item">Vite</div>
                     </div>
                 </div>
-                <div class="skill-category" style="--delay:2">
+                <div class="skill-category animate">
                     <h3><i class="fas fa-server"></i> Backend</h3>
                     <div class="skill-list">
                         <div class="skill-item">Node.js</div>
                         <div class="skill-item">Express.js</div>
                     </div>
                 </div>
-                <div class="skill-category" style="--delay:3">
+                <div class="skill-category animate">
                     <h3><i class="fas fa-database"></i> Database</h3>
                     <div class="skill-list">
                         <div class="skill-item">MongoDB</div>
                         <div class="skill-item">MySQL</div>
                     </div>
                 </div>
-                <div class="skill-category" style="--delay:4">
+                <div class="skill-category animate">
                     <h3><i class="fas fa-tools"></i> Tools & Technologies</h3>
                     <div class="skill-list">
                         <div class="skill-item">Redux</div>
@@ -2010,7 +909,7 @@
                         <div class="skill-item">Vercel</div>
                     </div>
                 </div>
-                <div class="skill-category" style="--delay:5">
+                <div class="skill-category animate">
                     <h3><i class="fas fa-laptop-code"></i> Languages</h3>
                     <div class="skill-list">
                         <div class="skill-item">C</div>
@@ -2025,12 +924,12 @@
 
     <!-- Projects Section -->
     <section id="projects" class="projects">
-        <h2>My Projects</h2>
+        <h2 class="section-title">My Projects</h2>
         <div class="container">
             <div class="projects-grid">
-                <div class="project-card" style="--delay:1">
+                <div class="project-card animate">
                     <div class="project-image">
-                        <img src="images/projects/port1.png" alt="Movie Ticket Booking System">
+                        <img src="images/projects/movie_booking.png" alt="Movie Ticket Booking System">
                     </div>
                     <div class="project-content">
                         <h3 class="project-title">Movie Ticket Booking System using AI</h3>
@@ -2047,13 +946,13 @@
                         </div>
                     </div>
                 </div>
-                <div class="project-card" style="--delay:2">
+                <div class="project-card animate">
                     <div class="project-image">
                         <img src="images/projects/text_to_image.png" alt="Text-to-Image Generator">
                     </div>
                     <div class="project-content">
                         <h3 class="project-title">Text-to-Image Generator</h3>
-                        <p class="project-description">A powerful AI-based Text-to-Image Generator built using Google Colab and deep learning models. Converts text prompts into stunning AI-generated images with customizable parameters. This project leverages pre-trained AI models to transform textual descriptions into high-quality visuals with adjustable resolution and style settings.</p>
+                        <p class="project-description">A powerful AI-based Text-to-Image Generator built using Google Colab and deep learning models. Converts text prompts into stunning AI-generated images with customizable parameters.</p>
                         <div class="project-tech">
                             <span class="tech-badge">Python</span>
                             <span class="tech-badge">Google Colab</span>
@@ -2066,13 +965,13 @@
                         </div>
                     </div>
                 </div>
-                <div class="project-card" style="--delay:3">
+                <div class="project-card animate">
                     <div class="project-image">
                         <img src="images/projects/recipe_finder.png" alt="Food Recipe Suggestor">
                     </div>
                     <div class="project-content">
                         <h3 class="project-title">Food Recipe Suggestor using Ingredients</h3>
-                        <p class="project-description">A smart machine learning-based system that suggests food recipes based on the ingredients you have at home. Users simply enter available ingredients, and the system recommends relevant recipes, reducing food waste and simplifying cooking.</p>
+                        <p class="project-description">A smart machine learning-based system that suggests food recipes based on the ingredients you have at home. Users simply enter available ingredients, and the system recommends relevant recipes.</p>
                         <div class="project-tech">
                             <span class="tech-badge">HTML</span>
                             <span class="tech-badge">CSS</span>
@@ -2091,7 +990,7 @@
 
     <!-- Contact Section -->
     <section id="contact" class="contact">
-        <h2>Contact Me</h2>
+        <h2 class="section-title">Contact Me</h2>
         <div class="container">
             <div class="contact-info animate">
                 <h3>Get In Touch</h3>
@@ -2148,7 +1047,7 @@
                 <a href="https://github.com/Om-Singh-45" target="_blank"><i class="fab fa-github"></i></a>
                 <a href="https://www.instagram.com/omsingh_45_45?igsh=MXB5M2g2MzN0anlyYw==" target="_blank"><i class="fab fa-instagram"></i></a>
             </div>
-            <p class="copyright">Â© 2025 Om Singh. All Rights Reserved.</p>
+            <p class="copyright">© 2025 Om Singh. All Rights Reserved.</p>
         </div>
     </footer>
 
@@ -2158,207 +1057,101 @@
     </div>
 
     <script>
-        // Performance-optimized cosmic background
-        function createStars() {
-            console.log("Creating stars");
+        // Create cosmic background elements
+        function createCosmicBackground() {
             const starsContainer = document.getElementById('starsContainer');
-            const numberOfStars = 300; // Reduced number of stars
-            
-            if (!starsContainer) {
-                console.error("Stars container not found");
-                return;
-            }
-            
-            // Clear any existing stars
+            const planetsContainer = document.getElementById('planetsContainer');
+            const satelliteContainer = document.getElementById('satelliteContainer');
+            const isMobile = window.innerWidth <= 768;
+            const numberOfStars = isMobile ? 50 : 100;
+            const numberOfPlanets = isMobile ? 2 : 4;
+
+            // Clear containers
             starsContainer.innerHTML = '';
-            
-            // Use document fragment for better performance
-            const fragment = document.createDocumentFragment();
-            
+            planetsContainer.innerHTML = '';
+            satelliteContainer.innerHTML = '';
+
+            const fragmentStars = document.createDocumentFragment();
+            const fragmentPlanets = document.createDocumentFragment();
+            const fragmentSatellite = document.createDocumentFragment();
+
+            // Create twinkling stars
             for (let i = 0; i < numberOfStars; i++) {
                 const star = document.createElement('div');
                 star.classList.add('star');
-                
-                // Random position
                 star.style.left = `${Math.random() * 100}%`;
                 star.style.top = `${Math.random() * 100}%`;
-                
-                // Random twinkle duration and opacity
-                const duration = Math.random() * 3 + 2; // 2 to 5 seconds
-                const opacity = Math.random() * 0.7 + 0.3; // 0.3 to 1.0
-                
-                star.style.setProperty('--duration', `${duration}s`);
-                star.style.setProperty('--opacity', opacity);
-                
-                fragment.appendChild(star);
+                star.style.animationDelay = `${Math.random() * 2}s`;
+                fragmentStars.appendChild(star);
             }
-            
-            // Add all stars at once for better performance
-            starsContainer.appendChild(fragment);
-        }
-        
-        // Simplified shooting stars for better performance
-        function createShootingStars() {
-            const shootingStarsContainer = document.getElementById('shootingStarsContainer');
-            const numberOfShootingStars = 5; // Reduced number for better performance
-            
-            if (!shootingStarsContainer) {
-                console.error("Shooting stars container not found");
-                return;
-            }
-            
-            // Clear any existing shooting stars
-            shootingStarsContainer.innerHTML = '';
-            
-            // Use document fragment for better performance
-            const fragment = document.createDocumentFragment();
-            
-            for (let i = 0; i < numberOfShootingStars; i++) {
-                const star = document.createElement('div');
-                star.classList.add('shooting-star');
-                
-                // Define random start and end positions
-                const startX = Math.random() * window.innerWidth;
-                const startY = Math.random() * (window.innerHeight / 3);
-                const distance = 300 + Math.random() * 300;
-                const angle = (Math.random() * 60 - 30) - 45;
-                
-                star.style.setProperty('--start-x', startX);
-                star.style.setProperty('--start-y', startY);
-                star.style.setProperty('--duration', `${Math.random() * 2 + 2}s`);
-                star.style.setProperty('--angle', `${angle}deg`);
-                
-                // Longer delays to reduce simultaneous animations
-                star.style.animationDelay = `${i * 3 + Math.random() * 10}s`;
-                
-                fragment.appendChild(star);
-            }
-            
-            // Add all stars at once for better performance
-            shootingStarsContainer.appendChild(fragment);
-            
-            // Create new shooting stars less frequently
-            setTimeout(createShootingStars, 15000);
-        }
 
-        // Simplified parallax effect to reduce lag
-        function handleScroll() {
-            // Disable heavy parallax effects
-            return;
-        }
+            // Create planets
+            const planetSizes = ['small', 'medium', 'large'];
+            const planetPositions = [
+                { left: '10%', top: '20%' },
+                { left: '80%', top: '30%' },
+                { left: '20%', top: '70%' },
+                { left: '70%', top: '80%' }
+            ];
 
-        // Create fewer dust particles
-        function createDustParticles() {
-            const dustContainer = document.getElementById('dustParticlesContainer');
-            const numberOfParticles = 20; // Reduced number for better performance
-            
-            if (!dustContainer) {
-                console.error("Dust particles container not found");
-                return;
+            for (let i = 0; i < numberOfPlanets; i++) {
+                const planet = document.createElement('div');
+                planet.classList.add('planet', planetSizes[Math.floor(Math.random() * 3)]);
+                if (i === 0 && !isMobile) planet.classList.add('ring');
+                planet.style.left = planetPositions[i].left;
+                planet.style.top = planetPositions[i].top;
+                planet.style.animationDelay = `${Math.random() * 10}s`;
+                fragmentPlanets.appendChild(planet);
             }
-            
-            // Clear any existing particles
-            dustContainer.innerHTML = '';
-            
-            // Use document fragment for better performance
-            const fragment = document.createDocumentFragment();
-            
-            for (let i = 0; i < numberOfParticles; i++) {
-                const particle = document.createElement('div');
-                particle.classList.add('dust-particle');
-                
-                // Random position
-                particle.style.left = `${Math.random() * 100}%`;
-                particle.style.bottom = '0';
-                
-                // Simplify animation properties
-                particle.style.setProperty('--duration', `${Math.random() * 10 + 20}s`);
-                
-                fragment.appendChild(particle);
-            }
-            
-            // Add all particles at once for better performance
-            dustContainer.appendChild(fragment);
-        }
 
-        // Disable animation on scroll to improve performance
-        const animationObserver = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('animate');
-                }
-            });
-        }, { threshold: 0.1 });
-        
-        // Initialize with optimized settings for performance
-        document.addEventListener('DOMContentLoaded', () => {
-            createStars();
-            createShootingStars();
-            createDustParticles();
-            
-            // Remove scroll handling to improve performance
-            window.removeEventListener('scroll', handleScroll);
-            
-            const animateElements = document.querySelectorAll('.animate, .skill-category, .project-card');
-            animateElements.forEach(el => animationObserver.observe(el));
-        });
+            // Create satellite
+            const satellite = document.createElement('div');
+            satellite.classList.add('satellite');
+            satellite.style.left = '0%';
+            satellite.style.top = '0%';
+            fragmentSatellite.appendChild(satellite);
+
+            starsContainer.appendChild(fragmentStars);
+            planetsContainer.appendChild(fragmentPlanets);
+            satelliteContainer.appendChild(fragmentSatellite);
+        }
 
         // Navbar Scroll Effect
         window.addEventListener('scroll', () => {
             const navbar = document.querySelector('.navbar');
-            if (window.scrollY > 50) {
-                navbar.classList.add('scrolled');
-            } else {
-                navbar.classList.remove('scrolled');
-            }
+            navbar.classList.toggle('scrolled', window.scrollY > 50);
         });
 
-        // Other existing event listeners...
-
-        // Other existing event listeners
         // Mobile Menu Toggle
         const openMenu = document.getElementById('open-menu');
         const closeMenu = document.getElementById('close-menu');
         const menu = document.getElementById('menu');
 
-        openMenu.addEventListener('click', () => {
-            menu.classList.add('active');
-        });
-
-        closeMenu.addEventListener('click', () => {
-            menu.classList.remove('active');
-        });
+        openMenu.addEventListener('click', () => menu.classList.add('active'));
+        closeMenu.addEventListener('click', () => menu.classList.remove('active'));
 
         // Scroll to Top Button
         const scrollTop = document.querySelector('.scroll-top');
         window.addEventListener('scroll', () => {
-            if (window.scrollY > 300) {
-                scrollTop.classList.add('show');
-            } else {
-                scrollTop.classList.remove('show');
-            }
+            scrollTop.classList.toggle('show', window.scrollY > 300);
         });
 
         scrollTop.addEventListener('click', () => {
             window.scrollTo({ top: 0, behavior: 'smooth' });
         });
 
-        // Smooth scrolling for anchor links
+        // Smooth Scrolling
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function(e) {
                 e.preventDefault();
-                
                 const targetId = this.getAttribute('href');
                 const targetElement = document.querySelector(targetId);
-                
                 if (targetElement) {
-                    // Close mobile menu if open
                     if (menu.classList.contains('active')) {
                         menu.classList.remove('active');
                     }
-                    
                     window.scrollTo({
-                        top: targetElement.offsetTop - 80,
+                        top: targetElement.offsetTop - 60,
                         behavior: 'smooth'
                     });
                 }
@@ -2366,138 +1159,32 @@
         });
 
         // Animation on Scroll
-        const animateElements = document.querySelectorAll('.animate, .skill-category, .project-card');
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     entry.target.classList.add('animate');
-                    
-                    // Add staggered animation delay for skill and project cards
-                    if (entry.target.classList.contains('skill-category') || 
-                        entry.target.classList.contains('project-card')) {
-                        const delayStyle = entry.target.getAttribute('style');
-                        if (delayStyle && delayStyle.includes('--delay:')) {
-                            const delay = delayStyle.split('--delay:')[1].split(')')[0];
-                            entry.target.style.animationDelay = `${delay * 0.1}s`;
-                        }
-                    }
                 }
             });
-        }, { threshold: 0.1 });
+        }, { threshold: 0.2 });
 
-        animateElements.forEach(el => observer.observe(el));
+        document.querySelectorAll('.animate').forEach(el => observer.observe(el));
 
-        // Form Submission (Basic Example)
+        // Form Submission
         document.getElementById('contact-form').addEventListener('submit', (e) => {
             e.preventDefault();
-            alert('Message sent! (This is a demo - actual submission requires backend integration)');
+            alert('Message sent! (Demo - requires backend integration)');
             e.target.reset();
         });
 
-        // Create shooting stars with enhanced features
-        function createShootingStars() {
-            const shootingStarsContainer = document.getElementById('shootingStarsContainer');
-            const numberOfShootingStars = 15; // Increased number of shooting stars
-            
-            if (!shootingStarsContainer) {
-                console.error("Shooting stars container not found");
-                return;
-            }
-            
-            // Clear any existing shooting stars
-            shootingStarsContainer.innerHTML = '';
-            
-            // Use document fragment for better performance
-            const fragment = document.createDocumentFragment();
-            
-            for (let i = 0; i < numberOfShootingStars; i++) {
-                const star = document.createElement('div');
-                star.classList.add('shooting-star');
-                
-                // Define random start and end positions
-                const startX = Math.random() * window.innerWidth;
-                const startY = Math.random() * (window.innerHeight / 2);
-                const distance = 300 + Math.random() * 500;
-                const angle = (Math.random() * 60 - 30) - 45; // -75 to -15 degrees
-                const angleRad = angle * Math.PI / 180;
-                
-                // Calculate end position based on angle and distance
-                const endX = startX + Math.cos(angleRad) * distance;
-                const endY = startY + Math.sin(angleRad) * distance;
-                
-                // Randomize width, height and glow
-                const width = Math.random() * 80 + 50; // 50-130px
-                const height = Math.random() * 2 + 2; // 2-4px
-                const glow = Math.random() * 5 + 5; // 5-10px
-                
-                // Set animation properties
-                const duration = Math.random() * 2 + 2; // 2 to 4 seconds
-                
-                star.style.setProperty('--start-x', `${startX}px`);
-                star.style.setProperty('--start-y', `${startY}px`);
-                star.style.setProperty('--end-x', `${endX}px`);
-                star.style.setProperty('--end-y', `${endY}px`);
-                star.style.setProperty('--duration', `${duration}s`);
-                star.style.setProperty('--angle', `${angle}deg`);
-                star.style.setProperty('--width', `${width}px`);
-                star.style.setProperty('--height', `${height}px`);
-                star.style.setProperty('--glow', `${glow}px`);
-                
-                // Set a delay between shooting stars
-                star.style.animationDelay = `${i * 2 + Math.random() * 10}s`;
-                
-                fragment.appendChild(star);
-            }
-            
-            // Add all stars at once for better performance
-            shootingStarsContainer.appendChild(fragment);
-            
-            // Create new shooting stars more frequently
-            setTimeout(createShootingStars, 10000); // Create new batch every 10 seconds
-        }
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            createCosmicBackground();
+        });
 
-        // Create dust particles
-        function createDustParticles() {
-            const dustContainer = document.getElementById('dustParticlesContainer');
-            const numberOfParticles = 80;
-            
-            if (!dustContainer) {
-                console.error("Dust particles container not found");
-                return;
-            }
-            
-            // Clear any existing particles
-            dustContainer.innerHTML = '';
-            
-            for (let i = 0; i < numberOfParticles; i++) {
-                const particle = document.createElement('div');
-                particle.classList.add('dust-particle');
-                
-                // Random size
-                const size = Math.random() * 2 + 1;
-                particle.style.width = `${size}px`;
-                particle.style.height = `${size}px`;
-                
-                // Random position
-                particle.style.left = `${Math.random() * 100}%`;
-                particle.style.bottom = '0';
-                
-                // Random animation properties
-                const duration = Math.random() * 20 + 20; // 20 to 40 seconds
-                const opacity = Math.random() * 0.3 + 0.1; // 0.1 to 0.4
-                const translateX = (Math.random() - 0.5) * 200; // -100px to 100px
-                
-                particle.style.setProperty('--duration', `${duration}s`);
-                particle.style.setProperty('--opacity', opacity);
-                particle.style.setProperty('--translate-x', `${translateX}px`);
-                
-                // Add a delay
-                particle.style.animationDelay = `${Math.random() * duration}s`;
-                
-                dustContainer.appendChild(particle);
-            }
-        }
+        // Recreate stars on resize
+        window.addEventListener('resize', () => {
+            createCosmicBackground();
+        });
     </script>
 </body>
 </html>
-
