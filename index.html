@@ -622,9 +622,22 @@
             animation: twinkle 2s infinite alternate;
         }
 
+        .falling-star {
+            position: absolute;
+            width: 2px;
+            height: 20px;
+            background: linear-gradient(to bottom, rgba(255, 255, 255, 0.8), transparent);
+            animation: fall 5s linear infinite;
+        }
+
         @keyframes twinkle {
             0% { opacity: 0.7; transform: scale(1); }
             100% { opacity: 1; transform: scale(1.2); }
+        }
+
+        @keyframes fall {
+            0% { transform: translate(0, -10vh) rotate(45deg); opacity: 1; }
+            100% { transform: translate(100vw, 100vh) rotate(45deg); opacity: 0; }
         }
 
         .planet {
@@ -633,7 +646,7 @@
             background: radial-gradient(circle at 30% 30%, #ffffff, #4b5e91, #2b3a67);
             box-shadow: 0 0 20px var(--planet-glow);
             animation: float 20s infinite linear;
-            display: block; /* Ensure planets are visible on mobile */
+            display: block;
         }
 
         .planet.ring {
@@ -662,32 +675,13 @@
             height: 80px;
         }
 
-        .planet.large {
-            width: 120px;
-            height: 120px;
-        }
-
-        .satellite {
+        .spaceship {
             position: absolute;
-            width: 40px;
-            height: 40px;
-            background: linear-gradient(45deg, #aaaaaa, #ffffff);
-            border-radius: 50%;
-            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+            width: 80px;
+            height: 80px;
+            background: url('https://via.placeholder.com/80x80.png?text=UFO') no-repeat center;
+            background-size: contain;
             animation: orbit 60s linear infinite;
-        }
-
-        .satellite.ring::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 120%;
-            height: 10%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-            transform: translate(-50%, -50%) rotate(45deg);
-            border-radius: 50%;
-            animation: rotate-ring 10s linear infinite;
         }
 
         @keyframes float {
@@ -698,12 +692,10 @@
 
         @keyframes orbit {
             0% { transform: translate(0, 0); }
-            100% { transform: translate(100vw, 100vh); }
-        }
-
-        @keyframes rotate-ring {
-            0% { transform: translate(-50%, -50%) rotate(0deg); }
-            100% { transform: translate(-50%, -50%) rotate(360deg); }
+            25% { transform: translate(80vw, 20vh); }
+            50% { transform: translate(100vw, 80vh); }
+            75% { transform: translate(20vw, 100vh); }
+            100% { transform: translate(0, 0); }
         }
 
         @keyframes scrollAnimation {
@@ -729,7 +721,7 @@
             }
 
             .planet {
-                display: block; /* Ensure planets are visible on mobile */
+                display: block;
             }
         }
 
@@ -780,8 +772,8 @@
                 display: block;
             }
 
-            .satellite {
-                animation-duration: 30s;
+            .spaceship {
+                animation-duration: 30s; /* Faster movement on mobile */
             }
         }
 
@@ -831,8 +823,9 @@
     <!-- Cosmic Background -->
     <div class="cosmic-background">
         <div id="starsContainer"></div>
+        <div id="fallingStarsContainer"></div>
         <div id="planetsContainer"></div>
-        <div id="satelliteContainer"></div>
+        <div id="spaceshipContainer"></div>
     </div>
 
     <!-- Navbar -->
@@ -1088,21 +1081,24 @@
         // Create cosmic background elements
         function createCosmicBackground() {
             const starsContainer = document.getElementById('starsContainer');
+            const fallingStarsContainer = document.getElementById('fallingStarsContainer');
             const planetsContainer = document.getElementById('planetsContainer');
-            const satelliteContainer = document.getElementById('satelliteContainer');
+            const spaceshipContainer = document.getElementById('spaceshipContainer');
             const isMobile = window.innerWidth <= 768;
             const numberOfStars = isMobile ? 50 : 100;
-            const numberOfPlanets = isMobile ? 3 : 5; // Increased planets for mobile visibility
-            const numberOfSatellites = 3; // Added 2-3 more satellites
+            const numberOfPlanets = 2;
+            const numberOfFallingStars = isMobile ? 2 : 5;
 
             // Clear containers
             starsContainer.innerHTML = '';
+            fallingStarsContainer.innerHTML = '';
             planetsContainer.innerHTML = '';
-            satelliteContainer.innerHTML = '';
+            spaceshipContainer.innerHTML = '';
 
             const fragmentStars = document.createDocumentFragment();
+            const fragmentFallingStars = document.createDocumentFragment();
             const fragmentPlanets = document.createDocumentFragment();
-            const fragmentSatellites = document.createDocumentFragment();
+            const fragmentSpaceship = document.createDocumentFragment();
 
             // Create twinkling stars
             for (let i = 0; i < numberOfStars; i++) {
@@ -1114,45 +1110,43 @@
                 fragmentStars.appendChild(star);
             }
 
+            // Create falling stars
+            for (let i = 0; i < numberOfFallingStars; i++) {
+                const fallingStar = document.createElement('div');
+                fallingStar.classList.add('falling-star');
+                fallingStar.style.left = `${Math.random() * 100}%`;
+                fallingStar.style.animationDelay = `${Math.random() * 5}s`;
+                fragmentFallingStars.appendChild(fallingStar);
+            }
+
             // Create planets
-            const planetSizes = ['small', 'medium', 'large'];
+            const planetSizes = ['small', 'medium'];
             const planetPositions = [
                 { left: '10%', top: '20%' },
-                { left: '80%', top: '30%' },
-                { left: '20%', top: '70%' },
-                { left: '70%', top: '80%' },
-                { left: '40%', top: '40%' }
+                { left: '80%', top: '70%' }
             ];
 
             for (let i = 0; i < numberOfPlanets; i++) {
                 const planet = document.createElement('div');
-                planet.classList.add('planet', planetSizes[Math.floor(Math.random() * 3)]);
-                if (i === 0 || (isMobile && i === 1)) planet.classList.add('ring'); // Added ring to more planets
-                planet.style.left = planetPositions[i % planetPositions.length].left;
-                planet.style.top = planetPositions[i % planetPositions.length].top;
+                planet.classList.add('planet', planetSizes[i]);
+                if (i === 0) planet.classList.add('ring');
+                planet.style.left = planetPositions[i].left;
+                planet.style.top = planetPositions[i].top;
                 planet.style.animationDelay = `${Math.random() * 10}s`;
                 fragmentPlanets.appendChild(planet);
             }
 
-            // Create satellites with rings
-            const satellitePositions = [
-                { left: '5%', top: '5%' },
-                { left: '50%', top: '30%' },
-                { left: '90%', top: '70%' }
-            ];
-
-            for (let i = 0; i < numberOfSatellites; i++) {
-                const satellite = document.createElement('div');
-                satellite.classList.add('satellite', 'ring');
-                satellite.style.left = satellitePositions[i].left;
-                satellite.style.top = satellitePositions[i].top;
-                satellite.style.animationDelay = `${Math.random() * 5}s`;
-                fragmentSatellites.appendChild(satellite);
-            }
+            // Create single spaceship
+            const spaceship = document.createElement('div');
+            spaceship.classList.add('spaceship');
+            spaceship.style.left = '0%';
+            spaceship.style.top = '0%';
+            fragmentSpaceship.appendChild(spaceship);
 
             starsContainer.appendChild(fragmentStars);
+            fallingStarsContainer.appendChild(fragmentFallingStars);
             planetsContainer.appendChild(fragmentPlanets);
-            satelliteContainer.appendChild(fragmentSatellites);
+            spaceshipContainer.appendChild(fragmentSpaceship);
         }
 
         // Navbar Scroll Effect
@@ -1160,12 +1154,13 @@
             const navbar = document.querySelector('.navbar');
             navbar.classList.toggle('scrolled', window.scrollY > 50);
 
-            // Add scroll animation to cosmic elements
-            const cosmicElements = document.querySelectorAll('.planet, .satellite, .star');
-            cosmicElements.forEach(element => {
-                element.classList.add('cosmic-element');
-                element.style.animationDelay = `${Math.random() * 1}s`; // Stagger animation
-            });
+            // Update spaceship position on scroll
+            const spaceship = document.querySelector('.spaceship');
+            const viewportWidth = window.innerWidth;
+            const viewportHeight = window.innerHeight;
+            const newX = Math.random() * (viewportWidth - 80);
+            const newY = Math.random() * (viewportHeight - 80);
+            spaceship.style.transform = `translate(${newX}px, ${newY}px)`;
         });
 
         // Mobile Menu Toggle
