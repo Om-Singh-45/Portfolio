@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Om Singh - Portfolio</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Add particles.js library -->
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
     <style>
         :root {
             --primary-color: #2563eb;
@@ -35,6 +37,7 @@
             background: linear-gradient(145deg, #000110, #07032a);
             overflow-x: hidden;
             position: relative;
+            cursor: none;
         }
 
         a {
@@ -329,6 +332,54 @@
             color: white;
         }
 
+        /* Skills styling with progress bars */
+        .skill-progress {
+            margin-bottom: 15px;
+        }
+        
+        .skill-name {
+            margin-bottom: 5px;
+            color: var(--text-color);
+            font-weight: 500;
+        }
+        
+        .progress-container {
+            height: 8px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+            border-radius: 4px;
+            width: 0;
+            transition: width 1.5s ease-in-out;
+        }
+        
+        /* Animated elements */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+        
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .bounce-in {
+            animation: bounceIn 1s;
+        }
+        
+        @keyframes bounceIn {
+            0% { transform: scale(0.8); opacity: 0; }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
         /* Projects Section */
         .projects {
             padding: 80px 0;
@@ -346,17 +397,26 @@
             background-color: rgba(15, 15, 25, 0.7);
             border-radius: 10px;
             overflow: hidden;
-            transition: transform 0.3s ease;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
             will-change: transform;
+            transform-style: preserve-3d;
+            perspective: 1000px;
         }
 
         .project-card:hover {
-            transform: translateY(-5px);
+            transform: translateY(-5px) rotateX(5deg) rotateY(5deg);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .project-card .tilt-box {
+            transition: transform 0.2s ease-out;
+            transform-style: preserve-3d;
         }
 
         .project-image {
             height: 180px;
             overflow: hidden;
+            transform: translateZ(20px);
         }
 
         .project-image img {
@@ -372,6 +432,7 @@
 
         .project-content {
             padding: 20px;
+            transform: translateZ(30px);
         }
 
         .project-title {
@@ -817,9 +878,131 @@
         .animate {
             animation: fadeInUp 0.5s ease-out forwards;
         }
+
+        /* Particle background */
+        #particles-js {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: -90;
+        }
+
+        /* Typewriter effect */
+        .typewriter {
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: var(--text-muted);
+        }
+        
+        #typewriter-text {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+        
+        .cursor {
+            display: inline-block;
+            width: 2px;
+            background-color: var(--text-color);
+            margin-left: 2px;
+            animation: blink 1s infinite;
+        }
+        
+        @keyframes blink {
+            0% { opacity: 1; }
+            50% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+
+        /* Custom cursor styles */
+        .cursor-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--primary-color);
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .cursor-outline {
+            width: 30px;
+            height: 30px;
+            border: 2px solid var(--primary-color);
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9998;
+            opacity: 0;
+            transition: transform 0.2s, opacity 0.3s;
+        }
+        
+        a, button, .btn, .project-card {
+            cursor: none;
+        }
+        
+        body {
+            cursor: none;
+        }
+        
+        /* Hide custom cursor on touch devices */
+        @media (hover: none) and (pointer: coarse) {
+            .cursor-dot, .cursor-outline {
+                display: none;
+            }
+            
+            body, a, button, .btn, .project-card {
+                cursor: auto;
+            }
+        }
+
+        /* Floating contact button */
+        .floating-contact {
+            position: fixed;
+            right: 20px;
+            bottom: 80px;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border-radius: 50px;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            z-index: 98;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s, box-shadow 0.3s;
+            animation: pulse 2s infinite;
+        }
+        
+        .floating-contact:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+            animation: none;
+        }
+        
+        .floating-icon {
+            font-size: 20px;
+        }
+        
+        .floating-text {
+            font-weight: 600;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
     </style>
 </head>
 <body>
+    <!-- Particles Background -->
+    <div id="particles-js"></div>
+
     <!-- Cosmic Background -->
     <div class="cosmic-background">
         <div id="starsContainer"></div>
@@ -827,6 +1010,10 @@
         <div id="planetsContainer"></div>
         <div id="spaceshipContainer"></div>
     </div>
+
+    <!-- Custom cursor elements -->
+    <div class="cursor-dot" id="cursor-dot"></div>
+    <div class="cursor-outline" id="cursor-outline"></div>
 
     <!-- Navbar -->
     <nav class="navbar">
@@ -852,7 +1039,7 @@
     <section id="home" class="hero">
         <div class="content">
             <h1>Hi, I'm <span class="name">Om Singh</span></h1>
-            <p>Software Developer & Data Analyst</p>
+            <p class="typewriter">I'm a <span id="typewriter-text"></span><span class="cursor">|</span></p>
             <p>Building innovative solutions with code and data</p>
             <div class="btn-group">
                 <a href="#projects" class="btn btn-primary">View Projects</a>
@@ -898,45 +1085,80 @@
             <div class="skills-container">
                 <div class="skill-category animate">
                     <h3><i class="fas fa-code"></i> Frontend</h3>
-                    <div class="skill-list">
-                        <div class="skill-item">React.js</div>
-                        <div class="skill-item">HTML5</div>
-                        <div class="skill-item">CSS3</div>
-                        <div class="skill-item">JavaScript</div>
-                        <div class="skill-item">Tailwind CSS</div>
-                        <div class="skill-item">Vite</div>
+                    <div class="skill-progress">
+                        <div class="skill-name">React.js</div>
+                        <div class="progress-container">
+                            <div class="progress-bar" data-width="85%"></div>
+                        </div>
+                    </div>
+                    <div class="skill-progress">
+                        <div class="skill-name">HTML5/CSS3</div>
+                        <div class="progress-container">
+                            <div class="progress-bar" data-width="92%"></div>
+                        </div>
+                    </div>
+                    <div class="skill-progress">
+                        <div class="skill-name">JavaScript</div>
+                        <div class="progress-container">
+                            <div class="progress-bar" data-width="88%"></div>
+                        </div>
+                    </div>
+                    <div class="skill-progress">
+                        <div class="skill-name">Tailwind CSS</div>
+                        <div class="progress-container">
+                            <div class="progress-bar" data-width="80%"></div>
+                        </div>
                     </div>
                 </div>
                 <div class="skill-category animate">
                     <h3><i class="fas fa-server"></i> Backend</h3>
-                    <div class="skill-list">
-                        <div class="skill-item">Node.js</div>
-                        <div class="skill-item">Express.js</div>
+                    <div class="skill-progress">
+                        <div class="skill-name">Node.js</div>
+                        <div class="progress-container">
+                            <div class="progress-bar" data-width="75%"></div>
+                        </div>
+                    </div>
+                    <div class="skill-progress">
+                        <div class="skill-name">Express.js</div>
+                        <div class="progress-container">
+                            <div class="progress-bar" data-width="78%"></div>
+                        </div>
                     </div>
                 </div>
                 <div class="skill-category animate">
                     <h3><i class="fas fa-database"></i> Database</h3>
-                    <div class="skill-list">
-                        <div class="skill-item">MongoDB</div>
-                        <div class="skill-item">MySQL</div>
+                    <div class="skill-progress">
+                        <div class="skill-name">MongoDB</div>
+                        <div class="progress-container">
+                            <div class="progress-bar" data-width="82%"></div>
+                        </div>
                     </div>
-                </div>
-                <div class="skill-category animate">
-                    <h3><i class="fas fa-tools"></i> Tools & Technologies</h3>
-                    <div class="skill-list">
-                        <div class="skill-item">Redux</div>
-                        <div class="skill-item">Git</div>
-                        <div class="skill-item">GitHub</div>
-                        <div class="skill-item">Vercel</div>
+                    <div class="skill-progress">
+                        <div class="skill-name">MySQL</div>
+                        <div class="progress-container">
+                            <div class="progress-bar" data-width="75%"></div>
+                        </div>
                     </div>
                 </div>
                 <div class="skill-category animate">
                     <h3><i class="fas fa-laptop-code"></i> Languages</h3>
-                    <div class="skill-list">
-                        <div class="skill-item">C</div>
-                        <div class="skill-item">C++</div>
-                        <div class="skill-item">Python</div>
-                        <div class="skill-item">JavaScript</div>
+                    <div class="skill-progress">
+                        <div class="skill-name">Python</div>
+                        <div class="progress-container">
+                            <div class="progress-bar" data-width="90%"></div>
+                        </div>
+                    </div>
+                    <div class="skill-progress">
+                        <div class="skill-name">C++</div>
+                        <div class="progress-container">
+                            <div class="progress-bar" data-width="85%"></div>
+                        </div>
+                    </div>
+                    <div class="skill-progress">
+                        <div class="skill-name">JavaScript</div>
+                        <div class="progress-container">
+                            <div class="progress-bar" data-width="88%"></div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1059,6 +1281,14 @@
         </div>
     </section>
 
+    <!-- Floating contact button -->
+    <div class="floating-contact" id="floating-contact">
+        <div class="floating-icon">
+            <i class="fas fa-comments"></i>
+        </div>
+        <div class="floating-text">Let's Talk!</div>
+    </div>
+
     <!-- Footer -->
     <footer class="footer">
         <div class="container">
@@ -1149,6 +1379,98 @@
             spaceshipContainer.appendChild(fragmentSpaceship);
         }
 
+        // Typewriter effect
+        function typewriterEffect() {
+            const texts = [
+                "Software Developer",
+                "Data Analyst",
+                "AI Enthusiast",
+                "Problem Solver"
+            ];
+            
+            let textIndex = 0;
+            let charIndex = 0;
+            let isDeleting = false;
+            const typeSpeed = 100; // Speed of typing
+            const deleteSpeed = 50; // Speed of deleting
+            const waitAfterTyping = 1500; // Time to wait after full text is displayed
+            
+            const typewriter = document.getElementById('typewriter-text');
+            
+            function type() {
+                const currentText = texts[textIndex];
+                
+                if (isDeleting) {
+                    // Removing text
+                    typewriter.textContent = currentText.substring(0, charIndex - 1);
+                    charIndex--;
+                } else {
+                    // Adding text
+                    typewriter.textContent = currentText.substring(0, charIndex + 1);
+                    charIndex++;
+                }
+                
+                // Set typing speed
+                let typingSpeed = isDeleting ? deleteSpeed : typeSpeed;
+                
+                // If completed typing current text
+                if (!isDeleting && charIndex === currentText.length) {
+                    typingSpeed = waitAfterTyping;
+                    isDeleting = true;
+                } else if (isDeleting && charIndex === 0) {
+                    isDeleting = false;
+                    textIndex = (textIndex + 1) % texts.length;
+                }
+                
+                setTimeout(type, typingSpeed);
+            }
+            
+            // Start the typing effect
+            setTimeout(type, 1000);
+        }
+        
+        // Animate skill bars when in viewport
+        function animateSkillBars() {
+            const progressBars = document.querySelectorAll('.progress-bar');
+            
+            function setSkillBarWidths() {
+                progressBars.forEach(bar => {
+                    const width = bar.getAttribute('data-width');
+                    bar.style.width = width;
+                });
+            }
+            
+            const skillsObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        setTimeout(setSkillBarWidths, 200);
+                        skillsObserver.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.5 });
+            
+            // Observe the skills section
+            const skillsSection = document.querySelector('#skills');
+            if (skillsSection) {
+                skillsObserver.observe(skillsSection);
+            }
+        }
+        
+        // Fade-in animation for elements
+        function setupFadeInAnimations() {
+            const fadeElements = document.querySelectorAll('.fade-in');
+            
+            const fadeObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, { threshold: 0.1 });
+            
+            fadeElements.forEach(el => fadeObserver.observe(el));
+        }
+
         // Navbar Scroll Effect
         window.addEventListener('scroll', () => {
             const navbar = document.querySelector('.navbar');
@@ -1222,12 +1544,174 @@
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
             createCosmicBackground();
+            typewriterEffect();
+            animateSkillBars();
+            setupFadeInAnimations();
+            
+            // Add fade-in class to project cards
+            document.querySelectorAll('.project-card').forEach(card => {
+                card.classList.add('fade-in');
+            });
+            
+            // Particle.js configuration
+            particlesJS("particles-js", {
+                "particles": {
+                    "number": {
+                        "value": 80,
+                        "density": {
+                            "enable": true,
+                            "value_area": 800
+                        }
+                    },
+                    "color": {
+                        "value": "#ffffff"
+                    },
+                    "shape": {
+                        "type": "circle",
+                        "stroke": {
+                            "width": 0,
+                            "color": "#000000"
+                        }
+                    },
+                    "opacity": {
+                        "value": 0.5,
+                        "random": true
+                    },
+                    "size": {
+                        "value": 3,
+                        "random": true
+                    },
+                    "line_linked": {
+                        "enable": true,
+                        "distance": 150,
+                        "color": "#2563eb",
+                        "opacity": 0.4,
+                        "width": 1
+                    },
+                    "move": {
+                        "enable": true,
+                        "speed": 2,
+                        "direction": "none",
+                        "random": true,
+                        "straight": false,
+                        "out_mode": "out",
+                        "bounce": false
+                    }
+                },
+                "interactivity": {
+                    "detect_on": "canvas",
+                    "events": {
+                        "onhover": {
+                            "enable": true,
+                            "mode": "grab"
+                        },
+                        "onclick": {
+                            "enable": true,
+                            "mode": "push"
+                        },
+                        "resize": true
+                    },
+                    "modes": {
+                        "grab": {
+                            "distance": 140,
+                            "line_linked": {
+                                "opacity": 1
+                            }
+                        },
+                        "push": {
+                            "particles_nb": 4
+                        }
+                    }
+                },
+                "retina_detect": true
+            });
+
+            // Custom cursor
+            setupCustomCursor();
+            setupFloatingContact();
         });
 
         // Recreate cosmic elements on resize
         window.addEventListener('resize', () => {
             createCosmicBackground();
         });
+
+        // Custom cursor
+        function setupCustomCursor() {
+            const cursorDot = document.getElementById('cursor-dot');
+            const cursorOutline = document.getElementById('cursor-outline');
+            
+            document.addEventListener('mousemove', (e) => {
+                // Show cursors if they're hidden
+                if (cursorDot.style.opacity !== '1') {
+                    cursorDot.style.opacity = '1';
+                    cursorOutline.style.opacity = '1';
+                }
+                
+                // Position the dot cursor exactly at the mouse position
+                cursorDot.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
+                
+                // Position the outline cursor with slight delay for smooth effect
+                setTimeout(() => {
+                    cursorOutline.style.transform = `translate(${e.clientX - 15}px, ${e.clientY - 15}px)`;
+                }, 50);
+            });
+            
+            // Scale up outline on hover over clickable elements
+            document.querySelectorAll('a, button, .btn, .project-card, .skill-item, input, textarea').forEach(el => {
+                el.addEventListener('mouseenter', () => {
+                    cursorOutline.style.transform = 'translate(calc(-50% + ' + event.clientX + 'px), calc(-50% + ' + event.clientY + 'px)) scale(1.5)';
+                    cursorOutline.style.borderColor = 'var(--accent-color)';
+                    cursorDot.style.backgroundColor = 'var(--accent-color)';
+                });
+                
+                el.addEventListener('mouseleave', () => {
+                    cursorOutline.style.transform = 'translate(calc(-50% + ' + event.clientX + 'px), calc(-50% + ' + event.clientY + 'px)) scale(1)';
+                    cursorOutline.style.borderColor = 'var(--primary-color)';
+                    cursorDot.style.backgroundColor = 'var(--primary-color)';
+                });
+            });
+            
+            // Hide cursor when leaving the window
+            document.addEventListener('mouseout', (e) => {
+                if (e.relatedTarget === null) {
+                    cursorDot.style.opacity = '0';
+                    cursorOutline.style.opacity = '0';
+                }
+            });
+        }
+
+        // 3D tilt effect for project cards
+        function setupTiltEffect() {
+            const cards = document.querySelectorAll('.project-card');
+            
+            cards.forEach(card => {
+                card.addEventListener('mousemove', (e) => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left; // x position within the card
+                    const y = e.clientY - rect.top; // y position within the card
+                    
+                    const xRotation = 20 * ((y - rect.height / 2) / rect.height);
+                    const yRotation = -20 * ((x - rect.width / 2) / rect.width);
+                    
+                    card.style.transform = `perspective(1000px) rotateX(${xRotation}deg) rotateY(${yRotation}deg) scale3d(1.05, 1.05, 1.05)`;
+                });
+                
+                card.addEventListener('mouseout', () => {
+                    card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)';
+                });
+            });
+        }
+
+        // Floating contact button
+        function setupFloatingContact() {
+            const floatingContact = document.getElementById('floating-contact');
+            const contactSection = document.getElementById('contact');
+            
+            floatingContact.addEventListener('click', () => {
+                contactSection.scrollIntoView({ behavior: 'smooth' });
+            });
+        }
     </script>
 </body>
 </html>
