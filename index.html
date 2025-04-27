@@ -997,6 +997,71 @@
             50% { transform: scale(1.05); }
             100% { transform: scale(1); }
         }
+
+        /* Skills Galaxy */
+        .skills-galaxy-container {
+            position: relative;
+            width: 100%;
+            height: 100vh; /* Full viewport height */
+            overflow: hidden;
+            background-color: transparent; /* Transparent background */
+            margin-top: -40px; /* Negative margin to blend with background */
+            margin-bottom: -40px;
+            z-index: 5; /* Ensure the container is visible */
+        }
+
+        #skillsGalaxy {
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+            position: relative;
+            z-index: 5;
+        }
+
+        .skill-detail-popup {
+            position: fixed; /* Fixed position for better visibility */
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            width: 300px;
+            background: rgba(10, 10, 20, 0.85);
+            backdrop-filter: blur(8px);
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 0 40px rgba(6, 182, 212, 0.6);
+            z-index: 200;
+            opacity: 0;
+            transition: transform 0.5s cubic-bezier(0.2, 0.85, 0.4, 1.5), opacity 0.5s ease;
+            border: 1px solid var(--accent-color);
+        }
+
+        .skill-detail-popup.active {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
+        }
+
+        .skill-detail-content {
+            text-align: center;
+        }
+
+        .skill-detail-content h3 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            font-size: 22px;
+        }
+
+        .skill-detail-level {
+            margin-bottom: 15px;
+        }
+
+        .skill-detail-content p {
+            margin-bottom: 20px;
+            color: var(--text-muted);
+        }
+
+        #closeSkillDetail {
+            width: 100%;
+        }
     </style>
 </head>
 <body>
@@ -1081,85 +1146,18 @@
     <!-- Skills Section -->
     <section id="skills" class="skills">
         <h2 class="section-title">My Skills</h2>
-        <div class="container">
-            <div class="skills-container">
-                <div class="skill-category animate">
-                    <h3><i class="fas fa-code"></i> Frontend</h3>
-                    <div class="skill-progress">
-                        <div class="skill-name">React.js</div>
+        <div class="skills-galaxy-container">
+            <canvas id="skillsGalaxy"></canvas>
+            <div id="skillDetail" class="skill-detail-popup">
+                <div class="skill-detail-content">
+                    <h3 id="skillDetailTitle">Skill Name</h3>
+                    <div class="skill-detail-level">
                         <div class="progress-container">
-                            <div class="progress-bar" data-width="85%"></div>
+                            <div id="skillDetailProgress" class="progress-bar" data-width="85%"></div>
                         </div>
                     </div>
-                    <div class="skill-progress">
-                        <div class="skill-name">HTML5/CSS3</div>
-                        <div class="progress-container">
-                            <div class="progress-bar" data-width="92%"></div>
-                        </div>
-                    </div>
-                    <div class="skill-progress">
-                        <div class="skill-name">JavaScript</div>
-                        <div class="progress-container">
-                            <div class="progress-bar" data-width="88%"></div>
-                        </div>
-                    </div>
-                    <div class="skill-progress">
-                        <div class="skill-name">Tailwind CSS</div>
-                        <div class="progress-container">
-                            <div class="progress-bar" data-width="80%"></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="skill-category animate">
-                    <h3><i class="fas fa-server"></i> Backend</h3>
-                    <div class="skill-progress">
-                        <div class="skill-name">Node.js</div>
-                        <div class="progress-container">
-                            <div class="progress-bar" data-width="75%"></div>
-                        </div>
-                    </div>
-                    <div class="skill-progress">
-                        <div class="skill-name">Express.js</div>
-                        <div class="progress-container">
-                            <div class="progress-bar" data-width="78%"></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="skill-category animate">
-                    <h3><i class="fas fa-database"></i> Database</h3>
-                    <div class="skill-progress">
-                        <div class="skill-name">MongoDB</div>
-                        <div class="progress-container">
-                            <div class="progress-bar" data-width="82%"></div>
-                        </div>
-                    </div>
-                    <div class="skill-progress">
-                        <div class="skill-name">MySQL</div>
-                        <div class="progress-container">
-                            <div class="progress-bar" data-width="75%"></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="skill-category animate">
-                    <h3><i class="fas fa-laptop-code"></i> Languages</h3>
-                    <div class="skill-progress">
-                        <div class="skill-name">Python</div>
-                        <div class="progress-container">
-                            <div class="progress-bar" data-width="90%"></div>
-                        </div>
-                    </div>
-                    <div class="skill-progress">
-                        <div class="skill-name">C++</div>
-                        <div class="progress-container">
-                            <div class="progress-bar" data-width="85%"></div>
-                        </div>
-                    </div>
-                    <div class="skill-progress">
-                        <div class="skill-name">JavaScript</div>
-                        <div class="progress-container">
-                            <div class="progress-bar" data-width="88%"></div>
-                        </div>
-                    </div>
+                    <p id="skillDetailDesc">Skill description goes here...</p>
+                    <button id="closeSkillDetail" class="btn btn-primary">Close</button>
                 </div>
             </div>
         </div>
@@ -1548,6 +1546,9 @@
             animateSkillBars();
             setupFadeInAnimations();
             
+            // Initialize Skills Galaxy
+            const skillsGalaxy = new SkillsGalaxy();
+            
             // Add fade-in class to project cards
             document.querySelectorAll('.project-card').forEach(card => {
                 card.classList.add('fade-in');
@@ -1711,6 +1712,1271 @@
             floatingContact.addEventListener('click', () => {
                 contactSection.scrollIntoView({ behavior: 'smooth' });
             });
+        }
+
+        // Skills Galaxy
+        class SkillsGalaxy {
+            constructor() {
+                this.canvas = document.getElementById('skillsGalaxy');
+                this.ctx = this.canvas.getContext('2d');
+                this.skills = [
+                    { name: 'React.js', level: 85, type: 'Frontend', description: 'Building interactive and responsive UI components with React hooks and state management.', color: '#61DAFB', radius: 25 },
+                    { name: 'HTML5/CSS3', level: 92, type: 'Frontend', description: 'Creating semantic and accessible web layouts with modern CSS techniques.', color: '#E44D26', radius: 28 },
+                    { name: 'JavaScript', level: 88, type: 'Languages', description: 'Implementing complex client-side logic and interactive web features.', color: '#F7DF1E', radius: 27 },
+                    { name: 'Tailwind CSS', level: 80, type: 'Frontend', description: 'Building responsive designs quickly with utility-first approach.', color: '#38B2AC', radius: 22 },
+                    { name: 'Node.js', level: 75, type: 'Backend', description: 'Creating scalable server-side applications and APIs.', color: '#68A063', radius: 23 },
+                    { name: 'Express.js', level: 78, type: 'Backend', description: 'Building robust backend services and RESTful APIs.', color: '#000000', radius: 24 },
+                    { name: 'MongoDB', level: 82, type: 'Database', description: 'Working with NoSQL databases for flexible data models.', color: '#47A248', radius: 25 },
+                    { name: 'MySQL', level: 75, type: 'Database', description: 'Designing and optimizing relational database schemas.', color: '#4479A1', radius: 22 },
+                    { name: 'Python', level: 90, type: 'Languages', description: 'Developing data analysis and machine learning applications.', color: '#3776AB', radius: 30 },
+                    { name: 'C++', level: 85, type: 'Languages', description: 'Building high-performance applications and algorithms.', color: '#00599C', radius: 26 }
+                ];
+                
+                this.centerX = 0;
+                this.centerY = 0;
+                this.orbits = [];
+                this.currentZoomLevel = 1;
+                this.targetZoomLevel = 1;
+                this.selectedSkill = null;
+                this.animationFrameId = null;
+                this.mouseX = 0;
+                this.mouseY = 0;
+                
+                this.skillDetailPopup = document.getElementById('skillDetail');
+                this.skillDetailTitle = document.getElementById('skillDetailTitle');
+                this.skillDetailProgress = document.getElementById('skillDetailProgress');
+                this.skillDetailDesc = document.getElementById('skillDetailDesc');
+                this.closeDetailBtn = document.getElementById('closeSkillDetail');
+                
+                this.closeDetailBtn.addEventListener('click', () => this.hideSkillDetail());
+                
+                // Set up event listeners
+                this.canvas.addEventListener('click', this.handleClick.bind(this));
+                this.canvas.addEventListener('mousemove', this.handleMouseMove.bind(this));
+                window.addEventListener('resize', this.handleResize.bind(this));
+                
+                this.handleResize();
+                this.setupOrbits();
+                this.animate();
+            }
+            
+            handleResize() {
+                const container = this.canvas.parentElement;
+                this.canvas.width = container.clientWidth;
+                this.canvas.height = container.clientHeight;
+                this.centerX = this.canvas.width / 2;
+                this.centerY = this.canvas.height / 2;
+                
+                // Recalculate orbits when resizing
+                this.setupOrbits();
+            }
+            
+            setupOrbits() {
+                // Create precise orbital system with evenly spaced planets
+                this.orbits = [];
+                
+                // Calculate canvas dimensions and center
+                const width = this.canvas.width;
+                const height = this.canvas.height;
+                this.centerX = width / 2;
+                this.centerY = height / 2;
+                
+                // Calculate the visible area's size - use more of the available space
+                const maxRadius = Math.min(width, height) * 0.42; // Increased from 0.38 to use more space
+                
+                // Define organized orbital rings with proper spacing
+                // Each ring has distinct radius and planets are evenly spaced around the ring
+                const orbitalRings = [
+                    { radius: maxRadius * 0.35, count: 3 }, // Inner ring
+                    { radius: maxRadius * 0.65, count: 3 }, // Middle ring
+                    { radius: maxRadius * 0.95, count: 4 }  // Outer ring
+                ];
+                
+                // Assign skills to each ring
+                const skillAssignments = [
+                    // Inner ring (faster planets)
+                    ['JavaScript', 'Express.js', 'Tailwind CSS'],
+                    // Middle ring
+                    ['React.js', 'Node.js', 'HTML5/CSS3'],
+                    // Outer ring (slower planets)
+                    ['Python', 'MongoDB', 'MySQL', 'C++']
+                ];
+                
+                // Create orbits with precise positioning
+                orbitalRings.forEach((ring, ringIndex) => {
+                    const skills = skillAssignments[ringIndex];
+                    
+                    // For each skill in this ring
+                    skills.forEach((skillName, skillIndex) => {
+                        // Find matching skill object
+                        const skill = this.skills.find(s => s.name === skillName);
+                        
+                        if (skill) {
+                            // Calculate precise angle for even distribution
+                            const angleStep = (2 * Math.PI) / skills.length;
+                            const baseAngle = angleStep * skillIndex;
+                            
+                            // Add tiny random offset for natural feel (-5 to +5 degrees in radians)
+                            const angleOffset = (Math.random() * 0.17) - 0.085;
+                            const angle = baseAngle + angleOffset;
+                            
+                            // Slightly vary orbit radius to avoid perfect circles
+                            const radiusVariation = 1 + ((Math.random() * 0.08) - 0.04); // ±4% variation
+                            const orbitRadius = ring.radius * radiusVariation;
+                            
+                            // Orbit eccentricity (elliptical orbits)
+                            // Inner orbits more circular, outer more elliptical
+                            const eccentricity = 0.02 + (ringIndex * 0.02);
+                            
+                            // Calculate speed based on ring - inner planets move faster (inverse to radius)
+                            const baseSpeed = 0.0008; // Increased speed
+                            const speedFactor = 1 - (ringIndex * 0.2); // Reduce speed for outer rings
+                            const speed = baseSpeed * speedFactor;
+                            
+                            this.orbits.push({
+                                skill,
+                                orbitRadius,
+                                angle,
+                                speed,
+                                eccentricity,
+                                tiltX: Math.random() * 0.1,
+                                tiltY: Math.random() * 0.1,
+                                phaseShift: angle, // Start at distributed position
+                                x: 0,
+                                y: 0, 
+                                z: 0,
+                                ringIndex, // Store ring index for drawing orbit paths
+                                hovered: false,
+                                pulseAmount: 0,
+                                pulseDirection: 1,
+                                type: skill.type,
+                                startTime: Date.now() + (skillIndex * 300) // Staggered start times
+                            });
+                        }
+                    });
+                });
+                
+                // Assign distinct orbit paths
+                this.orbitalPaths = orbitalRings.map(ring => ({
+                    radius: ring.radius,
+                    visible: true
+                }));
+                
+                // Calculate initial positions
+                this.calculateInitialPositions();
+            }
+            
+            calculateInitialPositions() {
+                // Update all positions initially
+                this.orbits.forEach(orbit => {
+                    const a = orbit.orbitRadius;
+                    const b = orbit.orbitRadius * (1 - orbit.eccentricity);
+                    const theta = orbit.angle + orbit.phaseShift;
+                    
+                    // Basic elliptical orbit
+                    const baseX = a * Math.cos(theta);
+                    const baseY = b * Math.sin(theta);
+                    
+                    // Apply tilt for 3D effect
+                    orbit.x = this.centerX + (baseX * Math.cos(orbit.tiltX) - baseY * Math.sin(orbit.tiltY));
+                    orbit.y = this.centerY + (baseX * Math.sin(orbit.tiltX) + baseY * Math.cos(orbit.tiltY));
+                    
+                    // Calculate z-position for depth
+                    orbit.z = Math.sin(theta) * 50;
+                });
+            }
+            
+            animate() {
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                
+                // Use a very transparent background to blend with cosmic background
+                this.ctx.fillStyle = 'rgba(0, 0, 0, 0.0)';
+                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+                
+                // Draw background elements
+                this.drawConstellations();
+                this.drawStarTwinkles();
+                
+                // Draw orbit rings
+                this.drawOrbitRings();
+                
+                // Sort orbits by z-index to create depth effect
+                const sortedOrbits = [...this.orbits].sort((a, b) => a.z - b.z);
+                
+                // Draw connecting lines between skills to indicate relationships
+                this.drawConnections(sortedOrbits);
+                
+                // Get current time for animation
+                const currentTime = Date.now();
+                
+                // Update and draw skills
+                sortedOrbits.forEach(orbit => {
+                    // Calculate time-based animation with staggered starts
+                    const elapsed = currentTime - orbit.startTime;
+                    if (elapsed < 0) return; // Don't show yet if staggered start time hasn't arrived
+                    
+                    // Update angle - time-based animation for smooth rendering across devices
+                    orbit.angle += orbit.speed;
+                    
+                    // Calculate 3D position using elliptical orbit equations
+                    const a = orbit.orbitRadius;
+                    const b = orbit.orbitRadius * (1 - orbit.eccentricity);
+                    const theta = orbit.angle;
+                    
+                    // Basic elliptical orbit
+                    const baseX = a * Math.cos(theta);
+                    const baseY = b * Math.sin(theta);
+                    
+                    // Apply tilt for 3D effect
+                    orbit.x = this.centerX + (baseX * Math.cos(orbit.tiltX) - baseY * Math.sin(orbit.tiltY));
+                    orbit.y = this.centerY + (baseX * Math.sin(orbit.tiltX) + baseY * Math.cos(orbit.tiltY));
+                    
+                    // Calculate z-position for depth
+                    orbit.z = Math.sin(theta) * 50;
+                    
+                    // Update pulse effect for hover animation
+                    if (orbit.hovered) {
+                        orbit.pulseAmount += 0.05 * orbit.pulseDirection;
+                        if (orbit.pulseAmount > 1 || orbit.pulseAmount < 0) {
+                            orbit.pulseDirection *= -1;
+                        }
+                    } else {
+                        orbit.pulseAmount = Math.max(0, orbit.pulseAmount - 0.05);
+                    }
+                    
+                    // Draw skills
+                    this.drawSkill(orbit);
+                });
+                
+                // Draw orbit trails when a planet is hovered
+                sortedOrbits.forEach(orbit => {
+                    if (orbit.hovered) {
+                        this.drawOrbitTrail(orbit);
+                    }
+                });
+                
+                // Interactive effect - slight gravity pull toward mouse
+                this.applyMouseGravity();
+                
+                // Draw center avatar last (on top)
+                this.drawCenterAvatar();
+                
+                this.animationFrameId = requestAnimationFrame(this.animate.bind(this));
+            }
+            
+            drawOrbitTrail(orbit) {
+                // Draw highlighted orbit path when planet is hovered
+                this.ctx.save();
+                
+                const a = orbit.orbitRadius;
+                const b = orbit.orbitRadius * (1 - orbit.eccentricity);
+                
+                // Draw full elliptical orbit
+                this.ctx.beginPath();
+                this.ctx.ellipse(
+                    this.centerX, 
+                    this.centerY, 
+                    a, 
+                    b,
+                    0, // rotation
+                    0, 
+                    Math.PI * 2
+                );
+                
+                // Use planet color for its orbit trail
+                const gradient = this.ctx.createLinearGradient(
+                    this.centerX - a, this.centerY,
+                    this.centerX + a, this.centerY
+                );
+                gradient.addColorStop(0, `${orbit.skill.color}10`);
+                gradient.addColorStop(0.5, `${orbit.skill.color}40`);
+                gradient.addColorStop(1, `${orbit.skill.color}10`);
+                
+                this.ctx.strokeStyle = gradient;
+                this.ctx.lineWidth = 2;
+                this.ctx.stroke();
+                
+                this.ctx.restore();
+            }
+            
+            drawOrbitRings() {
+                // Draw aesthetic orbit rings for each orbital path
+                this.orbitalPaths.forEach(path => {
+                    // Draw orbit ellipse
+                    const radius = path.radius;
+                    
+                    // Use multiple arcs with varying opacity for a glowing effect
+                    const maxGlow = 3;
+                    for (let i = 0; i < maxGlow; i++) {
+                        const opacity = 0.1 - (i * 0.03);
+                        const width = 1 + (i * 0.5);
+                        
+                        this.ctx.beginPath();
+                        this.ctx.ellipse(
+                            this.centerX, 
+                            this.centerY, 
+                            radius, 
+                            radius * 0.99, // Slight elliptical shape
+                            0, // rotation
+                            0, 
+                            Math.PI * 2
+                        );
+                        this.ctx.strokeStyle = `rgba(255, 255, 255, ${opacity})`;
+                        this.ctx.lineWidth = width;
+                        this.ctx.stroke();
+                    }
+                    
+                    // Add ticks to the orbit ring for visual interest
+                    for (let i = 0; i < 24; i++) {
+                        const angle = (Math.PI * 2 / 24) * i;
+                        const x1 = this.centerX + Math.cos(angle) * (radius - 1);
+                        const y1 = this.centerY + Math.sin(angle) * (radius - 1);
+                        const x2 = this.centerX + Math.cos(angle) * (radius + 1);
+                        const y2 = this.centerY + Math.sin(angle) * (radius + 1);
+                        
+                        this.ctx.beginPath();
+                        this.ctx.moveTo(x1, y1);
+                        this.ctx.lineTo(x2, y2);
+                        this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+                        this.ctx.lineWidth = 0.5;
+                        this.ctx.stroke();
+                    }
+                });
+            }
+            
+            drawConstellations() {
+                // Draw fixed constellation patterns
+                this.ctx.save();
+                
+                const constellationPoints = [
+                    // Define points for constellations - these are fixed points that don't move
+                    // Constellation 1 - top left
+                    [
+                        {x: this.canvas.width * 0.1, y: this.canvas.height * 0.2},
+                        {x: this.canvas.width * 0.2, y: this.canvas.height * 0.15},
+                        {x: this.canvas.width * 0.25, y: this.canvas.height * 0.25},
+                        {x: this.canvas.width * 0.15, y: this.canvas.height * 0.3},
+                        {x: this.canvas.width * 0.1, y: this.canvas.height * 0.2}
+                    ],
+                    // Constellation 2 - top right
+                    [
+                        {x: this.canvas.width * 0.8, y: this.canvas.height * 0.2},
+                        {x: this.canvas.width * 0.9, y: this.canvas.height * 0.1},
+                        {x: this.canvas.width * 0.85, y: this.canvas.height * 0.3}
+                    ],
+                    // Constellation 3 - bottom right
+                    [
+                        {x: this.canvas.width * 0.7, y: this.canvas.height * 0.7},
+                        {x: this.canvas.width * 0.8, y: this.canvas.height * 0.8},
+                        {x: this.canvas.width * 0.9, y: this.canvas.height * 0.75},
+                        {x: this.canvas.width * 0.85, y: this.canvas.height * 0.65},
+                        {x: this.canvas.width * 0.7, y: this.canvas.height * 0.7}
+                    ],
+                    // Constellation 4 - bottom left
+                    [
+                        {x: this.canvas.width * 0.2, y: this.canvas.height * 0.7},
+                        {x: this.canvas.width * 0.1, y: this.canvas.height * 0.8},
+                        {x: this.canvas.width * 0.25, y: this.canvas.height * 0.9}
+                    ]
+                ];
+                
+                // Animate the constellations slightly for a living universe effect
+                const time = Date.now() * 0.0005;
+                
+                // Draw each constellation
+                constellationPoints.forEach((points, constellationIndex) => {
+                    // Draw connecting lines with animated gradient
+                    this.ctx.beginPath();
+                    
+                    // Apply subtle animation to the start point
+                    const startX = points[0].x + Math.sin(time + constellationIndex) * 2;
+                    const startY = points[0].y + Math.cos(time + constellationIndex) * 2;
+                    this.ctx.moveTo(startX, startY);
+                    
+                    for (let i = 1; i < points.length; i++) {
+                        // Apply subtle animation to each point
+                        const x = points[i].x + Math.sin(time + i + constellationIndex) * 2;
+                        const y = points[i].y + Math.cos(time + i + constellationIndex) * 2;
+                        this.ctx.lineTo(x, y);
+                    }
+                    
+                    // Animated opacity based on time
+                    const opacity = 0.03 + Math.sin(time + constellationIndex) * 0.02;
+                    
+                    this.ctx.strokeStyle = `rgba(255, 255, 255, ${opacity + 0.05})`;
+                    this.ctx.lineWidth = 0.5;
+                    this.ctx.stroke();
+                    
+                    // Draw points with subtle animation
+                    points.forEach((point, i) => {
+                        // Animate point size based on time
+                        const sizeOscillation = 0.5 + Math.sin(time * 2 + i + constellationIndex) * 0.5;
+                        const pointSize = 1 + sizeOscillation * 0.5;
+                        
+                        // Animate point position
+                        const x = point.x + Math.sin(time + i + constellationIndex) * 2;
+                        const y = point.y + Math.cos(time + i + constellationIndex) * 2;
+                        
+                        this.ctx.beginPath();
+                        this.ctx.arc(x, y, pointSize, 0, Math.PI * 2);
+                        this.ctx.fillStyle = `rgba(255, 255, 255, ${0.2 + sizeOscillation * 0.1})`;
+                        this.ctx.fill();
+                    });
+                });
+                
+                this.ctx.restore();
+            }
+            
+            drawStarTwinkles() {
+                // Add more stars and make them twinkle naturally
+                // Create more stars in random positions for space effect
+                if (Math.random() < 0.4) {  // Increased probability for more stars
+                    const x = Math.random() * this.canvas.width;
+                    const y = Math.random() * this.canvas.height;
+                    const radius = 0.5 + Math.random() * 1.5;
+                    
+                    // Vary brightness for twinkling effect
+                    const brightness = 0.3 + Math.random() * 0.7;
+                    
+                    this.ctx.save();
+                    
+                    // Add glow effect to some stars
+                    if (Math.random() > 0.7) {
+                        this.ctx.shadowColor = 'rgba(255, 255, 255, 0.8)';
+                        this.ctx.shadowBlur = 5;
+                    }
+                    
+                    this.ctx.beginPath();
+                    this.ctx.arc(x, y, radius, 0, Math.PI * 2);
+                    this.ctx.fillStyle = `rgba(255, 255, 255, ${brightness})`;
+                    this.ctx.fill();
+                    
+                    this.ctx.restore();
+                }
+            }
+            
+            drawConnections(orbits) {
+                // Draw connections between skills with better organization
+                this.ctx.save();
+                
+                // Group orbits by type for organized connections
+                const orbitsByType = {};
+                orbits.forEach(orbit => {
+                    if (!orbitsByType[orbit.type]) {
+                        orbitsByType[orbit.type] = [];
+                    }
+                    orbitsByType[orbit.type].push(orbit);
+                });
+                
+                // Draw connections between skills of the same type
+                Object.entries(orbitsByType).forEach(([type, typeOrbits]) => {
+                    if (typeOrbits.length < 2) return;
+                    
+                    // Select type-specific color
+                    let connectionColor;
+                    switch(type) {
+                        case 'Frontend':
+                            connectionColor = '#38B2AC'; // Teal
+                            break;
+                        case 'Backend':
+                            connectionColor = '#68A063'; // Green
+                            break;
+                        case 'Database':
+                            connectionColor = '#4479A1'; // Blue
+                            break;
+                        case 'Languages':
+                            connectionColor = '#F7DF1E'; // Yellow
+                            break;
+                        default:
+                            connectionColor = '#FFFFFF'; // White
+                    }
+                    
+                    // Connect orbits of the same type with a constellation-like pattern
+                    for (let i = 0; i < typeOrbits.length; i++) {
+                        for (let j = i + 1; j < typeOrbits.length; j++) {
+                            const orbitA = typeOrbits[i];
+                            const orbitB = typeOrbits[j];
+                            
+                            // Calculate distance
+                            const dx = orbitA.x - orbitB.x;
+                            const dy = orbitA.y - orbitB.y;
+                            const distance = Math.sqrt(dx * dx + dy * dy);
+                            
+                            // Only connect if reasonably close
+                            if (distance < 400) {
+                                // Calculate opacity based on distance
+                                const opacity = this.mapRange(distance, 100, 400, 0.15, 0.03);
+                                
+                                // Create gradient connection
+                                const gradient = this.ctx.createLinearGradient(
+                                    orbitA.x, orbitA.y, orbitB.x, orbitB.y
+                                );
+                                gradient.addColorStop(0, `${connectionColor}${Math.floor(opacity * 255).toString(16).padStart(2, '0')}`);
+                                gradient.addColorStop(0.5, `${connectionColor}${Math.floor(opacity * 255 * 1.5).toString(16).padStart(2, '0')}`);
+                                gradient.addColorStop(1, `${connectionColor}${Math.floor(opacity * 255).toString(16).padStart(2, '0')}`);
+                                
+                                // Draw the connection line
+                                this.ctx.beginPath();
+                                this.ctx.moveTo(orbitA.x, orbitA.y);
+                                this.ctx.lineTo(orbitB.x, orbitB.y);
+                                this.ctx.strokeStyle = gradient;
+                                this.ctx.lineWidth = 1;
+                                this.ctx.stroke();
+                                
+                                // Add a pulse effect along the connection line
+                                this.drawConnectionPulse(orbitA, orbitB, connectionColor);
+                            }
+                        }
+                    }
+                });
+                
+                // Draw subtle links from center to each planet (gravitational influence)
+                orbits.forEach(orbit => {
+                    // Calculate distance from center
+                    const distance = Math.sqrt(
+                        Math.pow(orbit.x - this.centerX, 2) + 
+                        Math.pow(orbit.y - this.centerY, 2)
+                    );
+                    
+                    // Calculate opacity based on distance
+                    const opacity = this.mapRange(distance, 50, 400, 0.1, 0.02);
+                    
+                    // Create gradient
+                    const gradient = this.ctx.createLinearGradient(
+                        this.centerX, this.centerY, orbit.x, orbit.y
+                    );
+                    gradient.addColorStop(0, `rgba(37, 99, 235, ${opacity * 1.5})`);
+                    gradient.addColorStop(1, `rgba(37, 99, 235, 0)`);
+                    
+                    // Draw connection
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(this.centerX, this.centerY);
+                    this.ctx.lineTo(orbit.x, orbit.y);
+                    this.ctx.strokeStyle = gradient;
+                    this.ctx.lineWidth = 0.5;
+                    this.ctx.stroke();
+                });
+                
+                this.ctx.restore();
+            }
+            
+            drawConnectionPulse(orbitA, orbitB, color) {
+                // Create pulsing particle effect along connection lines
+                const time = Date.now() * 0.001;
+                const dx = orbitB.x - orbitA.x;
+                const dy = orbitB.y - orbitA.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                // Only draw pulse for connections below a certain threshold
+                if (distance > 300) return;
+                
+                // Number of pulses based on distance
+                const pulseCount = Math.floor(distance / 100) + 1;
+                
+                for (let i = 0; i < pulseCount; i++) {
+                    // Calculate position along the line
+                    const progress = (((time * (i + 1)) % 2) / 2);
+                    const x = orbitA.x + dx * progress;
+                    const y = orbitA.y + dy * progress;
+                    
+                    // Pulse size oscillates
+                    const size = 1.5 + Math.sin(time * 3 + i) * 1;
+                    
+                    // Draw pulse
+                    this.ctx.beginPath();
+                    this.ctx.arc(x, y, size, 0, Math.PI * 2);
+                    this.ctx.fillStyle = `${color}40`;
+                    this.ctx.fill();
+                }
+            }
+            
+            drawCenterAvatar() {
+                this.ctx.save();
+                
+                // Enhanced glow effect
+                this.ctx.shadowColor = 'rgba(37, 99, 235, 0.8)';
+                this.ctx.shadowBlur = 30;
+                
+                // Central avatar radius - slightly larger than planets
+                const avatarRadius = 50;
+                
+                // Draw radial rays/corona
+                this.drawSunCorona(avatarRadius);
+                
+                // Draw orbit clock ticks
+                this.drawClockTicks(avatarRadius);
+                
+                // Draw main sun gradient with enhanced colors
+                const sunGradient = this.ctx.createRadialGradient(
+                    this.centerX, this.centerY, 0,
+                    this.centerX, this.centerY, avatarRadius
+                );
+                sunGradient.addColorStop(0, 'rgba(255, 255, 255, 0.95)');
+                sunGradient.addColorStop(0.2, 'rgba(79, 70, 229, 0.9)');
+                sunGradient.addColorStop(0.7, 'rgba(37, 99, 235, 0.7)');
+                sunGradient.addColorStop(1, 'rgba(37, 99, 235, 0.3)');
+                
+                // Draw main circle
+                this.ctx.beginPath();
+                this.ctx.arc(this.centerX, this.centerY, avatarRadius, 0, Math.PI * 2);
+                this.ctx.fillStyle = sunGradient;
+                this.ctx.fill();
+                
+                // Add pulsing surface details
+                this.drawSunSurfaceDetails(avatarRadius);
+                
+                // Add text with better styling
+                this.drawCentralText();
+                
+                this.ctx.restore();
+            }
+            
+            drawSunCorona(radius) {
+                // Create sun corona/rays effect
+                const rays = 16;
+                const maxRayLength = radius * 0.4;
+                
+                for (let i = 0; i < rays; i++) {
+                    const angle = (Math.PI * 2 / rays) * i;
+                    const rayLength = radius + (maxRayLength * (0.5 + Math.sin(Date.now() * 0.001 + i) * 0.5));
+                    
+                    const x1 = this.centerX + Math.cos(angle) * radius;
+                    const y1 = this.centerY + Math.sin(angle) * radius;
+                    const x2 = this.centerX + Math.cos(angle) * rayLength;
+                    const y2 = this.centerY + Math.sin(angle) * rayLength;
+                    
+                    const gradient = this.ctx.createLinearGradient(x1, y1, x2, y2);
+                    gradient.addColorStop(0, 'rgba(79, 70, 229, 0.7)');
+                    gradient.addColorStop(1, 'rgba(37, 99, 235, 0)');
+                    
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(x1, y1);
+                    this.ctx.lineTo(x2, y2);
+                    this.ctx.strokeStyle = gradient;
+                    this.ctx.lineWidth = 2;
+                    this.ctx.stroke();
+                }
+            }
+            
+            drawClockTicks(radius) {
+                // Draw orbit clock ticks around the central sun
+                const clockRadius = radius * 1.3;
+                
+                for (let i = 0; i < 24; i++) {
+                    const angle = (Math.PI * 2 / 24) * i;
+                    const innerRadius = clockRadius - (i % 6 === 0 ? 8 : 4);
+                    const outerRadius = clockRadius;
+                    
+                    const x1 = this.centerX + Math.cos(angle) * innerRadius;
+                    const y1 = this.centerY + Math.sin(angle) * innerRadius;
+                    const x2 = this.centerX + Math.cos(angle) * outerRadius;
+                    const y2 = this.centerY + Math.sin(angle) * outerRadius;
+                    
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(x1, y1);
+                    this.ctx.lineTo(x2, y2);
+                    this.ctx.strokeStyle = 'rgba(255, 255, 255, ' + (i % 6 === 0 ? 0.5 : 0.3) + ')';
+                    this.ctx.lineWidth = i % 6 === 0 ? 2 : 1;
+                    this.ctx.stroke();
+                }
+            }
+            
+            drawSunSurfaceDetails(radius) {
+                // Create animated solar surface details
+                const time = Date.now() * 0.001;
+                const numDetails = 15;
+                
+                for (let i = 0; i < numDetails; i++) {
+                    const detailAngle = Math.PI * 2 * (i / numDetails);
+                    const dist = (0.2 + Math.sin(time + i) * 0.2) * radius;
+                    
+                    const detailX = this.centerX + Math.cos(detailAngle) * dist;
+                    const detailY = this.centerY + Math.sin(detailAngle) * dist;
+                    const detailSize = 3 + Math.sin(time * 2 + i) * 2;
+                    
+                    this.ctx.beginPath();
+                    this.ctx.arc(detailX, detailY, detailSize, 0, Math.PI * 2);
+                    
+                    const brightness = 0.7 + Math.sin(time + i * 2) * 0.3;
+                    this.ctx.fillStyle = `rgba(255, 255, 255, ${brightness})`;
+                    this.ctx.fill();
+                }
+            }
+            
+            drawCentralText() {
+                // Draw central text with professional styling
+                this.ctx.fillStyle = '#ffffff';
+                this.ctx.textAlign = 'center';
+                this.ctx.textBaseline = 'middle';
+                
+                // Draw 'Om' text
+                this.ctx.font = 'bold 18px "Segoe UI", sans-serif';
+                this.ctx.fillText('Om', this.centerX, this.centerY - 10);
+                
+                // Draw 'Singh' text
+                this.ctx.font = 'bold 16px "Segoe UI", sans-serif';
+                this.ctx.fillText('Singh', this.centerX, this.centerY + 12);
+            }
+            
+            drawSkill(orbit) {
+                const { skill, x, y, z, hovered, pulseAmount } = orbit;
+                
+                // Scale based on z-position for depth effect
+                const zScale = this.mapRange(z, -50, 50, 0.7, 1.3);
+                
+                // Additional scale for hover and pulse effects
+                const hoverScale = 1 + (pulseAmount * 0.3);
+                
+                // Final radius with all effects
+                const radius = skill.radius * zScale * hoverScale;
+                
+                this.ctx.save();
+                
+                // Enhanced glow effect based on hover state and z-position
+                if (hovered || z > 0) {
+                    const glowAmount = hovered ? 20 + (pulseAmount * 10) : (z / 50) * 15;
+                    this.ctx.shadowColor = skill.color;
+                    this.ctx.shadowBlur = glowAmount;
+                }
+                
+                // Draw orbit trail behind skill when hovered
+                if (hovered) {
+                    // The orbit trail is now drawn in a separate method
+                    // to ensure proper layering with other elements
+                }
+                
+                // Draw planet atmosphere/glow
+                const atmosphereSize = radius * 1.15;
+                const gradient = this.ctx.createRadialGradient(
+                    x, y, radius * 0.8,
+                    x, y, atmosphereSize
+                );
+                gradient.addColorStop(0, `${skill.color}50`);
+                gradient.addColorStop(1, `${skill.color}00`);
+                
+                this.ctx.beginPath();
+                this.ctx.arc(x, y, atmosphereSize, 0, Math.PI * 2);
+                this.ctx.fillStyle = gradient;
+                this.ctx.fill();
+                
+                // Draw main planet body
+                this.ctx.beginPath();
+                this.ctx.arc(x, y, radius, 0, Math.PI * 2);
+                
+                // Create complex gradient for planets with light source
+                const planetGradient = this.ctx.createRadialGradient(
+                    x - radius * 0.3, y - radius * 0.3, radius * 0.1, // Light source
+                    x, y, radius
+                );
+                
+                // Use skill color with variations for more realistic planet appearance
+                planetGradient.addColorStop(0, this.lightenColor(skill.color, 70));
+                planetGradient.addColorStop(0.4, skill.color);
+                planetGradient.addColorStop(1, this.darkenColor(skill.color, 30));
+                
+                this.ctx.fillStyle = planetGradient;
+                this.ctx.fill();
+                
+                // Add planetary details based on skill type
+                this.addPlanetaryDetails(x, y, radius, skill);
+                
+                // Draw semi-transparent atmosphere/ring effect
+                if (radius > 20 && !hovered) {
+                    this.drawPlanetaryRing(x, y, radius, skill);
+                }
+                
+                // Draw border - thicker when hovered
+                this.ctx.strokeStyle = hovered ? 
+                    'rgba(255, 255, 255, 0.8)' : 
+                    'rgba(255, 255, 255, 0.2)';
+                this.ctx.lineWidth = hovered ? 2 : 0.8;
+                this.ctx.stroke();
+                
+                // Draw skill name with dynamic sizing and better contrast
+                const fontSize = Math.max(11, Math.min(14, radius * 0.5));
+                const textColor = this.getContrastColor(skill.color);
+                
+                // Clear a small area for text if needed for legibility
+                if (!hovered) {
+                    this.ctx.fillStyle = `${skill.color}99`;
+                    this.ctx.beginPath();
+                    this.ctx.arc(x, y, radius * 0.6, 0, Math.PI * 2);
+                    this.ctx.fill();
+                }
+                
+                // Draw skill name
+                this.ctx.fillStyle = textColor;
+                this.ctx.font = `${hovered ? 'bold' : ''} ${fontSize}px 'Segoe UI', sans-serif`;
+                this.ctx.textAlign = 'center';
+                this.ctx.textBaseline = 'middle';
+                
+                // Add text shadow for better readability
+                this.ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
+                this.ctx.shadowBlur = 4;
+                this.ctx.shadowOffsetX = 0;
+                this.ctx.shadowOffsetY = 0;
+                
+                this.ctx.fillText(skill.name, x, y);
+                
+                // Add skill level indicator when hovered
+                if (hovered) {
+                    this.drawSkillLevel(x, y, radius, skill);
+                }
+                
+                this.ctx.restore();
+            }
+            
+            addPlanetaryDetails(x, y, radius, skill) {
+                // Add different types of surface details based on skill type
+                
+                // Skip for very small planets
+                if (radius < 10) return;
+                
+                this.ctx.save();
+                
+                // Different patterns based on skill type
+                switch (skill.type) {
+                    case 'Frontend':
+                        // Create grid/web-like pattern
+                        this.drawGridPattern(x, y, radius);
+                        break;
+                        
+                    case 'Backend':
+                        // Create server-like structures
+                        this.drawBlockPattern(x, y, radius);
+                        break;
+                        
+                    case 'Database':
+                        // Create circular patterns like data clusters
+                        this.drawDatabasePattern(x, y, radius);
+                        break;
+                        
+                    case 'Languages':
+                    default:
+                        // Create crater-like patterns
+                        this.drawCraterPattern(x, y, radius);
+                        break;
+                }
+                
+                this.ctx.restore();
+            }
+            
+            drawGridPattern(x, y, radius) {
+                // Simple grid pattern for frontend skills
+                const numLines = Math.floor(radius / 5);
+                const spacing = radius * 1.5 / numLines;
+                
+                this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+                this.ctx.lineWidth = 0.5;
+                
+                // Draw horizontal grid lines
+                for (let i = -numLines; i <= numLines; i++) {
+                    const yOffset = i * spacing;
+                    if (Math.abs(yOffset) > radius) continue;
+                    
+                    const width = Math.sqrt(radius * radius - yOffset * yOffset) * 1.8;
+                    
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(x - width, y + yOffset);
+                    this.ctx.lineTo(x + width, y + yOffset);
+                    this.ctx.stroke();
+                }
+                
+                // Draw vertical grid lines
+                for (let i = -numLines; i <= numLines; i++) {
+                    const xOffset = i * spacing;
+                    if (Math.abs(xOffset) > radius) continue;
+                    
+                    const height = Math.sqrt(radius * radius - xOffset * xOffset) * 1.8;
+                    
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(x + xOffset, y - height);
+                    this.ctx.lineTo(x + xOffset, y + height);
+                    this.ctx.stroke();
+                }
+            }
+            
+            drawBlockPattern(x, y, radius) {
+                // Server rack-like pattern for backend skills
+                const numBlocks = Math.floor(radius / 4);
+                
+                this.ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+                
+                for (let i = 0; i < numBlocks; i++) {
+                    const angle = Math.random() * Math.PI * 2;
+                    const distance = Math.random() * radius * 0.7;
+                    
+                    const blockX = x + Math.cos(angle) * distance;
+                    const blockY = y + Math.sin(angle) * distance;
+                    
+                    const width = 2 + Math.random() * 4;
+                    const height = 2 + Math.random() * 4;
+                    
+                    this.ctx.fillRect(
+                        blockX - width/2, 
+                        blockY - height/2, 
+                        width, 
+                        height
+                    );
+                }
+            }
+            
+            drawDatabasePattern(x, y, radius) {
+                // Circular data patterns for database skills
+                const numCircles = Math.floor(radius / 3);
+                
+                this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+                this.ctx.lineWidth = 0.5;
+                
+                for (let i = 0; i < numCircles; i++) {
+                    const angle = Math.random() * Math.PI * 2;
+                    const distance = Math.random() * radius * 0.7;
+                    
+                    const circleX = x + Math.cos(angle) * distance;
+                    const circleY = y + Math.sin(angle) * distance;
+                    
+                    const circleRadius = 1 + Math.random() * 3;
+                    
+                    this.ctx.beginPath();
+                    this.ctx.arc(circleX, circleY, circleRadius, 0, Math.PI * 2);
+                    this.ctx.stroke();
+                    
+                    // Sometimes fill the circle
+                    if (Math.random() > 0.5) {
+                        this.ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+                        this.ctx.fill();
+                    }
+                }
+            }
+            
+            drawCraterPattern(x, y, radius) {
+                // Crater-like patterns for language skills
+                const numCraters = Math.floor(radius / 2.5);
+                
+                for (let i = 0; i < numCraters; i++) {
+                    const angle = Math.random() * Math.PI * 2;
+                    const distance = Math.random() * radius * 0.7;
+                    
+                    const craterX = x + Math.cos(angle) * distance;
+                    const craterY = y + Math.sin(angle) * distance;
+                    
+                    const craterRadius = 1 + Math.random() * 3;
+                    
+                    // Draw crater with subtle gradient
+                    const gradient = this.ctx.createRadialGradient(
+                        craterX, craterY, 0,
+                        craterX, craterY, craterRadius
+                    );
+                    gradient.addColorStop(0, 'rgba(255, 255, 255, 0.2)');
+                    gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+                    
+                    this.ctx.fillStyle = gradient;
+                    this.ctx.beginPath();
+                    this.ctx.arc(craterX, craterY, craterRadius, 0, Math.PI * 2);
+                    this.ctx.fill();
+                }
+            }
+            
+            drawPlanetaryRing(x, y, radius, skill) {
+                // Draw an optional ring around some planets
+                // Only add rings to randomly selected planets
+                if (skill.name === 'MongoDB' || skill.name === 'Python' || skill.name === 'React.js') {
+                    const ringWidth = radius * 0.6;
+                    const ringInnerRadius = radius * 1.2;
+                    const ringOuterRadius = ringInnerRadius + ringWidth;
+                    
+                    // Create ring gradient
+                    const ringGradient = this.ctx.createRadialGradient(
+                        x, y, ringInnerRadius,
+                        x, y, ringOuterRadius
+                    );
+                    ringGradient.addColorStop(0, `${skill.color}30`);
+                    ringGradient.addColorStop(0.5, `${skill.color}20`);
+                    ringGradient.addColorStop(1, `${skill.color}00`);
+                    
+                    // Draw elliptical ring at an angle
+                    this.ctx.save();
+                    this.ctx.translate(x, y);
+                    this.ctx.rotate(Math.PI / 6); // Tilt the ring
+                    this.ctx.scale(1, 0.3); // Flatten to create perspective
+                    
+                    // Outer ring
+                    this.ctx.beginPath();
+                    this.ctx.arc(0, 0, ringOuterRadius, 0, Math.PI * 2);
+                    this.ctx.fillStyle = ringGradient;
+                    this.ctx.fill();
+                    
+                    // Clear inner part
+                    this.ctx.beginPath();
+                    this.ctx.arc(0, 0, ringInnerRadius, 0, Math.PI * 2);
+                    this.ctx.globalCompositeOperation = 'destination-out';
+                    this.ctx.fill();
+                    this.ctx.globalCompositeOperation = 'source-over';
+                    
+                    this.ctx.restore();
+                }
+            }
+            
+            drawSkillLevel(x, y, radius, skill) {
+                // Draw skill level indicator around the planet when hovered
+                const levelRadius = radius * 1.4;
+                
+                this.ctx.save();
+                
+                // Background ring
+                this.ctx.beginPath();
+                this.ctx.arc(x, y, levelRadius, 0, Math.PI * 2);
+                this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+                this.ctx.lineWidth = 3;
+                this.ctx.stroke();
+                
+                // Skill level arc
+                const levelAngle = (skill.level / 100) * Math.PI * 2;
+                
+                this.ctx.beginPath();
+                this.ctx.arc(x, y, levelRadius, -Math.PI/2, -Math.PI/2 + levelAngle);
+                
+                const gradient = this.ctx.createLinearGradient(
+                    x - levelRadius, y,
+                    x + levelRadius, y
+                );
+                gradient.addColorStop(0, this.lightenColor(skill.color, 30));
+                gradient.addColorStop(1, skill.color);
+                
+                this.ctx.strokeStyle = gradient;
+                this.ctx.lineWidth = 4;
+                this.ctx.lineCap = 'round';
+                this.ctx.stroke();
+                
+                // Draw percentage text
+                this.ctx.fillStyle = '#ffffff';
+                this.ctx.font = '12px "Segoe UI", sans-serif';
+                this.ctx.textAlign = 'center';
+                this.ctx.textBaseline = 'middle';
+                this.ctx.fillText(`${skill.level}%`, x, y - levelRadius - 15);
+                
+                this.ctx.restore();
+            }
+            
+            lightenColor(color, amount) {
+                return this.adjustColor(color, amount);
+            }
+            
+            darkenColor(color, amount) {
+                return this.adjustColor(color, -amount);
+            }
+            
+            getContrastColor(hexColor) {
+                // Convert hex to RGB
+                const r = parseInt(hexColor.slice(1, 3), 16);
+                const g = parseInt(hexColor.slice(3, 5), 16);
+                const b = parseInt(hexColor.slice(5, 7), 16);
+                
+                // Calculate luminance (perceived brightness)
+                const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+                
+                // Return white or black based on background luminance
+                return luminance > 0.5 ? '#000000' : '#ffffff';
+            }
+            
+            mapRange(value, low1, high1, low2, high2) {
+                return low2 + (high2 - low2) * (value - low1) / (high1 - low1);
+            }
+            
+            handleClick(event) {
+                const rect = this.canvas.getBoundingClientRect();
+                const mouseX = event.clientX - rect.left;
+                const mouseY = event.clientY - rect.top;
+                
+                // Check if center avatar was clicked
+                const distToCenter = Math.sqrt(
+                    Math.pow(mouseX - this.centerX, 2) + 
+                    Math.pow(mouseY - this.centerY, 2)
+                );
+                
+                if (distToCenter < 45) {
+                    // Show all skills details or some special animation
+                    this.pulseAllSkills();
+                    return;
+                }
+                
+                // Check if any skill was clicked
+                for (const orbit of this.orbits) {
+                    const dx = mouseX - orbit.x;
+                    const dy = mouseY - orbit.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    // Scale clickable area with planet size and z position
+                    const zScale = this.mapRange(orbit.z, -50, 50, 0.7, 1.3);
+                    const clickRadius = orbit.skill.radius * zScale * 1.2;
+                    
+                    if (distance < clickRadius) {
+                        // Skill was clicked
+                        this.showSkillDetail(orbit.skill);
+                        return;
+                    }
+                }
+                
+                // If no skill was clicked and a detail popup is shown, hide it
+                if (this.skillDetailPopup.classList.contains('active')) {
+                    this.hideSkillDetail();
+                }
+            }
+            
+            pulseAllSkills() {
+                // Create a wave effect emanating from center
+                let delay = 0;
+                
+                this.orbits.sort((a, b) => {
+                    const distA = Math.sqrt(Math.pow(a.x - this.centerX, 2) + Math.pow(a.y - this.centerY, 2));
+                    const distB = Math.sqrt(Math.pow(b.x - this.centerX, 2) + Math.pow(b.y - this.centerY, 2));
+                    return distA - distB;
+                }).forEach(orbit => {
+                    setTimeout(() => {
+                        orbit.hovered = true;
+                        setTimeout(() => {
+                            orbit.hovered = false;
+                        }, 300);
+                    }, delay);
+                    delay += 50;
+                });
+            }
+            
+            handleMouseMove(event) {
+                const rect = this.canvas.getBoundingClientRect();
+                this.mouseX = event.clientX - rect.left;
+                this.mouseY = event.clientY - rect.top;
+                
+                let hoverDetected = false;
+                
+                // Check for center avatar hover
+                const distToCenter = Math.sqrt(
+                    Math.pow(this.mouseX - this.centerX, 2) + 
+                    Math.pow(this.mouseY - this.centerY, 2)
+                );
+                
+                if (distToCenter < 45) {
+                    this.canvas.style.cursor = 'pointer';
+                    hoverDetected = true;
+                }
+                
+                // Check if mouse is over any skill
+                for (const orbit of this.orbits) {
+                    const dx = this.mouseX - orbit.x;
+                    const dy = this.mouseY - orbit.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    // Scale hover area with planet size and z position
+                    const zScale = this.mapRange(orbit.z, -50, 50, 0.7, 1.3);
+                    const hoverRadius = orbit.skill.radius * zScale * 1.2;
+                    
+                    if (distance < hoverRadius) {
+                        orbit.hovered = true;
+                        this.canvas.style.cursor = 'pointer';
+                        hoverDetected = true;
+                    } else {
+                        orbit.hovered = false;
+                    }
+                }
+                
+                if (!hoverDetected) {
+                    this.canvas.style.cursor = 'default';
+                }
+            }
+            
+            showSkillDetail(skill) {
+                this.selectedSkill = skill;
+                this.targetZoomLevel = 1.5;
+                
+                // Update skill detail content
+                this.skillDetailTitle.textContent = skill.name;
+                this.skillDetailProgress.style.width = `${skill.level}%`;
+                this.skillDetailDesc.textContent = skill.description;
+                
+                // Show popup with animation
+                this.skillDetailPopup.classList.add('active');
+            }
+            
+            hideSkillDetail() {
+                this.selectedSkill = null;
+                this.targetZoomLevel = 1;
+                this.skillDetailPopup.classList.remove('active');
+            }
+            
+            adjustColor(color, amount) {
+                // Helper function to darken/lighten colors
+                let usePound = false;
+                
+                if (color[0] === '#') {
+                    color = color.slice(1);
+                    usePound = true;
+                }
+                
+                const num = parseInt(color, 16);
+                let r = (num >> 16) + amount;
+                let g = ((num >> 8) & 0x00FF) + amount;
+                let b = (num & 0x0000FF) + amount;
+                
+                r = Math.min(255, Math.max(0, r));
+                g = Math.min(255, Math.max(0, g));
+                b = Math.min(255, Math.max(0, b));
+                
+                return (usePound ? '#' : '') + ((g | (r << 8) | (b << 16)).toString(16).padStart(6, '0'));
+            }
+
+            // Add the missing applyMouseGravity method
+            applyMouseGravity() {
+                // Interactive gravity effect when mouse moves near planets
+                if (this.mouseX && this.mouseY) {
+                    // Calculate distance from mouse to center
+                    const dcx = this.centerX - this.mouseX;
+                    const dcy = this.centerY - this.mouseY;
+                    const centerDist = Math.sqrt(dcx * dcx + dcy * dcy);
+                    
+                    // Protect center from being affected by mouse gravity
+                    if (centerDist < 100) return;
+                    
+                    // Apply to each orbit
+                    this.orbits.forEach(orbit => {
+                        // Calculate distance from mouse to planet
+                        const dx = this.mouseX - orbit.x;
+                        const dy = this.mouseY - orbit.y;
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+                        
+                        // Skip if too far away or too close
+                        if (distance > 150 || distance < 10) return;
+                        
+                        // Calculate gravitational force (inverse square law)
+                        // Weaker gravity for a more subtle effect
+                        const force = 0.15 * (1 / Math.max(distance, 30));
+                        
+                        // Apply gravitational pull - move toward mouse
+                        orbit.x += dx * force;
+                        orbit.y += dy * force;
+                        
+                        // Add restoration force to pull planet back toward its orbit
+                        // Calculate current distance from center
+                        const cdx = orbit.x - this.centerX;
+                        const cdy = orbit.y - this.centerY;
+                        const currentDist = Math.sqrt(cdx * cdx + cdy * cdy);
+                        
+                        // Calculate ideal distance (orbit radius)
+                        const targetDist = orbit.orbitRadius;
+                        
+                        // Apply restoration force proportional to displacement
+                        const displacement = currentDist - targetDist;
+                        const restorationForce = displacement * 0.01;
+                        
+                        // Direction vector towards center
+                        const dirX = cdx / currentDist;
+                        const dirY = cdy / currentDist;
+                        
+                        // Apply restoration force
+                        orbit.x -= dirX * restorationForce;
+                        orbit.y -= dirY * restorationForce;
+                    });
+                }
+            }
         }
     </script>
 </body>
