@@ -1762,12 +1762,26 @@
             
             handleResize() {
                 const container = this.canvas.parentElement;
-                this.canvas.width = container.clientWidth;
-                this.canvas.height = container.clientHeight;
-                this.centerX = this.canvas.width / 2;
-                this.centerY = this.canvas.height / 2;
                 
-                // Recalculate orbits when resizing
+                // Get actual available space
+                const containerWidth = container.clientWidth;
+                const containerHeight = container.clientHeight;
+                
+                // On mobile, use square canvas to maximize visible area
+                const isMobile = containerWidth < 768;
+                const canvasSize = isMobile ? 
+                    Math.min(containerWidth, containerHeight) : 
+                    Math.max(containerWidth, containerHeight);
+                
+                // Set canvas dimensions
+                this.canvas.width = containerWidth;
+                this.canvas.height = containerHeight;
+                
+                // Update center position
+                this.centerX = containerWidth / 2;
+                this.centerY = containerHeight / 2;
+                
+                // Recalculate orbits with new dimensions
                 this.setupOrbits();
             }
             
@@ -1781,84 +1795,112 @@
                 this.centerX = width / 2;
                 this.centerY = height / 2;
                 
-                // Calculate the visible area's size - use more of the available space
-                const maxRadius = Math.min(width, height) * 0.42; // Increased from 0.38 to use more space
+                // Check if we're on mobile (smaller canvas)
+                const isMobile = width < 768;
                 
-                // Define organized orbital rings with proper spacing
-                // Each ring has distinct radius and planets are evenly spaced around the ring
-                const orbitalRings = [
-                    { radius: maxRadius * 0.35, count: 3 }, // Inner ring
-                    { radius: maxRadius * 0.65, count: 3 }, // Middle ring
-                    { radius: maxRadius * 0.95, count: 4 }  // Outer ring
-                ];
+                // Calculate the visible area's size with responsive adjustments
+                // Use smaller orbits on mobile to prevent overlapping
+                const maxRadius = isMobile ? 
+                    Math.min(width, height) * 0.32 : // Mobile: smaller orbital radius
+                    Math.min(width, height) * 0.42;  // Desktop: larger orbital radius
                 
-                // Assign skills to each ring
-                const skillAssignments = [
-                    // Inner ring (faster planets)
-                    ['JavaScript', 'Express.js', 'Tailwind CSS'],
-                    // Middle ring
-                    ['React.js', 'Node.js', 'HTML5/CSS3'],
-                    // Outer ring (slower planets)
-                    ['Python', 'MongoDB', 'MySQL', 'C++']
-                ];
+                // Apply more direct size overrides for planets - especially Tailwind CSS
+                this.forceSkillSizes();
                 
-                // Create orbits with precise positioning
-                orbitalRings.forEach((ring, ringIndex) => {
-                    const skills = skillAssignments[ringIndex];
+                // Define fixed, non-overlapping positions for skills
+                // Mobile and desktop have completely different layouts
+                const skillPositions = isMobile ? [
+                    // MOBILE LAYOUT - with much greater angular separation
+                    // Inner ring - spread out evenly around the circle (120° apart)
+                    { name: 'JavaScript', angle: Math.PI * 0.0, ring: 0 },   // Top
+                    { name: 'Express.js', angle: Math.PI * 0.67, ring: 0 },  // Right
+                    { name: 'Node.js', angle: Math.PI * 1.33, ring: 0 },     // Left
                     
-                    // For each skill in this ring
-                    skills.forEach((skillName, skillIndex) => {
-                        // Find matching skill object
-                        const skill = this.skills.find(s => s.name === skillName);
+                    // Outer ring - maximum separation (each is ~36° apart)
+                    { name: 'React.js', angle: Math.PI * 0.2, ring: 1 },     // Top-right
+                    { name: 'Python', angle: Math.PI * 0.6, ring: 1 },       // Right
+                    { name: 'HTML5/CSS3', angle: Math.PI * 1.0, ring: 1 },   // Bottom
+                    { name: 'MongoDB', angle: Math.PI * 1.4, ring: 1 },      // Left
+                    { name: 'C++', angle: Math.PI * 1.8, ring: 1 },          // Top-left
+                    { name: 'MySQL', angle: Math.PI * 0.4, ring: 1 },        // Right
+                    { name: 'Tailwind CSS', angle: Math.PI * 1.6, ring: 1 }  // Left (far from MySQL)
+                ] : [
+                    // DESKTOP LAYOUT - completely separate React and C++
+                    // Inner ring
+                    { name: 'JavaScript', angle: Math.PI * 0.8, ring: 0 },
+                    { name: 'Express.js', angle: Math.PI * 0.1, ring: 0 },
+                    { name: 'Node.js', angle: Math.PI * 1.5, ring: 0 },
+                    
+                    // Middle ring - React moved far from C++
+                    { name: 'React.js', angle: Math.PI * 1.7, ring: 1 }, // Bottom right
+                    { name: 'HTML5/CSS3', angle: Math.PI * 1.0, ring: 1 },
+                    { name: 'Tailwind CSS', angle: Math.PI * 0.3, ring: 1 }, // Top left
+                    
+                    // Outer ring - C++ moved to opposite side from React
+                    { name: 'Python', angle: Math.PI * 1.5, ring: 2 },
+                    { name: 'MongoDB', angle: Math.PI * 1.1, ring: 2 }, // Right side
+                    { name: 'MySQL', angle: Math.PI * 0.4, ring: 2 }, // Left side
+                    { name: 'C++', angle: Math.PI * 0.7, ring: 2 }  // Top left - far from React
+                ];
+                
+                // Set radius for each ring (mobile has 2 rings, desktop has 3)
+                const ringRadii = isMobile ? [
+                    maxRadius * 0.40, // Inner ring (mobile) - reduced to create more separation
+                    maxRadius * 0.85  // Outer ring (mobile) - slightly reduced
+                ] : [
+                    maxRadius * 0.35, // Inner ring (desktop)
+                    maxRadius * 0.65, // Middle ring (desktop)
+                    maxRadius * 0.90  // Outer ring (desktop)
+                ];
+                
+                // Create planets with fixed positions to avoid overlapping
+                skillPositions.forEach(skillPos => {
+                    const skill = this.skills.find(s => s.name === skillPos.name);
+                    
+                    if (skill) {
+                        // Get base radius for this ring
+                        const ringRadius = ringRadii[skillPos.ring];
                         
-                        if (skill) {
-                            // Calculate precise angle for even distribution
-                            const angleStep = (2 * Math.PI) / skills.length;
-                            const baseAngle = angleStep * skillIndex;
-                            
-                            // Add tiny random offset for natural feel (-5 to +5 degrees in radians)
-                            const angleOffset = (Math.random() * 0.17) - 0.085;
-                            const angle = baseAngle + angleOffset;
-                            
-                            // Slightly vary orbit radius to avoid perfect circles
-                            const radiusVariation = 1 + ((Math.random() * 0.08) - 0.04); // ±4% variation
-                            const orbitRadius = ring.radius * radiusVariation;
-                            
-                            // Orbit eccentricity (elliptical orbits)
-                            // Inner orbits more circular, outer more elliptical
-                            const eccentricity = 0.02 + (ringIndex * 0.02);
-                            
-                            // Calculate speed based on ring - inner planets move faster (inverse to radius)
-                            const baseSpeed = 0.0008; // Increased speed
-                            const speedFactor = 1 - (ringIndex * 0.2); // Reduce speed for outer rings
-                            const speed = baseSpeed * speedFactor;
-                            
-                            this.orbits.push({
-                                skill,
-                                orbitRadius,
-                                angle,
-                                speed,
-                                eccentricity,
-                                tiltX: Math.random() * 0.1,
-                                tiltY: Math.random() * 0.1,
-                                phaseShift: angle, // Start at distributed position
-                                x: 0,
-                                y: 0, 
-                                z: 0,
-                                ringIndex, // Store ring index for drawing orbit paths
-                                hovered: false,
-                                pulseAmount: 0,
-                                pulseDirection: 1,
-                                type: skill.type,
-                                startTime: Date.now() + (skillIndex * 300) // Staggered start times
-                            });
-                        }
-                    });
+                        // Set fixed orbit parameters
+                        const orbitRadius = ringRadius;
+                        const angle = skillPos.angle;
+                        
+                        // Different eccentricity and speed for different rings
+                        // Zero eccentricity on mobile to ensure perfect circles
+                        const eccentricity = isMobile ? 
+                            0.0 : // Mobile: perfect circles to maintain separation
+                            0.02 + (skillPos.ring * 0.02);
+                        
+                        // Faster speed on mobile for better visual effect
+                        const baseSpeed = isMobile ? 0.0008 : 0.0006;
+                        const speedFactor = 1 - (skillPos.ring * 0.15);
+                        const speed = baseSpeed * speedFactor;
+                        
+                        this.orbits.push({
+                            skill,
+                            orbitRadius,
+                            angle,
+                            speed,
+                            eccentricity,
+                            tiltX: isMobile ? 0 : Math.random() * 0.1, // No tilt on mobile
+                            tiltY: isMobile ? 0 : Math.random() * 0.1, // No tilt on mobile
+                            phaseShift: angle,
+                            x: 0,
+                            y: 0, 
+                            z: 0,
+                            ringIndex: skillPos.ring,
+                            hovered: false,
+                            pulseAmount: 0,
+                            pulseDirection: 1,
+                            type: skill.type,
+                            startTime: Date.now() + (skillPos.ring * 300)
+                        });
+                    }
                 });
                 
-                // Assign distinct orbit paths
-                this.orbitalPaths = orbitalRings.map(ring => ({
-                    radius: ring.radius,
+                // Set orbit paths
+                this.orbitalPaths = ringRadii.map(radius => ({
+                    radius: radius,
                     visible: true
                 }));
                 
@@ -1866,23 +1908,81 @@
                 this.calculateInitialPositions();
             }
             
+            // Force skill sizes with hard-coded values to ensure visibility
+            forceSkillSizes() {
+                // Adjust sizes based on text length and importance
+                const sizeMap = {
+                    'JavaScript': 26,      // Longer name, more important
+                    'React.js': 24,        // Medium length
+                    'Node.js': 22,         // Medium length
+                    'Express.js': 24,      // Longer name
+                    'Python': 22,          // Short name
+                    'HTML5/CSS3': 25,      // Longer name
+                    'MongoDB': 24,         // Medium length
+                    'MySQL': 22,           // Short name
+                    'C++': 20,             // Very short name
+                    'Tailwind CSS': 26     // Longer name
+                };
+                
+                // Size adjustment for mobile - slightly smaller on mobile but still readable
+                const isMobile = this.canvas.width < 768;
+                const mobileFactor = isMobile ? 0.85 : 1.0;
+                
+                // Apply size overrides to each skill, ensuring minimum size based on text length
+                this.skills.forEach(skill => {
+                    // Calculate minimum size based on text length
+                    const textLength = skill.name.length;
+                    let baseSize = sizeMap[skill.name] || Math.max(20, textLength * 1.5);
+                    
+                    // Apply mobile size reduction factor but ensure minimum size
+                    skill.radius = Math.max(baseSize * mobileFactor, 18);
+                });
+            }
+            
             calculateInitialPositions() {
-                // Update all positions initially
+                // Update each orbit's initial position
                 this.orbits.forEach(orbit => {
-                    const a = orbit.orbitRadius;
-                    const b = orbit.orbitRadius * (1 - orbit.eccentricity);
-                    const theta = orbit.angle + orbit.phaseShift;
+                    // Calculate x, y position based on orbit parameters
+                    const angle = orbit.phaseShift;
                     
-                    // Basic elliptical orbit
-                    const baseX = a * Math.cos(theta);
-                    const baseY = b * Math.sin(theta);
+                    // Separate equations for elliptical orbits with eccentricity
+                    const a = orbit.orbitRadius; // Semi-major axis
+                    const e = orbit.eccentricity; // Eccentricity
+                    const b = a * Math.sqrt(1 - e * e); // Semi-minor axis
                     
-                    // Apply tilt for 3D effect
-                    orbit.x = this.centerX + (baseX * Math.cos(orbit.tiltX) - baseY * Math.sin(orbit.tiltY));
-                    orbit.y = this.centerY + (baseX * Math.sin(orbit.tiltX) + baseY * Math.cos(orbit.tiltY));
+                    // Calculate position with tilt applied
+                    const cosAngle = Math.cos(angle);
+                    const sinAngle = Math.sin(angle);
                     
-                    // Calculate z-position for depth
-                    orbit.z = Math.sin(theta) * 50;
+                    // Base elliptical position
+                    const ellipseX = a * cosAngle;
+                    const ellipseY = b * sinAngle;
+                    
+                    // Apply tilt rotation (skip on mobile for more predictable orbits)
+                    const isMobile = this.canvas.width < 768;
+                    if (isMobile) {
+                        // Mobile - simpler circular orbits
+                        orbit.x = this.centerX + ellipseX;
+                        orbit.y = this.centerY + ellipseY;
+                    } else {
+                        // Desktop - more complex tilted orbits
+                        const tiltX = orbit.tiltX;
+                        const tiltY = orbit.tiltY;
+                        
+                        // Calculate 3D-like position with tilt
+                        const x = ellipseX;
+                        const y = ellipseY * Math.cos(tiltX) - 0 * Math.sin(tiltX);
+                        const z = ellipseY * Math.sin(tiltX) + 0 * Math.cos(tiltX);
+                        
+                        // Apply y-axis tilt
+                        const x2 = x * Math.cos(tiltY) + z * Math.sin(tiltY);
+                        const z2 = -x * Math.sin(tiltY) + z * Math.cos(tiltY);
+                        
+                        // Store final position
+                        orbit.x = this.centerX + x2;
+                        orbit.y = this.centerY + y;
+                        orbit.z = z2;
+                    }
                 });
             }
             
@@ -2421,14 +2521,23 @@
             drawSkill(orbit) {
                 const { skill, x, y, z, hovered, pulseAmount } = orbit;
                 
-                // Scale based on z-position for depth effect
-                const zScale = this.mapRange(z, -50, 50, 0.7, 1.3);
+                // Check if we're on mobile (smaller screen)
+                const isMobile = this.canvas.width < 768;
+                
+                // Scale based on z-position for depth effect (less on mobile)
+                const zScale = isMobile ? 
+                    this.mapRange(z, -50, 50, 0.95, 1.05) :  // Less z-effect on mobile
+                    this.mapRange(z, -50, 50, 0.7, 1.3);
                 
                 // Additional scale for hover and pulse effects
                 const hoverScale = 1 + (pulseAmount * 0.3);
                 
-                // Final radius with all effects
-                const radius = skill.radius * zScale * hoverScale;
+                // Final radius with all effects - cap size on mobile
+                // Increase minimum size to ensure visibility
+                const radius = Math.max(
+                    Math.min(skill.radius * zScale * hoverScale, isMobile ? 30 : 45), // Increased max cap
+                    isMobile ? 17 : 20 // Increased minimum size
+                );
                 
                 this.ctx.save();
                 
@@ -2439,14 +2548,8 @@
                     this.ctx.shadowBlur = glowAmount;
                 }
                 
-                // Draw orbit trail behind skill when hovered
-                if (hovered) {
-                    // The orbit trail is now drawn in a separate method
-                    // to ensure proper layering with other elements
-                }
-                
-                // Draw planet atmosphere/glow
-                const atmosphereSize = radius * 1.15;
+                // Draw planet atmosphere/glow - reduced on mobile
+                const atmosphereSize = radius * (isMobile ? 1.1 : 1.15);
                 const gradient = this.ctx.createRadialGradient(
                     x, y, radius * 0.8,
                     x, y, atmosphereSize
@@ -2470,60 +2573,87 @@
                 );
                 
                 // Use skill color with variations for more realistic planet appearance
-                planetGradient.addColorStop(0, this.lightenColor(skill.color, 70));
-                planetGradient.addColorStop(0.4, skill.color);
-                planetGradient.addColorStop(1, this.darkenColor(skill.color, 30));
+                // Brighter colors for better text contrast
+                planetGradient.addColorStop(0, this.lightenColor(skill.color, 80));
+                planetGradient.addColorStop(0.4, this.lightenColor(skill.color, 15));
+                planetGradient.addColorStop(1, this.darkenColor(skill.color, 20));
                 
                 this.ctx.fillStyle = planetGradient;
                 this.ctx.fill();
                 
-                // Add planetary details based on skill type
-                this.addPlanetaryDetails(x, y, radius, skill);
+                // Add planetary details based on skill type (skip on mobile if too small)
+                if (!isMobile || radius > 15) {
+                    this.addPlanetaryDetails(x, y, radius, skill);
+                }
                 
-                // Draw semi-transparent atmosphere/ring effect
-                if (radius > 20 && !hovered) {
+                // Draw semi-transparent atmosphere/ring effect (only on desktop or larger planets)
+                if ((radius > 20 && !hovered) && !isMobile) {
                     this.drawPlanetaryRing(x, y, radius, skill);
                 }
                 
                 // Draw border - thicker when hovered
                 this.ctx.strokeStyle = hovered ? 
                     'rgba(255, 255, 255, 0.8)' : 
-                    'rgba(255, 255, 255, 0.2)';
-                this.ctx.lineWidth = hovered ? 2 : 0.8;
+                    'rgba(255, 255, 255, 0.3)';
+                this.ctx.lineWidth = hovered ? 2 : 1;
                 this.ctx.stroke();
                 
-                // Draw skill name with dynamic sizing and better contrast
-                const fontSize = Math.max(11, Math.min(14, radius * 0.5));
-                const textColor = this.getContrastColor(skill.color);
+                // Create a clearer background for text
+                this.ctx.fillStyle = `${skill.color}CC`; // More opaque for better text visibility
+                this.ctx.beginPath();
+                this.ctx.arc(x, y, radius * 0.7, 0, Math.PI * 2);
+                this.ctx.fill();
                 
-                // Clear a small area for text if needed for legibility
-                if (!hovered) {
-                    this.ctx.fillStyle = `${skill.color}99`;
-                    this.ctx.beginPath();
-                    this.ctx.arc(x, y, radius * 0.6, 0, Math.PI * 2);
-                    this.ctx.fill();
-                }
+                // Draw skill name with dynamic sizing and better contrast
+                // Larger font sizes for better readability
+                const fontSize = isMobile ?
+                    Math.max(11, Math.min(14, radius * 0.6)) : // Increased on mobile
+                    Math.max(13, Math.min(16, radius * 0.5)); // Increased on desktop
+                    
+                // Always use high contrast color for text
+                const textColor = 'rgba(255, 255, 255, 0.95)'; // Almost white for all planets
                 
                 // Draw skill name
                 this.ctx.fillStyle = textColor;
-                this.ctx.font = `${hovered ? 'bold' : ''} ${fontSize}px 'Segoe UI', sans-serif`;
+                this.ctx.font = `${hovered ? 'bold' : 'bold'} ${fontSize}px 'Segoe UI', sans-serif`; // Always bold
                 this.ctx.textAlign = 'center';
                 this.ctx.textBaseline = 'middle';
                 
-                // Add text shadow for better readability
-                this.ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
-                this.ctx.shadowBlur = 4;
+                // Add stronger text shadow for better readability
+                this.ctx.shadowColor = 'rgba(0, 0, 0, 0.9)';
+                this.ctx.shadowBlur = 6;
                 this.ctx.shadowOffsetX = 0;
                 this.ctx.shadowOffsetY = 0;
                 
-                this.ctx.fillText(skill.name, x, y);
+                // On mobile, abbreviate long skill names but ensure they're still recognizable
+                const displayName = isMobile && skill.name.length > 8 && radius < 22 ? 
+                    this.abbreviateSkillName(skill.name) : 
+                    skill.name;
                 
-                // Add skill level indicator when hovered
-                if (hovered) {
+                this.ctx.fillText(displayName, x, y);
+                
+                // Add skill level indicator when hovered (simplified on mobile)
+                if (hovered && (!isMobile || radius > 20)) {
                     this.drawSkillLevel(x, y, radius, skill);
                 }
                 
                 this.ctx.restore();
+            }
+            
+            // Helper to abbreviate skill names on mobile
+            abbreviateSkillName(name) {
+                // Common abbreviations
+                const abbreviations = {
+                    'JavaScript': 'JavaScript', // Keep full name for important skills
+                    'Express.js': 'Express',
+                    'React.js': 'React',
+                    'Node.js': 'Node',
+                    'MongoDB': 'MongoDB', // Keep full name
+                    'HTML5/CSS3': 'HTML/CSS',
+                    'Tailwind CSS': 'Tailwind'
+                };
+                
+                return abbreviations[name] || name;
             }
             
             addPlanetaryDetails(x, y, radius, skill) {
