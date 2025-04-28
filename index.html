@@ -7,6 +7,12 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Add particles.js library -->
     <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <!-- Add Three.js library for 3D animations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <!-- Add Three.js OrbitControls -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <!-- Add GSAP for animations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
     <style>
         :root {
             --primary-color: #2563eb;
@@ -290,9 +296,66 @@
         }
 
         .skills-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 60px;
+            margin-top: 40px;
+            padding: 20px;
+        }
+
+        .skill-circle {
+            width: 150px;
+            height: 150px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .skill-bubble {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            border: 3px solid rgba(255, 255, 255, 0.2);
+            font-weight: bold;
+            font-size: 16px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.3), rgba(30, 30, 60, 0.8), rgba(10, 10, 30, 0.9));
+            cursor: pointer;
+            text-align: center;
+            padding: 15px 10px;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+            color: white;
+            text-shadow: 0 0 5px rgba(0, 0, 0, 0.7);
+        }
+
+        .skill-bubble::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at center, rgba(255, 255, 255, 0.15), transparent 30%);
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        .skill-bubble i {
+            font-size: 28px;
+            margin-bottom: 8px;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+
+        .skill-bubble:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 35px rgba(255, 255, 255, 0.4);
         }
 
         .skill-category {
@@ -998,69 +1061,234 @@
             100% { transform: scale(1); }
         }
 
-        /* Skills Galaxy */
+        /* Skills Galaxy Section */
         .skills-galaxy-container {
-            position: relative;
-            width: 100%;
-            height: 100vh; /* Full viewport height */
-            overflow: hidden;
-            background-color: transparent; /* Transparent background */
-            margin-top: -40px; /* Negative margin to blend with background */
-            margin-bottom: -40px;
-            z-index: 5; /* Ensure the container is visible */
+            display: none;
         }
 
-        #skillsGalaxy {
+        #skills-galaxy-canvas {
             width: 100%;
             height: 100%;
-            cursor: pointer;
-            position: relative;
-            z-index: 5;
-        }
-
-        .skill-detail-popup {
-            position: fixed; /* Fixed position for better visibility */
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) scale(0);
-            width: 300px;
-            background: rgba(10, 10, 20, 0.85);
-            backdrop-filter: blur(8px);
+            background: linear-gradient(145deg, #050520, #0a0a2a);
             border-radius: 10px;
-            padding: 25px;
-            box-shadow: 0 0 40px rgba(6, 182, 212, 0.6);
-            z-index: 200;
-            opacity: 0;
-            transition: transform 0.5s cubic-bezier(0.2, 0.85, 0.4, 1.5), opacity 0.5s ease;
-            border: 1px solid var(--accent-color);
         }
 
-        .skill-detail-popup.active {
-            transform: translate(-50%, -50%) scale(1);
+        .skills-galaxy-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            pointer-events: none;
+        }
+
+        .skills-galaxy-title {
+            font-size: 32px;
+            color: white;
+            text-shadow: 0 0 10px rgba(37, 99, 235, 0.8);
+            margin-bottom: 20px;
+            z-index: 10;
+        }
+
+        .skills-galaxy-subtitle {
+            font-size: 18px;
+            color: var(--text-muted);
+            text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            max-width: 600px;
+            z-index: 10;
+        }
+
+        .skill-detail-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .skill-detail-modal.active {
             opacity: 1;
+            pointer-events: all;
         }
 
         .skill-detail-content {
-            text-align: center;
+            background: linear-gradient(145deg, #111827, #1e293b);
+            border-radius: 15px;
+            padding: 30px;
+            width: 90%;
+            max-width: 600px;
+            position: relative;
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+            box-shadow: 0 0 30px rgba(37, 99, 235, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        .skill-detail-content h3 {
-            color: var(--primary-color);
-            margin-bottom: 15px;
-            font-size: 22px;
+        .skill-detail-modal.active .skill-detail-content {
+            transform: scale(1);
+        }
+
+        .skill-detail-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 15px;
+        }
+
+        .skill-detail-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(145deg, var(--primary-color), var(--secondary-color));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 24px;
+            color: white;
+        }
+
+        .skill-detail-title {
+            font-size: 24px;
+            color: white;
         }
 
         .skill-detail-level {
-            margin-bottom: 15px;
-        }
-
-        .skill-detail-content p {
-            margin-bottom: 20px;
+            margin-top: 5px;
+            font-size: 14px;
             color: var(--text-muted);
         }
 
-        #closeSkillDetail {
+        .skill-detail-description {
+            margin-bottom: 20px;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        .skill-detail-progress {
+            height: 8px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .skill-detail-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+            border-radius: 4px;
+            width: 0;
+            transition: width 1s ease-in-out;
+        }
+
+        .skill-detail-projects {
+            margin-top: 20px;
+        }
+
+        .skill-detail-projects h4 {
+            font-size: 18px;
+            color: white;
+            margin-bottom: 10px;
+        }
+
+        .skill-detail-project-item {
+            padding: 10px;
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 5px;
+            margin-bottom: 10px;
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .skill-detail-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 30px;
+            height: 30px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .skill-detail-close:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        @media (max-width: 768px) {
+            .skills-galaxy-container {
+                height: 400px;
+            }
+            
+            .skill-detail-content {
+                width: 95%;
+                padding: 20px;
+            }
+        }
+
+        /* New styles for skill bubbles */
+        .skill-bubble {
             width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            border: 3px solid rgba(255, 255, 255, 0.2);
+            font-weight: bold;
+            font-size: 16px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.3), rgba(30, 30, 60, 0.8), rgba(10, 10, 30, 0.9));
+            cursor: pointer;
+            text-align: center;
+            padding: 15px 10px;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+            color: white;
+            text-shadow: 0 0 5px rgba(0, 0, 0, 0.7);
+        }
+
+        .skill-bubble::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at center, rgba(255, 255, 255, 0.15), transparent 30%);
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        .skill-bubble i {
+            font-size: 28px;
+            margin-bottom: 8px;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+
+        .skill-bubble:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 35px rgba(255, 255, 255, 0.4);
         }
     </style>
 </head>
@@ -1146,22 +1374,57 @@
     <!-- Skills Section -->
     <section id="skills" class="skills">
         <h2 class="section-title">My Skills</h2>
-        <div class="skills-galaxy-container">
-            <canvas id="skillsGalaxy"></canvas>
-            <div id="skillDetail" class="skill-detail-popup">
-                <div class="skill-detail-content">
-                    <h3 id="skillDetailTitle">Skill Name</h3>
-                    <div class="skill-detail-level">
-                        <div class="progress-container">
-                            <div id="skillDetailProgress" class="progress-bar" data-width="85%"></div>
-                        </div>
-                    </div>
-                    <p id="skillDetailDesc">Skill description goes here...</p>
-                    <button id="closeSkillDetail" class="btn btn-primary">Close</button>
+        <div class="container">
+            <div class="skills-container">
+                <div class="skill-circle">
+                    <div class="skill-bubble">C</div>
+                </div>
+                <div class="skill-circle">
+                    <div class="skill-bubble">HTML</div>
+                </div>
+                <div class="skill-circle">
+                    <div class="skill-bubble">Skill1</div>
+                </div>
+                <div class="skill-circle">
+                    <div class="skill-bubble">SKILL2</div>
+                </div>
+                <div class="skill-circle">
+                    <div class="skill-bubble"></div>
+                </div>
+                <div class="skill-circle">
+                    <div class="skill-bubble"></div>
                 </div>
             </div>
         </div>
     </section>
+
+    <!-- Skill Detail Modal -->
+    <div class="skill-detail-modal" id="skill-detail-modal">
+        <div class="skill-detail-content">
+            <div class="skill-detail-close" id="skill-detail-close">
+                <i class="fas fa-times"></i>
+            </div>
+            <div class="skill-detail-header">
+                <div class="skill-detail-icon" id="skill-detail-icon">
+                    <i class="fas fa-code"></i>
+                </div>
+                <div>
+                    <h3 class="skill-detail-title" id="skill-detail-title">Skill Name</h3>
+                    <div class="skill-detail-level" id="skill-detail-level">Proficiency Level</div>
+                </div>
+            </div>
+            <p class="skill-detail-description" id="skill-detail-description">Details about this skill will appear here.</p>
+            <div class="skill-detail-progress">
+                <div class="skill-detail-progress-bar" id="skill-detail-progress-bar"></div>
+            </div>
+            <div class="skill-detail-projects">
+                <h4>Related Projects</h4>
+                <div id="skill-detail-projects-list">
+                    <!-- Projects will be filled dynamically -->
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Projects Section -->
     <section id="projects" class="projects">
@@ -1546,9 +1809,6 @@
             animateSkillBars();
             setupFadeInAnimations();
             
-            // Initialize Skills Galaxy
-            const skillsGalaxy = new SkillsGalaxy();
-            
             // Add fade-in class to project cards
             document.querySelectorAll('.project-card').forEach(card => {
                 card.classList.add('fade-in');
@@ -1630,6 +1890,9 @@
             // Custom cursor
             setupCustomCursor();
             setupFloatingContact();
+            
+            // Initialize simple skill bubbles instead of galaxy
+            setupSkillBubbles();
         });
 
         // Recreate cosmic elements on resize
@@ -1713,1401 +1976,681 @@
                 contactSection.scrollIntoView({ behavior: 'smooth' });
             });
         }
+        
+        // Skills Galaxy with Three.js
+        function initSkillsGalaxy() {
+            // Skills data
+            const skillsData = [
+                {
+                    name: "React.js",
+                    category: "Frontend",
+                    icon: "fab fa-react",
+                    color: "#61DAFB",
+                    level: 85,
+                    description: "React is a JavaScript library for building user interfaces. I've used React in multiple projects to create dynamic and responsive web applications with efficient component-based architecture.",
+                    projects: ["Movie Ticket Booking System", "Personal Portfolio"]
+                },
+                {
+                    name: "HTML5/CSS3",
+                    category: "Frontend",
+                    icon: "fab fa-html5",
+                    color: "#E34F26",
+                    level: 92,
+                    description: "Strong foundation in HTML5 and CSS3 for creating well-structured, semantic, and responsive web pages. Proficient with modern CSS features including Flexbox, Grid, and CSS animations.",
+                    projects: ["Food Recipe Suggestor", "Movie Ticket Booking System", "Personal Portfolio"]
+                },
+                {
+                    name: "JavaScript",
+                    category: "Languages",
+                    icon: "fab fa-js-square",
+                    color: "#F7DF1E",
+                    level: 88,
+                    description: "Expert in JavaScript with strong understanding of ES6+ features, asynchronous programming, DOM manipulation, and modern JavaScript frameworks. Experience with both frontend and backend JavaScript development.",
+                    projects: ["Movie Ticket Booking System", "Food Recipe Suggestor", "Personal Portfolio"]
+                },
+                {
+                    name: "Python",
+                    category: "Languages",
+                    icon: "fab fa-python",
+                    color: "#3776AB",
+                    level: 90,
+                    description: "Advanced Python programming skills with expertise in data analysis, machine learning frameworks, and backend development. Experience with libraries like NumPy, Pandas, TensorFlow, and Flask.",
+                    projects: ["Text-to-Image Generator", "Food Recipe Suggestor", "Movie Ticket Booking System"]
+                },
+                {
+                    name: "Node.js",
+                    category: "Backend",
+                    icon: "fab fa-node",
+                    color: "#339933",
+                    level: 75,
+                    description: "Proficient with Node.js for building scalable backend services, RESTful APIs, and realtime applications. Experience with Express.js, MongoDB integration, and deploying Node applications.",
+                    projects: ["Movie Ticket Booking System"]
+                },
+                {
+                    name: "MongoDB",
+                    category: "Database",
+                    icon: "fas fa-database",
+                    color: "#47A248",
+                    level: 82,
+                    description: "Experience with MongoDB for NoSQL database design, CRUD operations, aggregation framework, and integration with various backend frameworks. Skilled in designing efficient database schemas for web applications.",
+                    projects: ["Food Recipe Suggestor"]
+                },
+                {
+                    name: "C++",
+                    category: "Languages",
+                    icon: "fas fa-code",
+                    color: "#00599C",
+                    level: 85,
+                    description: "Strong foundation in C++ programming for performance-critical applications. Experience with object-oriented programming, data structures, and algorithms implementation.",
+                    projects: ["Text-to-Image Generator"]
+                },
+                {
+                    name: "MySQL",
+                    category: "Database",
+                    icon: "fas fa-database",
+                    color: "#4479A1",
+                    level: 75,
+                    description: "Proficient in MySQL database design, optimization, and integration with backend applications. Experience with complex queries, stored procedures, and database normalization.",
+                    projects: ["Movie Ticket Booking System"]
+                },
+                {
+                    name: "Express.js",
+                    category: "Backend",
+                    icon: "fas fa-server",
+                    color: "#000000",
+                    level: 78,
+                    description: "Skilled in using Express.js to build RESTful APIs and server-side applications. Experience with middleware, routing, and integrating with various database systems.",
+                    projects: ["Movie Ticket Booking System"]
+                },
+                {
+                    name: "Tailwind CSS",
+                    category: "Frontend",
+                    icon: "fab fa-css3",
+                    color: "#06B6D4",
+                    level: 80,
+                    description: "Proficient with Tailwind CSS for utility-first CSS framework usage. Experience creating responsive, custom designs efficiently with minimal custom CSS.",
+                    projects: ["Personal Portfolio"]
+                }
+            ];
+            
+            // Get the canvas container
+            const container = document.querySelector('.skills-galaxy-container');
+            const canvas = document.getElementById('skills-galaxy-canvas');
+            
+            // Initialize Three.js scene
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(60, container.clientWidth / container.clientHeight, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
+            
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            
+            // Add ambient light
+            const ambientLight = new THREE.AmbientLight(0x404040, 2);
+            scene.add(ambientLight);
+            
+            // Add directional light
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+            directionalLight.position.set(1, 1, 1);
+            scene.add(directionalLight);
+            
+            // Add point light
+            const pointLight = new THREE.PointLight(0x2563eb, 2, 100);
+            pointLight.position.set(0, 0, 30);
+            scene.add(pointLight);
+            
+            // Create planets for each skill in a grid layout
+            const planets = [];
+            const planetSize = 2.5; // Larger planet size
+            const spacing = 7; // Increased spacing between planets
+            
+            // Calculate grid dimensions
+            const cols = Math.ceil(Math.sqrt(skillsData.length));
+            const rows = Math.ceil(skillsData.length / cols);
+            
+            // Calculate the total width and height of the grid
+            const gridWidth = (cols - 1) * spacing;
+            const gridHeight = (rows - 1) * spacing;
+            
+            // Create and position planets
+            skillsData.forEach((skill, index) => {
+                // Calculate grid position
+                const col = index % cols;
+                const row = Math.floor(index / cols);
+                
+                // Calculate x and z positions (centered grid)
+                const x = col * spacing - gridWidth / 2;
+                const z = row * spacing - gridHeight / 2;
+                
+                // Create planet
+                const planetGeometry = new THREE.SphereGeometry(planetSize, 32, 32);
+                
+                // Apply subtle deformation to make planets less perfectly round
+                const positionAttribute = planetGeometry.getAttribute('position');
+                const vertex = new THREE.Vector3();
+                
+                for (let i = 0; i < positionAttribute.count; i++) {
+                    vertex.fromBufferAttribute(positionAttribute, i);
+                    
+                    // Apply subtle noise based on position
+                    const noise = 0.1 * (Math.random() - 0.5);
+                    vertex.x += noise;
+                    vertex.y += noise;
+                    vertex.z += noise;
+                    
+                    positionAttribute.setXYZ(i, vertex.x, vertex.y, vertex.z);
+                }
+                
+                // Update geometry
+                planetGeometry.computeVertexNormals();
+                
+                const planetMaterial = new THREE.MeshPhongMaterial({ 
+                    color: skill.color,
+                    shininess: 40,
+                    emissive: skill.color,
+                    emissiveIntensity: 0.2,
+                    specular: 0xffffff
+                });
+                const planet = new THREE.Mesh(planetGeometry, planetMaterial);
+                
+                // Position the planet
+                planet.position.set(x, 0, z);
+                
+                // Create text directly on the planet instead of a separate label
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                canvas.width = 512;
+                canvas.height = 512;
+                
+                // Make canvas transparent
+                ctx.fillStyle = 'rgba(0,0,0,0)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                // Draw text
+                ctx.font = 'bold 48px Arial';
+                ctx.fillStyle = '#ffffff';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                
+                // Create a diagonal text effect similar to image
+                ctx.translate(canvas.width/2, canvas.height/2);
+                ctx.rotate(Math.PI / 4); // 45 degrees rotation
+                ctx.fillText(skill.name, 0, -30);
+                ctx.resetTransform();
+                
+                const texture = new THREE.CanvasTexture(canvas);
+                texture.needsUpdate = true;
+                
+                // Apply the texture to part of the sphere
+                const textMaterial = new THREE.MeshBasicMaterial({
+                    map: texture,
+                    transparent: true,
+                    opacity: 0.95,
+                    side: THREE.DoubleSide
+                });
+                
+                // Create a second mesh for the text on the same position
+                const textGeometry = new THREE.PlaneGeometry(planetSize * 2, planetSize * 2);
+                const textMesh = new THREE.Mesh(textGeometry, textMaterial);
+                
+                // Position text slightly above planet surface
+                textMesh.position.set(0, planetSize * 0.1, 0);
+                // Rotate to face up slightly
+                textMesh.rotation.x = -Math.PI / 2; // 90 degrees around X axis (horizontal)
+                textMesh.rotation.z = -Math.PI / 4; // 45 degrees around Z axis (for diagonal text)
+                
+                planet.add(textMesh);
+                
+                // Store skill data
+                planet.userData = {
+                    skill: skill
+                };
+                
+                scene.add(planet);
+                planets.push(planet);
+            });
+            
+            // Position camera
+            camera.position.set(0, 15, 35); // Move camera a bit further back
+            camera.lookAt(0, 0, 0);
+            
+            // Add a starfield background
+            const starsGeometry = new THREE.BufferGeometry();
+            const starsMaterial = new THREE.PointsMaterial({
+                color: 0xffffff,
+                size: 0.1,
+                transparent: true
+            });
+            
+            const starsVertices = [];
+            const starsPositions = []; // Store positions for constellation lines
+            
+            for (let i = 0; i < 1000; i++) {
+                const x = (Math.random() - 0.5) * 100;
+                const y = (Math.random() - 0.5) * 100;
+                const z = (Math.random() - 0.5) * 100;
+                starsVertices.push(x, y, z);
+                
+                // Store some star positions for constellations
+                if (i % 20 === 0) { // Use every 20th star
+                    starsPositions.push(new THREE.Vector3(x, y, z));
+                }
+            }
+            
+            starsGeometry.setAttribute('position', new THREE.Float32BufferAttribute(starsVertices, 3));
+            const starfield = new THREE.Points(starsGeometry, starsMaterial);
+            scene.add(starfield);
+            
+            // Create constellation lines between some stars
+            const constellationMaterial = new THREE.LineBasicMaterial({
+                color: 0x2563eb,
+                transparent: true,
+                opacity: 0.2
+            });
+            
+            // Create 5-7 small constellations
+            const numConstellations = 5 + Math.floor(Math.random() * 3);
+            
+            for (let c = 0; c < numConstellations; c++) {
+                // Use 3-5 stars per constellation
+                const numStars = 3 + Math.floor(Math.random() * 3);
+                const startIndex = Math.floor(Math.random() * (starsPositions.length - numStars));
+                
+                const constellationGeometry = new THREE.BufferGeometry();
+                const constellationPoints = [];
+                
+                for (let s = 0; s < numStars; s++) {
+                    const star = starsPositions[startIndex + s];
+                    constellationPoints.push(star.x, star.y, star.z);
+                }
+                
+                constellationGeometry.setAttribute('position', new THREE.Float32BufferAttribute(constellationPoints, 3));
+                const constellation = new THREE.Line(constellationGeometry, constellationMaterial);
+                scene.add(constellation);
+            }
+            
+            // Raycaster for planet selection
+            const raycaster = new THREE.Raycaster();
+            const mouse = new THREE.Vector2();
+            let selectedPlanet = null;
+            let isZooming = false;
+            
+            // Handle click on planets
+            canvas.addEventListener('click', (event) => {
+                if (isZooming) return;
+                
+                // Convert mouse position to normalized device coordinates
+                const rect = canvas.getBoundingClientRect();
+                mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+                mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+                
+                // Set raycaster from camera through mouse position
+                raycaster.setFromCamera(mouse, camera);
+                
+                // Find intersections with planets
+                const intersects = raycaster.intersectObjects(planets);
+                
+                if (intersects.length > 0) {
+                    selectedPlanet = intersects[0].object;
+                    zoomToSkill(selectedPlanet);
+                }
+            });
+            
+            // Zoom to selected skill
+            function zoomToSkill(planet) {
+                isZooming = true;
+                
+                // Get skill data
+                const skill = planet.userData.skill;
+                
+                // Calculate zoom position (slightly offset from the planet)
+                const zoomPosition = planet.position.clone();
+                const direction = new THREE.Vector3(0, 0, 1).normalize();
+                zoomPosition.addScaledVector(direction, 5);
+                
+                // Animate camera to zoom position
+                gsap.to(camera.position, {
+                    duration: 1.5,
+                    x: zoomPosition.x,
+                    y: zoomPosition.y + 3,
+                    z: zoomPosition.z + 5,
+                    onComplete: () => {
+                        showSkillDetails(skill);
+                    }
+                });
+                
+                // Make camera look at the planet
+                gsap.to(controls.target, {
+                    duration: 1.5,
+                    x: planet.position.x,
+                    y: planet.position.y,
+                    z: planet.position.z
+                });
+            }
+            
+            // Show skill details in modal
+            function showSkillDetails(skill) {
+                // Fill modal with skill details
+                document.getElementById('skill-detail-icon').innerHTML = `<i class="${skill.icon}"></i>`;
+                document.getElementById('skill-detail-title').textContent = skill.name;
+                document.getElementById('skill-detail-level').textContent = `${skill.level}% Proficiency`;
+                document.getElementById('skill-detail-description').textContent = skill.description;
+                
+                // Set progress bar
+                const progressBar = document.getElementById('skill-detail-progress-bar');
+                progressBar.style.width = '0%';
+                
+                // Fill projects list
+                const projectsList = document.getElementById('skill-detail-projects-list');
+                projectsList.innerHTML = '';
+                
+                skill.projects.forEach(project => {
+                    const projectItem = document.createElement('div');
+                    projectItem.className = 'skill-detail-project-item';
+                    projectItem.textContent = project;
+                    projectsList.appendChild(projectItem);
+                });
+                
+                // Show modal
+                const modal = document.getElementById('skill-detail-modal');
+                modal.classList.add('active');
+                
+                // Animate progress bar
+                setTimeout(() => {
+                    progressBar.style.width = `${skill.level}%`;
+                }, 100);
+            }
+            
+            // Close skill details
+            document.getElementById('skill-detail-close').addEventListener('click', () => {
+                closeSkillDetails();
+            });
+            
+            // Close modal when clicking outside
+            document.getElementById('skill-detail-modal').addEventListener('click', (e) => {
+                if (e.target === document.getElementById('skill-detail-modal')) {
+                    closeSkillDetails();
+                }
+            });
+            
+            function closeSkillDetails() {
+                const modal = document.getElementById('skill-detail-modal');
+                modal.classList.remove('active');
+                
+                // Reset camera to original position
+                gsap.to(camera.position, {
+                    duration: 1.5,
+                    x: 0,
+                    y: 15,
+                    z: 35,
+                    onComplete: () => {
+                        isZooming = false;
+                    }
+                });
+                
+                // Reset orbit controls target
+                gsap.to(controls.target, {
+                    duration: 1.5,
+                    x: 0,
+                    y: 0,
+                    z: 0
+                });
+            }
+            
+            // Add orbit controls for better exploration
+            const controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
+            controls.rotateSpeed = 0.5;
+            controls.enableZoom = true;
+            controls.enablePan = false;
+            controls.minDistance = 10;
+            controls.maxDistance = 50;
+            
+            // Handle window resize
+            window.addEventListener('resize', () => {
+                // Update camera aspect ratio
+                camera.aspect = container.clientWidth / container.clientHeight;
+                camera.updateProjectionMatrix();
+                
+                // Update renderer size
+                renderer.setSize(container.clientWidth, container.clientHeight);
+            });
+            
+            // Animation loop
+            function animate() {
+                requestAnimationFrame(animate);
+                
+                // Add subtle rotation to planets
+                planets.forEach(planet => {
+                    // Gentle rotation for floating effect
+                    planet.rotation.y += 0.005;
+                });
+                
+                // Update orbit controls
+                controls.update();
+                
+                // Render scene
+                renderer.render(scene, camera);
+            }
+            
+            animate();
+        }
 
-        // Skills Galaxy
-        class SkillsGalaxy {
-            constructor() {
-                this.canvas = document.getElementById('skillsGalaxy');
-                this.ctx = this.canvas.getContext('2d');
-                this.skills = [
-                    { name: 'React.js', level: 85, type: 'Frontend', description: 'Building interactive and responsive UI components with React hooks and state management.', color: '#61DAFB', radius: 25 },
-                    { name: 'HTML5/CSS3', level: 92, type: 'Frontend', description: 'Creating semantic and accessible web layouts with modern CSS techniques.', color: '#E44D26', radius: 28 },
-                    { name: 'JavaScript', level: 88, type: 'Languages', description: 'Implementing complex client-side logic and interactive web features.', color: '#F7DF1E', radius: 27 },
-                    { name: 'Tailwind CSS', level: 80, type: 'Frontend', description: 'Building responsive designs quickly with utility-first approach.', color: '#38B2AC', radius: 22 },
-                    { name: 'Node.js', level: 75, type: 'Backend', description: 'Creating scalable server-side applications and APIs.', color: '#68A063', radius: 23 },
-                    { name: 'Express.js', level: 78, type: 'Backend', description: 'Building robust backend services and RESTful APIs.', color: '#000000', radius: 24 },
-                    { name: 'MongoDB', level: 82, type: 'Database', description: 'Working with NoSQL databases for flexible data models.', color: '#47A248', radius: 25 },
-                    { name: 'MySQL', level: 75, type: 'Database', description: 'Designing and optimizing relational database schemas.', color: '#4479A1', radius: 22 },
-                    { name: 'Python', level: 90, type: 'Languages', description: 'Developing data analysis and machine learning applications.', color: '#3776AB', radius: 30 },
-                    { name: 'C++', level: 85, type: 'Languages', description: 'Building high-performance applications and algorithms.', color: '#00599C', radius: 26 }
-                ];
-                
-                this.centerX = 0;
-                this.centerY = 0;
-                this.orbits = [];
-                this.currentZoomLevel = 1;
-                this.targetZoomLevel = 1;
-                this.selectedSkill = null;
-                this.animationFrameId = null;
-                this.mouseX = 0;
-                this.mouseY = 0;
-                
-                this.skillDetailPopup = document.getElementById('skillDetail');
-                this.skillDetailTitle = document.getElementById('skillDetailTitle');
-                this.skillDetailProgress = document.getElementById('skillDetailProgress');
-                this.skillDetailDesc = document.getElementById('skillDetailDesc');
-                this.closeDetailBtn = document.getElementById('closeSkillDetail');
-                
-                this.closeDetailBtn.addEventListener('click', () => this.hideSkillDetail());
-                
-                // Set up event listeners
-                this.canvas.addEventListener('click', this.handleClick.bind(this));
-                this.canvas.addEventListener('mousemove', this.handleMouseMove.bind(this));
-                window.addEventListener('resize', this.handleResize.bind(this));
-                
-                this.handleResize();
-                this.setupOrbits();
-                this.animate();
-            }
+        // Add this new function
+        function setupSkillBubbles() {
+            const skillBubbles = document.querySelectorAll('.skill-bubble');
             
-            handleResize() {
-                const container = this.canvas.parentElement;
-                
-                // Get actual available space
-                const containerWidth = container.clientWidth;
-                const containerHeight = container.clientHeight;
-                
-                // On mobile, use square canvas to maximize visible area
-                const isMobile = containerWidth < 768;
-                const canvasSize = isMobile ? 
-                    Math.min(containerWidth, containerHeight) : 
-                    Math.max(containerWidth, containerHeight);
-                
-                // Set canvas dimensions
-                this.canvas.width = containerWidth;
-                this.canvas.height = containerHeight;
-                
-                // Update center position
-                this.centerX = containerWidth / 2;
-                this.centerY = containerHeight / 2;
-                
-                // Recalculate orbits with new dimensions
-                this.setupOrbits();
-            }
-            
-            setupOrbits() {
-                // Create precise orbital system with evenly spaced planets
-                this.orbits = [];
-                
-                // Calculate canvas dimensions and center
-                const width = this.canvas.width;
-                const height = this.canvas.height;
-                this.centerX = width / 2;
-                this.centerY = height / 2;
-                
-                // Check if we're on mobile (smaller canvas)
-                const isMobile = width < 768;
-                
-                // Calculate the visible area's size with responsive adjustments
-                // Use smaller orbits on mobile to prevent overlapping
-                const maxRadius = isMobile ? 
-                    Math.min(width, height) * 0.32 : // Mobile: smaller orbital radius
-                    Math.min(width, height) * 0.42;  // Desktop: larger orbital radius
-                
-                // Apply more direct size overrides for planets - especially Tailwind CSS
-                this.forceSkillSizes();
-                
-                // Define fixed, non-overlapping positions for skills
-                // Mobile and desktop have completely different layouts
-                const skillPositions = isMobile ? [
-                    // MOBILE LAYOUT - with much greater angular separation
-                    // Inner ring - spread out evenly around the circle (120° apart)
-                    { name: 'JavaScript', angle: Math.PI * 0.0, ring: 0 },   // Top
-                    { name: 'Express.js', angle: Math.PI * 0.67, ring: 0 },  // Right
-                    { name: 'Node.js', angle: Math.PI * 1.33, ring: 0 },     // Left
-                    
-                    // Outer ring - maximum separation (each is ~36° apart)
-                    { name: 'React.js', angle: Math.PI * 0.2, ring: 1 },     // Top-right
-                    { name: 'Python', angle: Math.PI * 0.6, ring: 1 },       // Right
-                    { name: 'HTML5/CSS3', angle: Math.PI * 1.0, ring: 1 },   // Bottom
-                    { name: 'MongoDB', angle: Math.PI * 1.4, ring: 1 },      // Left
-                    { name: 'C++', angle: Math.PI * 1.8, ring: 1 },          // Top-left
-                    { name: 'MySQL', angle: Math.PI * 0.4, ring: 1 },        // Right
-                    { name: 'Tailwind CSS', angle: Math.PI * 1.6, ring: 1 }  // Left (far from MySQL)
-                ] : [
-                    // DESKTOP LAYOUT - completely separate React and C++
-                    // Inner ring
-                    { name: 'JavaScript', angle: Math.PI * 0.8, ring: 0 },
-                    { name: 'Express.js', angle: Math.PI * 0.1, ring: 0 },
-                    { name: 'Node.js', angle: Math.PI * 1.5, ring: 0 },
-                    
-                    // Middle ring - React moved far from C++
-                    { name: 'React.js', angle: Math.PI * 1.7, ring: 1 }, // Bottom right
-                    { name: 'HTML5/CSS3', angle: Math.PI * 1.0, ring: 1 },
-                    { name: 'Tailwind CSS', angle: Math.PI * 0.3, ring: 1 }, // Top left
-                    
-                    // Outer ring - C++ moved to opposite side from React
-                    { name: 'Python', angle: Math.PI * 1.5, ring: 2 },
-                    { name: 'MongoDB', angle: Math.PI * 1.1, ring: 2 }, // Right side
-                    { name: 'MySQL', angle: Math.PI * 0.4, ring: 2 }, // Left side
-                    { name: 'C++', angle: Math.PI * 0.7, ring: 2 }  // Top left - far from React
-                ];
-                
-                // Set radius for each ring (mobile has 2 rings, desktop has 3)
-                const ringRadii = isMobile ? [
-                    maxRadius * 0.40, // Inner ring (mobile) - reduced to create more separation
-                    maxRadius * 0.85  // Outer ring (mobile) - slightly reduced
-                ] : [
-                    maxRadius * 0.35, // Inner ring (desktop)
-                    maxRadius * 0.65, // Middle ring (desktop)
-                    maxRadius * 0.90  // Outer ring (desktop)
-                ];
-                
-                // Create planets with fixed positions to avoid overlapping
-                skillPositions.forEach(skillPos => {
-                    const skill = this.skills.find(s => s.name === skillPos.name);
-                    
-                    if (skill) {
-                        // Get base radius for this ring
-                        const ringRadius = ringRadii[skillPos.ring];
-                        
-                        // Set fixed orbit parameters
-                        const orbitRadius = ringRadius;
-                        const angle = skillPos.angle;
-                        
-                        // Different eccentricity and speed for different rings
-                        // Zero eccentricity on mobile to ensure perfect circles
-                        const eccentricity = isMobile ? 
-                            0.0 : // Mobile: perfect circles to maintain separation
-                            0.02 + (skillPos.ring * 0.02);
-                        
-                        // Faster speed on mobile for better visual effect
-                        const baseSpeed = isMobile ? 0.0008 : 0.0006;
-                        const speedFactor = 1 - (skillPos.ring * 0.15);
-                        const speed = baseSpeed * speedFactor;
-                        
-                        this.orbits.push({
-                            skill,
-                            orbitRadius,
-                            angle,
-                            speed,
-                            eccentricity,
-                            tiltX: isMobile ? 0 : Math.random() * 0.1, // No tilt on mobile
-                            tiltY: isMobile ? 0 : Math.random() * 0.1, // No tilt on mobile
-                            phaseShift: angle,
-                            x: 0,
-                            y: 0, 
-                            z: 0,
-                            ringIndex: skillPos.ring,
-                            hovered: false,
-                            pulseAmount: 0,
-                            pulseDirection: 1,
-                            type: skill.type,
-                            startTime: Date.now() + (skillPos.ring * 300)
-                        });
-                    }
-                });
-                
-                // Set orbit paths
-                this.orbitalPaths = ringRadii.map(radius => ({
-                    radius: radius,
-                    visible: true
-                }));
-                
-                // Calculate initial positions
-                this.calculateInitialPositions();
-            }
-            
-            // Force skill sizes with hard-coded values to ensure visibility
-            forceSkillSizes() {
-                // Adjust sizes based on text length and importance
-                const sizeMap = {
-                    'JavaScript': 26,      // Longer name, more important
-                    'React.js': 24,        // Medium length
-                    'Node.js': 22,         // Medium length
-                    'Express.js': 24,      // Longer name
-                    'Python': 22,          // Short name
-                    'HTML5/CSS3': 25,      // Longer name
-                    'MongoDB': 24,         // Medium length
-                    'MySQL': 22,           // Short name
-                    'C++': 20,             // Very short name
-                    'Tailwind CSS': 26     // Longer name
-                };
-                
-                // Size adjustment for mobile - slightly smaller on mobile but still readable
-                const isMobile = this.canvas.width < 768;
-                const mobileFactor = isMobile ? 0.85 : 1.0;
-                
-                // Apply size overrides to each skill, ensuring minimum size based on text length
-                this.skills.forEach(skill => {
-                    // Calculate minimum size based on text length
-                    const textLength = skill.name.length;
-                    let baseSize = sizeMap[skill.name] || Math.max(20, textLength * 1.5);
-                    
-                    // Apply mobile size reduction factor but ensure minimum size
-                    skill.radius = Math.max(baseSize * mobileFactor, 18);
-                });
-            }
-            
-            calculateInitialPositions() {
-                // Update each orbit's initial position
-                this.orbits.forEach(orbit => {
-                    // Calculate x, y position based on orbit parameters
-                    const angle = orbit.phaseShift;
-                    
-                    // Separate equations for elliptical orbits with eccentricity
-                    const a = orbit.orbitRadius; // Semi-major axis
-                    const e = orbit.eccentricity; // Eccentricity
-                    const b = a * Math.sqrt(1 - e * e); // Semi-minor axis
-                    
-                    // Calculate position with tilt applied
-                    const cosAngle = Math.cos(angle);
-                    const sinAngle = Math.sin(angle);
-                    
-                    // Base elliptical position
-                    const ellipseX = a * cosAngle;
-                    const ellipseY = b * sinAngle;
-                    
-                    // Apply tilt rotation (skip on mobile for more predictable orbits)
-                    const isMobile = this.canvas.width < 768;
-                    if (isMobile) {
-                        // Mobile - simpler circular orbits
-                        orbit.x = this.centerX + ellipseX;
-                        orbit.y = this.centerY + ellipseY;
-                    } else {
-                        // Desktop - more complex tilted orbits
-                        const tiltX = orbit.tiltX;
-                        const tiltY = orbit.tiltY;
-                        
-                        // Calculate 3D-like position with tilt
-                        const x = ellipseX;
-                        const y = ellipseY * Math.cos(tiltX) - 0 * Math.sin(tiltX);
-                        const z = ellipseY * Math.sin(tiltX) + 0 * Math.cos(tiltX);
-                        
-                        // Apply y-axis tilt
-                        const x2 = x * Math.cos(tiltY) + z * Math.sin(tiltY);
-                        const z2 = -x * Math.sin(tiltY) + z * Math.cos(tiltY);
-                        
-                        // Store final position
-                        orbit.x = this.centerX + x2;
-                        orbit.y = this.centerY + y;
-                        orbit.z = z2;
-                    }
-                });
-            }
-            
-            animate() {
-                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-                
-                // Use a very transparent background to blend with cosmic background
-                this.ctx.fillStyle = 'rgba(0, 0, 0, 0.0)';
-                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-                
-                // Draw background elements
-                this.drawConstellations();
-                this.drawStarTwinkles();
-                
-                // Draw orbit rings
-                this.drawOrbitRings();
-                
-                // Sort orbits by z-index to create depth effect
-                const sortedOrbits = [...this.orbits].sort((a, b) => a.z - b.z);
-                
-                // Draw connecting lines between skills to indicate relationships
-                this.drawConnections(sortedOrbits);
-                
-                // Get current time for animation
-                const currentTime = Date.now();
-                
-                // Update and draw skills
-                sortedOrbits.forEach(orbit => {
-                    // Calculate time-based animation with staggered starts
-                    const elapsed = currentTime - orbit.startTime;
-                    if (elapsed < 0) return; // Don't show yet if staggered start time hasn't arrived
-                    
-                    // Update angle - time-based animation for smooth rendering across devices
-                    orbit.angle += orbit.speed;
-                    
-                    // Calculate 3D position using elliptical orbit equations
-                    const a = orbit.orbitRadius;
-                    const b = orbit.orbitRadius * (1 - orbit.eccentricity);
-                    const theta = orbit.angle;
-                    
-                    // Basic elliptical orbit
-                    const baseX = a * Math.cos(theta);
-                    const baseY = b * Math.sin(theta);
-                    
-                    // Apply tilt for 3D effect
-                    orbit.x = this.centerX + (baseX * Math.cos(orbit.tiltX) - baseY * Math.sin(orbit.tiltY));
-                    orbit.y = this.centerY + (baseX * Math.sin(orbit.tiltX) + baseY * Math.cos(orbit.tiltY));
-                    
-                    // Calculate z-position for depth
-                    orbit.z = Math.sin(theta) * 50;
-                    
-                    // Update pulse effect for hover animation
-                    if (orbit.hovered) {
-                        orbit.pulseAmount += 0.05 * orbit.pulseDirection;
-                        if (orbit.pulseAmount > 1 || orbit.pulseAmount < 0) {
-                            orbit.pulseDirection *= -1;
-                        }
-                    } else {
-                        orbit.pulseAmount = Math.max(0, orbit.pulseAmount - 0.05);
-                    }
-                    
-                    // Draw skills
-                    this.drawSkill(orbit);
-                });
-                
-                // Draw orbit trails when a planet is hovered
-                sortedOrbits.forEach(orbit => {
-                    if (orbit.hovered) {
-                        this.drawOrbitTrail(orbit);
-                    }
-                });
-                
-                // Interactive effect - slight gravity pull toward mouse
-                this.applyMouseGravity();
-                
-                // Draw center avatar last (on top)
-                this.drawCenterAvatar();
-                
-                this.animationFrameId = requestAnimationFrame(this.animate.bind(this));
-            }
-            
-            drawOrbitTrail(orbit) {
-                // Draw highlighted orbit path when planet is hovered
-                this.ctx.save();
-                
-                const a = orbit.orbitRadius;
-                const b = orbit.orbitRadius * (1 - orbit.eccentricity);
-                
-                // Draw full elliptical orbit
-                this.ctx.beginPath();
-                this.ctx.ellipse(
-                    this.centerX, 
-                    this.centerY, 
-                    a, 
-                    b,
-                    0, // rotation
-                    0, 
-                    Math.PI * 2
-                );
-                
-                // Use planet color for its orbit trail
-                const gradient = this.ctx.createLinearGradient(
-                    this.centerX - a, this.centerY,
-                    this.centerX + a, this.centerY
-                );
-                gradient.addColorStop(0, `${orbit.skill.color}10`);
-                gradient.addColorStop(0.5, `${orbit.skill.color}40`);
-                gradient.addColorStop(1, `${orbit.skill.color}10`);
-                
-                this.ctx.strokeStyle = gradient;
-                this.ctx.lineWidth = 2;
-                this.ctx.stroke();
-                
-                this.ctx.restore();
-            }
-            
-            drawOrbitRings() {
-                // Draw aesthetic orbit rings for each orbital path
-                this.orbitalPaths.forEach(path => {
-                    // Draw orbit ellipse
-                    const radius = path.radius;
-                    
-                    // Use multiple arcs with varying opacity for a glowing effect
-                    const maxGlow = 3;
-                    for (let i = 0; i < maxGlow; i++) {
-                        const opacity = 0.1 - (i * 0.03);
-                        const width = 1 + (i * 0.5);
-                        
-                        this.ctx.beginPath();
-                        this.ctx.ellipse(
-                            this.centerX, 
-                            this.centerY, 
-                            radius, 
-                            radius * 0.99, // Slight elliptical shape
-                            0, // rotation
-                            0, 
-                            Math.PI * 2
-                        );
-                        this.ctx.strokeStyle = `rgba(255, 255, 255, ${opacity})`;
-                        this.ctx.lineWidth = width;
-                        this.ctx.stroke();
-                    }
-                    
-                    // Add ticks to the orbit ring for visual interest
-                    for (let i = 0; i < 24; i++) {
-                        const angle = (Math.PI * 2 / 24) * i;
-                        const x1 = this.centerX + Math.cos(angle) * (radius - 1);
-                        const y1 = this.centerY + Math.sin(angle) * (radius - 1);
-                        const x2 = this.centerX + Math.cos(angle) * (radius + 1);
-                        const y2 = this.centerY + Math.sin(angle) * (radius + 1);
-                        
-                        this.ctx.beginPath();
-                        this.ctx.moveTo(x1, y1);
-                        this.ctx.lineTo(x2, y2);
-                        this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
-                        this.ctx.lineWidth = 0.5;
-                        this.ctx.stroke();
-                    }
-                });
-            }
-            
-            drawConstellations() {
-                // Draw fixed constellation patterns
-                this.ctx.save();
-                
-                const constellationPoints = [
-                    // Define points for constellations - these are fixed points that don't move
-                    // Constellation 1 - top left
-                    [
-                        {x: this.canvas.width * 0.1, y: this.canvas.height * 0.2},
-                        {x: this.canvas.width * 0.2, y: this.canvas.height * 0.15},
-                        {x: this.canvas.width * 0.25, y: this.canvas.height * 0.25},
-                        {x: this.canvas.width * 0.15, y: this.canvas.height * 0.3},
-                        {x: this.canvas.width * 0.1, y: this.canvas.height * 0.2}
-                    ],
-                    // Constellation 2 - top right
-                    [
-                        {x: this.canvas.width * 0.8, y: this.canvas.height * 0.2},
-                        {x: this.canvas.width * 0.9, y: this.canvas.height * 0.1},
-                        {x: this.canvas.width * 0.85, y: this.canvas.height * 0.3}
-                    ],
-                    // Constellation 3 - bottom right
-                    [
-                        {x: this.canvas.width * 0.7, y: this.canvas.height * 0.7},
-                        {x: this.canvas.width * 0.8, y: this.canvas.height * 0.8},
-                        {x: this.canvas.width * 0.9, y: this.canvas.height * 0.75},
-                        {x: this.canvas.width * 0.85, y: this.canvas.height * 0.65},
-                        {x: this.canvas.width * 0.7, y: this.canvas.height * 0.7}
-                    ],
-                    // Constellation 4 - bottom left
-                    [
-                        {x: this.canvas.width * 0.2, y: this.canvas.height * 0.7},
-                        {x: this.canvas.width * 0.1, y: this.canvas.height * 0.8},
-                        {x: this.canvas.width * 0.25, y: this.canvas.height * 0.9}
-                    ]
-                ];
-                
-                // Animate the constellations slightly for a living universe effect
-                const time = Date.now() * 0.0005;
-                
-                // Draw each constellation
-                constellationPoints.forEach((points, constellationIndex) => {
-                    // Draw connecting lines with animated gradient
-                    this.ctx.beginPath();
-                    
-                    // Apply subtle animation to the start point
-                    const startX = points[0].x + Math.sin(time + constellationIndex) * 2;
-                    const startY = points[0].y + Math.cos(time + constellationIndex) * 2;
-                    this.ctx.moveTo(startX, startY);
-                    
-                    for (let i = 1; i < points.length; i++) {
-                        // Apply subtle animation to each point
-                        const x = points[i].x + Math.sin(time + i + constellationIndex) * 2;
-                        const y = points[i].y + Math.cos(time + i + constellationIndex) * 2;
-                        this.ctx.lineTo(x, y);
-                    }
-                    
-                    // Animated opacity based on time
-                    const opacity = 0.03 + Math.sin(time + constellationIndex) * 0.02;
-                    
-                    this.ctx.strokeStyle = `rgba(255, 255, 255, ${opacity + 0.05})`;
-                    this.ctx.lineWidth = 0.5;
-                    this.ctx.stroke();
-                    
-                    // Draw points with subtle animation
-                    points.forEach((point, i) => {
-                        // Animate point size based on time
-                        const sizeOscillation = 0.5 + Math.sin(time * 2 + i + constellationIndex) * 0.5;
-                        const pointSize = 1 + sizeOscillation * 0.5;
-                        
-                        // Animate point position
-                        const x = point.x + Math.sin(time + i + constellationIndex) * 2;
-                        const y = point.y + Math.cos(time + i + constellationIndex) * 2;
-                        
-                        this.ctx.beginPath();
-                        this.ctx.arc(x, y, pointSize, 0, Math.PI * 2);
-                        this.ctx.fillStyle = `rgba(255, 255, 255, ${0.2 + sizeOscillation * 0.1})`;
-                        this.ctx.fill();
-                    });
-                });
-                
-                this.ctx.restore();
-            }
-            
-            drawStarTwinkles() {
-                // Add more stars and make them twinkle naturally
-                // Create more stars in random positions for space effect
-                if (Math.random() < 0.4) {  // Increased probability for more stars
-                    const x = Math.random() * this.canvas.width;
-                    const y = Math.random() * this.canvas.height;
-                    const radius = 0.5 + Math.random() * 1.5;
-                    
-                    // Vary brightness for twinkling effect
-                    const brightness = 0.3 + Math.random() * 0.7;
-                    
-                    this.ctx.save();
-                    
-                    // Add glow effect to some stars
-                    if (Math.random() > 0.7) {
-                        this.ctx.shadowColor = 'rgba(255, 255, 255, 0.8)';
-                        this.ctx.shadowBlur = 5;
-                    }
-                    
-                    this.ctx.beginPath();
-                    this.ctx.arc(x, y, radius, 0, Math.PI * 2);
-                    this.ctx.fillStyle = `rgba(255, 255, 255, ${brightness})`;
-                    this.ctx.fill();
-                    
-                    this.ctx.restore();
+            // Use the original skills data
+            const skillsData = [
+                {
+                    name: "React.js",
+                    category: "Frontend",
+                    icon: "fab fa-react",
+                    color: "#61DAFB",
+                    level: 85,
+                    description: "React is a JavaScript library for building user interfaces. I've used React in multiple projects to create dynamic and responsive web applications with efficient component-based architecture.",
+                    projects: ["Movie Ticket Booking System", "Personal Portfolio"]
+                },
+                {
+                    name: "HTML5/CSS3",
+                    category: "Frontend",
+                    icon: "fab fa-html5",
+                    color: "#E34F26",
+                    level: 92,
+                    description: "Strong foundation in HTML5 and CSS3 for creating well-structured, semantic, and responsive web pages. Proficient with modern CSS features including Flexbox, Grid, and CSS animations.",
+                    projects: ["Food Recipe Suggestor", "Movie Ticket Booking System", "Personal Portfolio"]
+                },
+                {
+                    name: "JavaScript",
+                    category: "Languages",
+                    icon: "fab fa-js-square",
+                    color: "#F7DF1E",
+                    level: 88,
+                    description: "Expert in JavaScript with strong understanding of ES6+ features, asynchronous programming, DOM manipulation, and modern JavaScript frameworks. Experience with both frontend and backend JavaScript development.",
+                    projects: ["Movie Ticket Booking System", "Food Recipe Suggestor", "Personal Portfolio"]
+                },
+                {
+                    name: "Python",
+                    category: "Languages",
+                    icon: "fab fa-python",
+                    color: "#3776AB",
+                    level: 90,
+                    description: "Advanced Python programming skills with expertise in data analysis, machine learning frameworks, and backend development. Experience with libraries like NumPy, Pandas, TensorFlow, and Flask.",
+                    projects: ["Text-to-Image Generator", "Food Recipe Suggestor", "Movie Ticket Booking System"]
+                },
+                {
+                    name: "Node.js",
+                    category: "Backend",
+                    icon: "fab fa-node",
+                    color: "#339933",
+                    level: 75,
+                    description: "Proficient with Node.js for building scalable backend services, RESTful APIs, and realtime applications. Experience with Express.js, MongoDB integration, and deploying Node applications.",
+                    projects: ["Movie Ticket Booking System"]
+                },
+                {
+                    name: "MongoDB",
+                    category: "Database",
+                    icon: "fas fa-database",
+                    color: "#47A248",
+                    level: 82,
+                    description: "Experience with MongoDB for NoSQL database design, CRUD operations, aggregation framework, and integration with various backend frameworks. Skilled in designing efficient database schemas for web applications.",
+                    projects: ["Food Recipe Suggestor"]
+                },
+                {
+                    name: "C++",
+                    category: "Languages",
+                    icon: "fas fa-code",
+                    color: "#00599C",
+                    level: 85,
+                    description: "Strong foundation in C++ programming for performance-critical applications. Experience with object-oriented programming, data structures, and algorithms implementation.",
+                    projects: ["Text-to-Image Generator"]
+                },
+                {
+                    name: "MySQL",
+                    category: "Database",
+                    icon: "fas fa-database",
+                    color: "#4479A1",
+                    level: 75,
+                    description: "Proficient in MySQL database design, optimization, and integration with backend applications. Experience with complex queries, stored procedures, and database normalization.",
+                    projects: ["Movie Ticket Booking System"]
+                },
+                {
+                    name: "Express.js",
+                    category: "Backend",
+                    icon: "fas fa-server",
+                    color: "#000000",
+                    level: 78,
+                    description: "Skilled in using Express.js to build RESTful APIs and server-side applications. Experience with middleware, routing, and integrating with various database systems.",
+                    projects: ["Movie Ticket Booking System"]
+                },
+                {
+                    name: "Tailwind CSS",
+                    category: "Frontend",
+                    icon: "fab fa-css3",
+                    color: "#06B6D4",
+                    level: 80,
+                    description: "Proficient with Tailwind CSS for utility-first CSS framework usage. Experience creating responsive, custom designs efficiently with minimal custom CSS.",
+                    projects: ["Personal Portfolio"]
                 }
-            }
+            ];
             
-            drawConnections(orbits) {
-                // Draw connections between skills with better organization
-                this.ctx.save();
-                
-                // Group orbits by type for organized connections
-                const orbitsByType = {};
-                orbits.forEach(orbit => {
-                    if (!orbitsByType[orbit.type]) {
-                        orbitsByType[orbit.type] = [];
-                    }
-                    orbitsByType[orbit.type].push(orbit);
-                });
-                
-                // Draw connections between skills of the same type
-                Object.entries(orbitsByType).forEach(([type, typeOrbits]) => {
-                    if (typeOrbits.length < 2) return;
-                    
-                    // Select type-specific color
-                    let connectionColor;
-                    switch(type) {
-                        case 'Frontend':
-                            connectionColor = '#38B2AC'; // Teal
-                            break;
-                        case 'Backend':
-                            connectionColor = '#68A063'; // Green
-                            break;
-                        case 'Database':
-                            connectionColor = '#4479A1'; // Blue
-                            break;
-                        case 'Languages':
-                            connectionColor = '#F7DF1E'; // Yellow
-                            break;
-                        default:
-                            connectionColor = '#FFFFFF'; // White
-                    }
-                    
-                    // Connect orbits of the same type with a constellation-like pattern
-                    for (let i = 0; i < typeOrbits.length; i++) {
-                        for (let j = i + 1; j < typeOrbits.length; j++) {
-                            const orbitA = typeOrbits[i];
-                            const orbitB = typeOrbits[j];
-                            
-                            // Calculate distance
-                            const dx = orbitA.x - orbitB.x;
-                            const dy = orbitA.y - orbitB.y;
-                            const distance = Math.sqrt(dx * dx + dy * dy);
-                            
-                            // Only connect if reasonably close
-                            if (distance < 400) {
-                                // Calculate opacity based on distance
-                                const opacity = this.mapRange(distance, 100, 400, 0.15, 0.03);
-                                
-                                // Create gradient connection
-                                const gradient = this.ctx.createLinearGradient(
-                                    orbitA.x, orbitA.y, orbitB.x, orbitB.y
-                                );
-                                gradient.addColorStop(0, `${connectionColor}${Math.floor(opacity * 255).toString(16).padStart(2, '0')}`);
-                                gradient.addColorStop(0.5, `${connectionColor}${Math.floor(opacity * 255 * 1.5).toString(16).padStart(2, '0')}`);
-                                gradient.addColorStop(1, `${connectionColor}${Math.floor(opacity * 255).toString(16).padStart(2, '0')}`);
-                                
-                                // Draw the connection line
-                                this.ctx.beginPath();
-                                this.ctx.moveTo(orbitA.x, orbitA.y);
-                                this.ctx.lineTo(orbitB.x, orbitB.y);
-                                this.ctx.strokeStyle = gradient;
-                                this.ctx.lineWidth = 1;
-                                this.ctx.stroke();
-                                
-                                // Add a pulse effect along the connection line
-                                this.drawConnectionPulse(orbitA, orbitB, connectionColor);
-                            }
-                        }
-                    }
-                });
-                
-                // Draw subtle links from center to each planet (gravitational influence)
-                orbits.forEach(orbit => {
-                    // Calculate distance from center
-                    const distance = Math.sqrt(
-                        Math.pow(orbit.x - this.centerX, 2) + 
-                        Math.pow(orbit.y - this.centerY, 2)
-                    );
-                    
-                    // Calculate opacity based on distance
-                    const opacity = this.mapRange(distance, 50, 400, 0.1, 0.02);
-                    
-                    // Create gradient
-                    const gradient = this.ctx.createLinearGradient(
-                        this.centerX, this.centerY, orbit.x, orbit.y
-                    );
-                    gradient.addColorStop(0, `rgba(37, 99, 235, ${opacity * 1.5})`);
-                    gradient.addColorStop(1, `rgba(37, 99, 235, 0)`);
-                    
-                    // Draw connection
-                    this.ctx.beginPath();
-                    this.ctx.moveTo(this.centerX, this.centerY);
-                    this.ctx.lineTo(orbit.x, orbit.y);
-                    this.ctx.strokeStyle = gradient;
-                    this.ctx.lineWidth = 0.5;
-                    this.ctx.stroke();
-                });
-                
-                this.ctx.restore();
-            }
+            // Create enough bubbles for all skills
+            const skillsContainer = document.querySelector('.skills-container');
             
-            drawConnectionPulse(orbitA, orbitB, color) {
-                // Create pulsing particle effect along connection lines
-                const time = Date.now() * 0.001;
-                const dx = orbitB.x - orbitA.x;
-                const dy = orbitB.y - orbitA.y;
-                const distance = Math.sqrt(dx * dx + dy * dy);
-                
-                // Only draw pulse for connections below a certain threshold
-                if (distance > 300) return;
-                
-                // Number of pulses based on distance
-                const pulseCount = Math.floor(distance / 100) + 1;
-                
-                for (let i = 0; i < pulseCount; i++) {
-                    // Calculate position along the line
-                    const progress = (((time * (i + 1)) % 2) / 2);
-                    const x = orbitA.x + dx * progress;
-                    const y = orbitA.y + dy * progress;
-                    
-                    // Pulse size oscillates
-                    const size = 1.5 + Math.sin(time * 3 + i) * 1;
-                    
-                    // Draw pulse
-                    this.ctx.beginPath();
-                    this.ctx.arc(x, y, size, 0, Math.PI * 2);
-                    this.ctx.fillStyle = `${color}40`;
-                    this.ctx.fill();
-                }
-            }
+            // Clear existing bubbles first
+            skillsContainer.innerHTML = '';
             
-            drawCenterAvatar() {
-                this.ctx.save();
+            // Create new bubbles
+            skillsData.forEach(skill => {
+                const skillCircle = document.createElement('div');
+                skillCircle.className = 'skill-circle';
                 
-                // Enhanced glow effect
-                this.ctx.shadowColor = 'rgba(37, 99, 235, 0.8)';
-                this.ctx.shadowBlur = 30;
+                const skillBubble = document.createElement('div');
+                skillBubble.className = 'skill-bubble';
+                skillBubble.innerHTML = `<i class="${skill.icon}"></i><br>${skill.name}`;
                 
-                // Central avatar radius - slightly larger than planets
-                const avatarRadius = 50;
+                // Create a custom gradient based on skill color
+                const color = skill.color;
+                const r = parseInt(color.slice(1, 3), 16);
+                const g = parseInt(color.slice(3, 5), 16);
+                const b = parseInt(color.slice(5, 7), 16);
                 
-                // Draw radial rays/corona
-                this.drawSunCorona(avatarRadius);
+                // Different planet styles based on category
+                let planetStyle = '';
                 
-                // Draw orbit clock ticks
-                this.drawClockTicks(avatarRadius);
-                
-                // Draw main sun gradient with enhanced colors
-                const sunGradient = this.ctx.createRadialGradient(
-                    this.centerX, this.centerY, 0,
-                    this.centerX, this.centerY, avatarRadius
-                );
-                sunGradient.addColorStop(0, 'rgba(255, 255, 255, 0.95)');
-                sunGradient.addColorStop(0.2, 'rgba(79, 70, 229, 0.9)');
-                sunGradient.addColorStop(0.7, 'rgba(37, 99, 235, 0.7)');
-                sunGradient.addColorStop(1, 'rgba(37, 99, 235, 0.3)');
-                
-                // Draw main circle
-                this.ctx.beginPath();
-                this.ctx.arc(this.centerX, this.centerY, avatarRadius, 0, Math.PI * 2);
-                this.ctx.fillStyle = sunGradient;
-                this.ctx.fill();
-                
-                // Add pulsing surface details
-                this.drawSunSurfaceDetails(avatarRadius);
-                
-                // Add text with better styling
-                this.drawCentralText();
-                
-                this.ctx.restore();
-            }
-            
-            drawSunCorona(radius) {
-                // Create sun corona/rays effect
-                const rays = 16;
-                const maxRayLength = radius * 0.4;
-                
-                for (let i = 0; i < rays; i++) {
-                    const angle = (Math.PI * 2 / rays) * i;
-                    const rayLength = radius + (maxRayLength * (0.5 + Math.sin(Date.now() * 0.001 + i) * 0.5));
-                    
-                    const x1 = this.centerX + Math.cos(angle) * radius;
-                    const y1 = this.centerY + Math.sin(angle) * radius;
-                    const x2 = this.centerX + Math.cos(angle) * rayLength;
-                    const y2 = this.centerY + Math.sin(angle) * rayLength;
-                    
-                    const gradient = this.ctx.createLinearGradient(x1, y1, x2, y2);
-                    gradient.addColorStop(0, 'rgba(79, 70, 229, 0.7)');
-                    gradient.addColorStop(1, 'rgba(37, 99, 235, 0)');
-                    
-                    this.ctx.beginPath();
-                    this.ctx.moveTo(x1, y1);
-                    this.ctx.lineTo(x2, y2);
-                    this.ctx.strokeStyle = gradient;
-                    this.ctx.lineWidth = 2;
-                    this.ctx.stroke();
-                }
-            }
-            
-            drawClockTicks(radius) {
-                // Draw orbit clock ticks around the central sun
-                const clockRadius = radius * 1.3;
-                
-                for (let i = 0; i < 24; i++) {
-                    const angle = (Math.PI * 2 / 24) * i;
-                    const innerRadius = clockRadius - (i % 6 === 0 ? 8 : 4);
-                    const outerRadius = clockRadius;
-                    
-                    const x1 = this.centerX + Math.cos(angle) * innerRadius;
-                    const y1 = this.centerY + Math.sin(angle) * innerRadius;
-                    const x2 = this.centerX + Math.cos(angle) * outerRadius;
-                    const y2 = this.centerY + Math.sin(angle) * outerRadius;
-                    
-                    this.ctx.beginPath();
-                    this.ctx.moveTo(x1, y1);
-                    this.ctx.lineTo(x2, y2);
-                    this.ctx.strokeStyle = 'rgba(255, 255, 255, ' + (i % 6 === 0 ? 0.5 : 0.3) + ')';
-                    this.ctx.lineWidth = i % 6 === 0 ? 2 : 1;
-                    this.ctx.stroke();
-                }
-            }
-            
-            drawSunSurfaceDetails(radius) {
-                // Create animated solar surface details
-                const time = Date.now() * 0.001;
-                const numDetails = 15;
-                
-                for (let i = 0; i < numDetails; i++) {
-                    const detailAngle = Math.PI * 2 * (i / numDetails);
-                    const dist = (0.2 + Math.sin(time + i) * 0.2) * radius;
-                    
-                    const detailX = this.centerX + Math.cos(detailAngle) * dist;
-                    const detailY = this.centerY + Math.sin(detailAngle) * dist;
-                    const detailSize = 3 + Math.sin(time * 2 + i) * 2;
-                    
-                    this.ctx.beginPath();
-                    this.ctx.arc(detailX, detailY, detailSize, 0, Math.PI * 2);
-                    
-                    const brightness = 0.7 + Math.sin(time + i * 2) * 0.3;
-                    this.ctx.fillStyle = `rgba(255, 255, 255, ${brightness})`;
-                    this.ctx.fill();
-                }
-            }
-            
-            drawCentralText() {
-                // Draw central text with professional styling
-                this.ctx.fillStyle = '#ffffff';
-                this.ctx.textAlign = 'center';
-                this.ctx.textBaseline = 'middle';
-                
-                // Draw 'Om' text
-                this.ctx.font = 'bold 18px "Segoe UI", sans-serif';
-                this.ctx.fillText('Om', this.centerX, this.centerY - 10);
-                
-                // Draw 'Singh' text
-                this.ctx.font = 'bold 16px "Segoe UI", sans-serif';
-                this.ctx.fillText('Singh', this.centerX, this.centerY + 12);
-            }
-            
-            drawSkill(orbit) {
-                const { skill, x, y, z, hovered, pulseAmount } = orbit;
-                
-                // Check if we're on mobile (smaller screen)
-                const isMobile = this.canvas.width < 768;
-                
-                // Scale based on z-position for depth effect (less on mobile)
-                const zScale = isMobile ? 
-                    this.mapRange(z, -50, 50, 0.95, 1.05) :  // Less z-effect on mobile
-                    this.mapRange(z, -50, 50, 0.7, 1.3);
-                
-                // Additional scale for hover and pulse effects
-                const hoverScale = 1 + (pulseAmount * 0.3);
-                
-                // Final radius with all effects - cap size on mobile
-                // Increase minimum size to ensure visibility
-                const radius = Math.max(
-                    Math.min(skill.radius * zScale * hoverScale, isMobile ? 30 : 45), // Increased max cap
-                    isMobile ? 17 : 20 // Increased minimum size
-                );
-                
-                this.ctx.save();
-                
-                // Enhanced glow effect based on hover state and z-position
-                if (hovered || z > 0) {
-                    const glowAmount = hovered ? 20 + (pulseAmount * 10) : (z / 50) * 15;
-                    this.ctx.shadowColor = skill.color;
-                    this.ctx.shadowBlur = glowAmount;
-                }
-                
-                // Draw planet atmosphere/glow - reduced on mobile
-                const atmosphereSize = radius * (isMobile ? 1.1 : 1.15);
-                const gradient = this.ctx.createRadialGradient(
-                    x, y, radius * 0.8,
-                    x, y, atmosphereSize
-                );
-                gradient.addColorStop(0, `${skill.color}50`);
-                gradient.addColorStop(1, `${skill.color}00`);
-                
-                this.ctx.beginPath();
-                this.ctx.arc(x, y, atmosphereSize, 0, Math.PI * 2);
-                this.ctx.fillStyle = gradient;
-                this.ctx.fill();
-                
-                // Draw main planet body
-                this.ctx.beginPath();
-                this.ctx.arc(x, y, radius, 0, Math.PI * 2);
-                
-                // Create complex gradient for planets with light source
-                const planetGradient = this.ctx.createRadialGradient(
-                    x - radius * 0.3, y - radius * 0.3, radius * 0.1, // Light source
-                    x, y, radius
-                );
-                
-                // Use skill color with variations for more realistic planet appearance
-                // Brighter colors for better text contrast
-                planetGradient.addColorStop(0, this.lightenColor(skill.color, 80));
-                planetGradient.addColorStop(0.4, this.lightenColor(skill.color, 15));
-                planetGradient.addColorStop(1, this.darkenColor(skill.color, 20));
-                
-                this.ctx.fillStyle = planetGradient;
-                this.ctx.fill();
-                
-                // Add planetary details based on skill type (skip on mobile if too small)
-                if (!isMobile || radius > 15) {
-                    this.addPlanetaryDetails(x, y, radius, skill);
-                }
-                
-                // Draw semi-transparent atmosphere/ring effect (only on desktop or larger planets)
-                if ((radius > 20 && !hovered) && !isMobile) {
-                    this.drawPlanetaryRing(x, y, radius, skill);
-                }
-                
-                // Draw border - thicker when hovered
-                this.ctx.strokeStyle = hovered ? 
-                    'rgba(255, 255, 255, 0.8)' : 
-                    'rgba(255, 255, 255, 0.3)';
-                this.ctx.lineWidth = hovered ? 2 : 1;
-                this.ctx.stroke();
-                
-                // Create a clearer background for text
-                this.ctx.fillStyle = `${skill.color}CC`; // More opaque for better text visibility
-                this.ctx.beginPath();
-                this.ctx.arc(x, y, radius * 0.7, 0, Math.PI * 2);
-                this.ctx.fill();
-                
-                // Draw skill name with dynamic sizing and better contrast
-                // Larger font sizes for better readability
-                const fontSize = isMobile ?
-                    Math.max(11, Math.min(14, radius * 0.6)) : // Increased on mobile
-                    Math.max(13, Math.min(16, radius * 0.5)); // Increased on desktop
-                    
-                // Always use high contrast color for text
-                const textColor = 'rgba(255, 255, 255, 0.95)'; // Almost white for all planets
-                
-                // Draw skill name
-                this.ctx.fillStyle = textColor;
-                this.ctx.font = `${hovered ? 'bold' : 'bold'} ${fontSize}px 'Segoe UI', sans-serif`; // Always bold
-                this.ctx.textAlign = 'center';
-                this.ctx.textBaseline = 'middle';
-                
-                // Add stronger text shadow for better readability
-                this.ctx.shadowColor = 'rgba(0, 0, 0, 0.9)';
-                this.ctx.shadowBlur = 6;
-                this.ctx.shadowOffsetX = 0;
-                this.ctx.shadowOffsetY = 0;
-                
-                // On mobile, abbreviate long skill names but ensure they're still recognizable
-                const displayName = isMobile && skill.name.length > 8 && radius < 22 ? 
-                    this.abbreviateSkillName(skill.name) : 
-                    skill.name;
-                
-                this.ctx.fillText(displayName, x, y);
-                
-                // Add skill level indicator when hovered (simplified on mobile)
-                if (hovered && (!isMobile || radius > 20)) {
-                    this.drawSkillLevel(x, y, radius, skill);
-                }
-                
-                this.ctx.restore();
-            }
-            
-            // Helper to abbreviate skill names on mobile
-            abbreviateSkillName(name) {
-                // Common abbreviations
-                const abbreviations = {
-                    'JavaScript': 'JavaScript', // Keep full name for important skills
-                    'Express.js': 'Express',
-                    'React.js': 'React',
-                    'Node.js': 'Node',
-                    'MongoDB': 'MongoDB', // Keep full name
-                    'HTML5/CSS3': 'HTML/CSS',
-                    'Tailwind CSS': 'Tailwind'
-                };
-                
-                return abbreviations[name] || name;
-            }
-            
-            addPlanetaryDetails(x, y, radius, skill) {
-                // Add different types of surface details based on skill type
-                
-                // Skip for very small planets
-                if (radius < 10) return;
-                
-                this.ctx.save();
-                
-                // Different patterns based on skill type
-                switch (skill.type) {
+                switch(skill.category) {
                     case 'Frontend':
-                        // Create grid/web-like pattern
-                        this.drawGridPattern(x, y, radius);
+                        // Bluish planets
+                        planetStyle = `radial-gradient(circle at 30% 30%, rgba(${r}, ${g}, ${b}, 0.6), rgba(20, 30, 90, 0.8), rgba(10, 15, 40, 0.9))`;
                         break;
-                        
                     case 'Backend':
-                        // Create server-like structures
-                        this.drawBlockPattern(x, y, radius);
+                        // Greenish planets
+                        planetStyle = `radial-gradient(circle at 30% 30%, rgba(${r}, ${g}, ${b}, 0.6), rgba(30, 70, 40, 0.8), rgba(15, 35, 20, 0.9))`;
                         break;
-                        
                     case 'Database':
-                        // Create circular patterns like data clusters
-                        this.drawDatabasePattern(x, y, radius);
+                        // Orange/red planets
+                        planetStyle = `radial-gradient(circle at 30% 30%, rgba(${r}, ${g}, ${b}, 0.6), rgba(80, 40, 20, 0.8), rgba(40, 20, 10, 0.9))`;
                         break;
-                        
                     case 'Languages':
                     default:
-                        // Create crater-like patterns
-                        this.drawCraterPattern(x, y, radius);
-                        break;
+                        // Purple/violet planets
+                        planetStyle = `radial-gradient(circle at 30% 30%, rgba(${r}, ${g}, ${b}, 0.6), rgba(60, 20, 90, 0.8), rgba(30, 10, 45, 0.9))`;
                 }
                 
-                this.ctx.restore();
-            }
-            
-            drawGridPattern(x, y, radius) {
-                // Simple grid pattern for frontend skills
-                const numLines = Math.floor(radius / 5);
-                const spacing = radius * 1.5 / numLines;
+                skillBubble.style.background = planetStyle;
+                skillBubble.style.borderColor = skill.color;
+                skillBubble.style.boxShadow = `0 0 20px rgba(${r}, ${g}, ${b}, 0.4)`;
+                skillBubble.style.color = 'white';
                 
-                this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
-                this.ctx.lineWidth = 0.5;
+                // Store skill data
+                skillBubble.dataset.skill = JSON.stringify(skill);
                 
-                // Draw horizontal grid lines
-                for (let i = -numLines; i <= numLines; i++) {
-                    const yOffset = i * spacing;
-                    if (Math.abs(yOffset) > radius) continue;
-                    
-                    const width = Math.sqrt(radius * radius - yOffset * yOffset) * 1.8;
-                    
-                    this.ctx.beginPath();
-                    this.ctx.moveTo(x - width, y + yOffset);
-                    this.ctx.lineTo(x + width, y + yOffset);
-                    this.ctx.stroke();
-                }
-                
-                // Draw vertical grid lines
-                for (let i = -numLines; i <= numLines; i++) {
-                    const xOffset = i * spacing;
-                    if (Math.abs(xOffset) > radius) continue;
-                    
-                    const height = Math.sqrt(radius * radius - xOffset * xOffset) * 1.8;
-                    
-                    this.ctx.beginPath();
-                    this.ctx.moveTo(x + xOffset, y - height);
-                    this.ctx.lineTo(x + xOffset, y + height);
-                    this.ctx.stroke();
-                }
-            }
-            
-            drawBlockPattern(x, y, radius) {
-                // Server rack-like pattern for backend skills
-                const numBlocks = Math.floor(radius / 4);
-                
-                this.ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
-                
-                for (let i = 0; i < numBlocks; i++) {
-                    const angle = Math.random() * Math.PI * 2;
-                    const distance = Math.random() * radius * 0.7;
-                    
-                    const blockX = x + Math.cos(angle) * distance;
-                    const blockY = y + Math.sin(angle) * distance;
-                    
-                    const width = 2 + Math.random() * 4;
-                    const height = 2 + Math.random() * 4;
-                    
-                    this.ctx.fillRect(
-                        blockX - width/2, 
-                        blockY - height/2, 
-                        width, 
-                        height
-                    );
-                }
-            }
-            
-            drawDatabasePattern(x, y, radius) {
-                // Circular data patterns for database skills
-                const numCircles = Math.floor(radius / 3);
-                
-                this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
-                this.ctx.lineWidth = 0.5;
-                
-                for (let i = 0; i < numCircles; i++) {
-                    const angle = Math.random() * Math.PI * 2;
-                    const distance = Math.random() * radius * 0.7;
-                    
-                    const circleX = x + Math.cos(angle) * distance;
-                    const circleY = y + Math.sin(angle) * distance;
-                    
-                    const circleRadius = 1 + Math.random() * 3;
-                    
-                    this.ctx.beginPath();
-                    this.ctx.arc(circleX, circleY, circleRadius, 0, Math.PI * 2);
-                    this.ctx.stroke();
-                    
-                    // Sometimes fill the circle
-                    if (Math.random() > 0.5) {
-                        this.ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
-                        this.ctx.fill();
-                    }
-                }
-            }
-            
-            drawCraterPattern(x, y, radius) {
-                // Crater-like patterns for language skills
-                const numCraters = Math.floor(radius / 2.5);
-                
-                for (let i = 0; i < numCraters; i++) {
-                    const angle = Math.random() * Math.PI * 2;
-                    const distance = Math.random() * radius * 0.7;
-                    
-                    const craterX = x + Math.cos(angle) * distance;
-                    const craterY = y + Math.sin(angle) * distance;
-                    
-                    const craterRadius = 1 + Math.random() * 3;
-                    
-                    // Draw crater with subtle gradient
-                    const gradient = this.ctx.createRadialGradient(
-                        craterX, craterY, 0,
-                        craterX, craterY, craterRadius
-                    );
-                    gradient.addColorStop(0, 'rgba(255, 255, 255, 0.2)');
-                    gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
-                    
-                    this.ctx.fillStyle = gradient;
-                    this.ctx.beginPath();
-                    this.ctx.arc(craterX, craterY, craterRadius, 0, Math.PI * 2);
-                    this.ctx.fill();
-                }
-            }
-            
-            drawPlanetaryRing(x, y, radius, skill) {
-                // Draw an optional ring around some planets
-                // Only add rings to randomly selected planets
-                if (skill.name === 'MongoDB' || skill.name === 'Python' || skill.name === 'React.js') {
-                    const ringWidth = radius * 0.6;
-                    const ringInnerRadius = radius * 1.2;
-                    const ringOuterRadius = ringInnerRadius + ringWidth;
-                    
-                    // Create ring gradient
-                    const ringGradient = this.ctx.createRadialGradient(
-                        x, y, ringInnerRadius,
-                        x, y, ringOuterRadius
-                    );
-                    ringGradient.addColorStop(0, `${skill.color}30`);
-                    ringGradient.addColorStop(0.5, `${skill.color}20`);
-                    ringGradient.addColorStop(1, `${skill.color}00`);
-                    
-                    // Draw elliptical ring at an angle
-                    this.ctx.save();
-                    this.ctx.translate(x, y);
-                    this.ctx.rotate(Math.PI / 6); // Tilt the ring
-                    this.ctx.scale(1, 0.3); // Flatten to create perspective
-                    
-                    // Outer ring
-                    this.ctx.beginPath();
-                    this.ctx.arc(0, 0, ringOuterRadius, 0, Math.PI * 2);
-                    this.ctx.fillStyle = ringGradient;
-                    this.ctx.fill();
-                    
-                    // Clear inner part
-                    this.ctx.beginPath();
-                    this.ctx.arc(0, 0, ringInnerRadius, 0, Math.PI * 2);
-                    this.ctx.globalCompositeOperation = 'destination-out';
-                    this.ctx.fill();
-                    this.ctx.globalCompositeOperation = 'source-over';
-                    
-                    this.ctx.restore();
-                }
-            }
-            
-            drawSkillLevel(x, y, radius, skill) {
-                // Draw skill level indicator around the planet when hovered
-                const levelRadius = radius * 1.4;
-                
-                this.ctx.save();
-                
-                // Background ring
-                this.ctx.beginPath();
-                this.ctx.arc(x, y, levelRadius, 0, Math.PI * 2);
-                this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
-                this.ctx.lineWidth = 3;
-                this.ctx.stroke();
-                
-                // Skill level arc
-                const levelAngle = (skill.level / 100) * Math.PI * 2;
-                
-                this.ctx.beginPath();
-                this.ctx.arc(x, y, levelRadius, -Math.PI/2, -Math.PI/2 + levelAngle);
-                
-                const gradient = this.ctx.createLinearGradient(
-                    x - levelRadius, y,
-                    x + levelRadius, y
-                );
-                gradient.addColorStop(0, this.lightenColor(skill.color, 30));
-                gradient.addColorStop(1, skill.color);
-                
-                this.ctx.strokeStyle = gradient;
-                this.ctx.lineWidth = 4;
-                this.ctx.lineCap = 'round';
-                this.ctx.stroke();
-                
-                // Draw percentage text
-                this.ctx.fillStyle = '#ffffff';
-                this.ctx.font = '12px "Segoe UI", sans-serif';
-                this.ctx.textAlign = 'center';
-                this.ctx.textBaseline = 'middle';
-                this.ctx.fillText(`${skill.level}%`, x, y - levelRadius - 15);
-                
-                this.ctx.restore();
-            }
-            
-            lightenColor(color, amount) {
-                return this.adjustColor(color, amount);
-            }
-            
-            darkenColor(color, amount) {
-                return this.adjustColor(color, -amount);
-            }
-            
-            getContrastColor(hexColor) {
-                // Convert hex to RGB
-                const r = parseInt(hexColor.slice(1, 3), 16);
-                const g = parseInt(hexColor.slice(3, 5), 16);
-                const b = parseInt(hexColor.slice(5, 7), 16);
-                
-                // Calculate luminance (perceived brightness)
-                const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-                
-                // Return white or black based on background luminance
-                return luminance > 0.5 ? '#000000' : '#ffffff';
-            }
-            
-            mapRange(value, low1, high1, low2, high2) {
-                return low2 + (high2 - low2) * (value - low1) / (high1 - low1);
-            }
-            
-            handleClick(event) {
-                const rect = this.canvas.getBoundingClientRect();
-                const mouseX = event.clientX - rect.left;
-                const mouseY = event.clientY - rect.top;
-                
-                // Check if center avatar was clicked
-                const distToCenter = Math.sqrt(
-                    Math.pow(mouseX - this.centerX, 2) + 
-                    Math.pow(mouseY - this.centerY, 2)
-                );
-                
-                if (distToCenter < 45) {
-                    // Show all skills details or some special animation
-                    this.pulseAllSkills();
-                    return;
-                }
-                
-                // Check if any skill was clicked
-                for (const orbit of this.orbits) {
-                    const dx = mouseX - orbit.x;
-                    const dy = mouseY - orbit.y;
-                    const distance = Math.sqrt(dx * dx + dy * dy);
-                    
-                    // Scale clickable area with planet size and z position
-                    const zScale = this.mapRange(orbit.z, -50, 50, 0.7, 1.3);
-                    const clickRadius = orbit.skill.radius * zScale * 1.2;
-                    
-                    if (distance < clickRadius) {
-                        // Skill was clicked
-                        this.showSkillDetail(orbit.skill);
-                        return;
-                    }
-                }
-                
-                // If no skill was clicked and a detail popup is shown, hide it
-                if (this.skillDetailPopup.classList.contains('active')) {
-                    this.hideSkillDetail();
-                }
-            }
-            
-            pulseAllSkills() {
-                // Create a wave effect emanating from center
-                let delay = 0;
-                
-                this.orbits.sort((a, b) => {
-                    const distA = Math.sqrt(Math.pow(a.x - this.centerX, 2) + Math.pow(a.y - this.centerY, 2));
-                    const distB = Math.sqrt(Math.pow(b.x - this.centerX, 2) + Math.pow(b.y - this.centerY, 2));
-                    return distA - distB;
-                }).forEach(orbit => {
-                    setTimeout(() => {
-                        orbit.hovered = true;
-                        setTimeout(() => {
-                            orbit.hovered = false;
-                        }, 300);
-                    }, delay);
-                    delay += 50;
+                // Add click handler
+                skillBubble.addEventListener('click', function() {
+                    const skillData = JSON.parse(this.dataset.skill);
+                    showSkillDetails(skillData);
                 });
-            }
+                
+                skillCircle.appendChild(skillBubble);
+                skillsContainer.appendChild(skillCircle);
+            });
             
-            handleMouseMove(event) {
-                const rect = this.canvas.getBoundingClientRect();
-                this.mouseX = event.clientX - rect.left;
-                this.mouseY = event.clientY - rect.top;
+            // Show skill details in modal function
+            function showSkillDetails(skill) {
+                // Fill modal with skill details
+                document.getElementById('skill-detail-icon').innerHTML = `<i class="${skill.icon}"></i>`;
+                document.getElementById('skill-detail-title').textContent = skill.name;
+                document.getElementById('skill-detail-level').textContent = `${skill.level}% Proficiency`;
+                document.getElementById('skill-detail-description').textContent = skill.description;
                 
-                let hoverDetected = false;
+                // Set progress bar
+                const progressBar = document.getElementById('skill-detail-progress-bar');
+                progressBar.style.width = '0%';
                 
-                // Check for center avatar hover
-                const distToCenter = Math.sqrt(
-                    Math.pow(this.mouseX - this.centerX, 2) + 
-                    Math.pow(this.mouseY - this.centerY, 2)
-                );
+                // Fill projects list
+                const projectsList = document.getElementById('skill-detail-projects-list');
+                projectsList.innerHTML = '';
                 
-                if (distToCenter < 45) {
-                    this.canvas.style.cursor = 'pointer';
-                    hoverDetected = true;
-                }
+                skill.projects.forEach(project => {
+                    const projectItem = document.createElement('div');
+                    projectItem.className = 'skill-detail-project-item';
+                    projectItem.textContent = project;
+                    projectsList.appendChild(projectItem);
+                });
                 
-                // Check if mouse is over any skill
-                for (const orbit of this.orbits) {
-                    const dx = this.mouseX - orbit.x;
-                    const dy = this.mouseY - orbit.y;
-                    const distance = Math.sqrt(dx * dx + dy * dy);
-                    
-                    // Scale hover area with planet size and z position
-                    const zScale = this.mapRange(orbit.z, -50, 50, 0.7, 1.3);
-                    const hoverRadius = orbit.skill.radius * zScale * 1.2;
-                    
-                    if (distance < hoverRadius) {
-                        orbit.hovered = true;
-                        this.canvas.style.cursor = 'pointer';
-                        hoverDetected = true;
-                    } else {
-                        orbit.hovered = false;
-                    }
-                }
+                // Show modal
+                const modal = document.getElementById('skill-detail-modal');
+                modal.classList.add('active');
                 
-                if (!hoverDetected) {
-                    this.canvas.style.cursor = 'default';
-                }
-            }
-            
-            showSkillDetail(skill) {
-                this.selectedSkill = skill;
-                this.targetZoomLevel = 1.5;
-                
-                // Update skill detail content
-                this.skillDetailTitle.textContent = skill.name;
-                this.skillDetailProgress.style.width = `${skill.level}%`;
-                this.skillDetailDesc.textContent = skill.description;
-                
-                // Show popup with animation
-                this.skillDetailPopup.classList.add('active');
-            }
-            
-            hideSkillDetail() {
-                this.selectedSkill = null;
-                this.targetZoomLevel = 1;
-                this.skillDetailPopup.classList.remove('active');
-            }
-            
-            adjustColor(color, amount) {
-                // Helper function to darken/lighten colors
-                let usePound = false;
-                
-                if (color[0] === '#') {
-                    color = color.slice(1);
-                    usePound = true;
-                }
-                
-                const num = parseInt(color, 16);
-                let r = (num >> 16) + amount;
-                let g = ((num >> 8) & 0x00FF) + amount;
-                let b = (num & 0x0000FF) + amount;
-                
-                r = Math.min(255, Math.max(0, r));
-                g = Math.min(255, Math.max(0, g));
-                b = Math.min(255, Math.max(0, b));
-                
-                return (usePound ? '#' : '') + ((g | (r << 8) | (b << 16)).toString(16).padStart(6, '0'));
-            }
-
-            // Add the missing applyMouseGravity method
-            applyMouseGravity() {
-                // Interactive gravity effect when mouse moves near planets
-                if (this.mouseX && this.mouseY) {
-                    // Calculate distance from mouse to center
-                    const dcx = this.centerX - this.mouseX;
-                    const dcy = this.centerY - this.mouseY;
-                    const centerDist = Math.sqrt(dcx * dcx + dcy * dcy);
-                    
-                    // Protect center from being affected by mouse gravity
-                    if (centerDist < 100) return;
-                    
-                    // Apply to each orbit
-                    this.orbits.forEach(orbit => {
-                        // Calculate distance from mouse to planet
-                        const dx = this.mouseX - orbit.x;
-                        const dy = this.mouseY - orbit.y;
-                        const distance = Math.sqrt(dx * dx + dy * dy);
-                        
-                        // Skip if too far away or too close
-                        if (distance > 150 || distance < 10) return;
-                        
-                        // Calculate gravitational force (inverse square law)
-                        // Weaker gravity for a more subtle effect
-                        const force = 0.15 * (1 / Math.max(distance, 30));
-                        
-                        // Apply gravitational pull - move toward mouse
-                        orbit.x += dx * force;
-                        orbit.y += dy * force;
-                        
-                        // Add restoration force to pull planet back toward its orbit
-                        // Calculate current distance from center
-                        const cdx = orbit.x - this.centerX;
-                        const cdy = orbit.y - this.centerY;
-                        const currentDist = Math.sqrt(cdx * cdx + cdy * cdy);
-                        
-                        // Calculate ideal distance (orbit radius)
-                        const targetDist = orbit.orbitRadius;
-                        
-                        // Apply restoration force proportional to displacement
-                        const displacement = currentDist - targetDist;
-                        const restorationForce = displacement * 0.01;
-                        
-                        // Direction vector towards center
-                        const dirX = cdx / currentDist;
-                        const dirY = cdy / currentDist;
-                        
-                        // Apply restoration force
-                        orbit.x -= dirX * restorationForce;
-                        orbit.y -= dirY * restorationForce;
-                    });
-                }
+                // Animate progress bar
+                setTimeout(() => {
+                    progressBar.style.width = `${skill.level}%`;
+                }, 100);
             }
         }
+
+        // Make sure the close button works - add this to the document ready function
+        document.addEventListener('DOMContentLoaded', function() {
+            // Existing code...
+            
+            // Fix skill detail modal close button
+            const closeButton = document.getElementById('skill-detail-close');
+            const skillModal = document.getElementById('skill-detail-modal');
+            
+            if (closeButton && skillModal) {
+                closeButton.addEventListener('click', function() {
+                    skillModal.classList.remove('active');
+                });
+                
+                // Also close when clicking outside the modal content
+                skillModal.addEventListener('click', function(e) {
+                    if (e.target === skillModal) {
+                        skillModal.classList.remove('active');
+                    }
+                });
+            }
+        });
     </script>
 </body>
 </html>
