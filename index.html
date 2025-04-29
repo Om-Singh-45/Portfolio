@@ -13,6 +13,9 @@
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
     <!-- Add GSAP for animations -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
+    <!-- Add Swiper.js for photo galleries -->
+    <link rel="stylesheet" href="https://unpkg.com/swiper@8/swiper.min.css" />
+    <script src="https://unpkg.com/swiper@8/swiper.min.js"></script>
     <style>
         :root {
             --primary-color: #2563eb;
@@ -1290,6 +1293,368 @@
             transform: scale(1.1);
             box-shadow: 0 0 35px rgba(255, 255, 255, 0.4);
         }
+
+        /* Planet label styles */
+        .planet-label {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            text-shadow: 0 0 8px rgba(0, 0, 0, 0.8), 0 0 15px rgba(0, 0, 0, 0.6);
+            pointer-events: none;
+            z-index: 10;
+            transition: opacity 0.3s ease;
+        }
+
+        .planet-label i {
+            font-size: 28px;
+            margin-bottom: 8px;
+            text-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+        }
+
+        .planet-label div {
+            font-size: 14px;
+            font-weight: bold;
+            text-shadow: 0 0 8px rgba(0, 0, 0, 0.8);
+        }
+
+        /* Canvas styling */
+        .planet-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100% !important;
+            height: 100% !important;
+            border-radius: 50%;
+            overflow: hidden;
+        }
+
+        /* Enhance skill bubble styles for 3D planets */
+        .skill-bubble {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            cursor: pointer;
+            overflow: hidden;
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .skill-bubble:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 40px rgba(255, 255, 255, 0.4);
+            z-index: 10;
+        }
+
+        /* Education Section Styles */
+        .education {
+            padding: 80px 0;
+            position: relative;
+            z-index: 10;
+        }
+
+        .section-subtitle {
+            text-align: center;
+            color: var(--text-muted);
+            margin-bottom: 40px;
+            font-size: 18px;
+        }
+
+        .space-library-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            min-height: 500px;
+        }
+
+        #space-library {
+            height: 500px;
+            background-color: rgba(9, 9, 15, 0.5);
+            border-radius: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .education-details {
+            background-color: rgba(9, 9, 15, 0.5);
+            border-radius: 10px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            min-height: 500px;
+        }
+
+        .education-placeholder {
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .orbit-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(145deg, var(--primary-color), var(--secondary-color));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 32px;
+            color: white;
+        }
+
+        .education-item {
+            display: none;
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+
+        .education-item.active {
+            display: block;
+        }
+
+        .education-item-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .education-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(145deg, var(--primary-color), var(--secondary-color));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 24px;
+            color: white;
+        }
+
+        .education-title h3 {
+            font-size: 24px;
+            color: white;
+            margin-bottom: 5px;
+        }
+
+        .education-title span {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .education-body {
+            padding-left: 75px;
+            position: relative;
+        }
+
+        .education-body:before {
+            content: '';
+            position: absolute;
+            left: 30px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, var(--primary-color), transparent);
+        }
+
+        .education-detail {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .education-detail:before {
+            content: '';
+            position: absolute;
+            left: -45px;
+            top: 8px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+        }
+
+        .education-detail h4 {
+            font-size: 18px;
+            color: white;
+            margin-bottom: 5px;
+        }
+
+        .education-detail p {
+            color: var(--text-muted);
+        }
+
+        .education-skills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .education-skill-badge {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 5px 12px;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .book {
+            position: absolute;
+            width: 50px;
+            height: 70px;
+            background: linear-gradient(145deg, var(--primary-color), var(--secondary-color));
+            border-radius: 5px;
+            cursor: pointer;
+            transform-style: preserve-3d;
+            transition: transform 0.5s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .book:hover {
+            transform: scale(1.2) rotateY(30deg);
+            z-index: 100;
+        }
+
+        .book:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: linear-gradient(to bottom, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.05));
+            border-top-left-radius: 5px;
+            border-bottom-left-radius: 5px;
+        }
+
+        .book:after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, rgba(255, 255, 255, 0.05), rgba(0, 0, 0, 0.2));
+            border-radius: 5px;
+            transform: translateZ(-1px);
+        }
+
+        .book-title {
+            position: absolute;
+            width: 100%;
+            text-align: center;
+            bottom: -25px;
+            font-size: 10px;
+            color: white;
+            text-shadow: 0 0 5px rgba(0, 0, 0, 0.8);
+            white-space: nowrap;
+            pointer-events: none;
+        }
+
+        @media (max-width: 768px) {
+            .space-library-container {
+                grid-template-columns: 1fr;
+            }
+            
+            #space-library {
+                height: 400px;
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0) rotateY(0deg); }
+            50% { transform: translateY(-10px) rotateY(180deg); }
+            100% { transform: translateY(0) rotateY(360deg); }
+        }
+
+        /* Add styles for education photos */
+        .education-photo {
+            width: 100%;
+            height: 180px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .education-photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .education-photo:hover img {
+            transform: scale(1.05);
+        }
+
+        .education-photo:hover {
+            transform: translateY(-5px);
+        }
+
+        .education-photo::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(0deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0) 100%);
+            pointer-events: none;
+        }
+
+        .education-photo-caption {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            color: white;
+            font-size: 14px;
+            z-index: 2;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+        }
+
+        /* Swiper styles for photo gallery */
+        .education-photos-container {
+            margin-bottom: 20px;
+            overflow: hidden;
+            border-radius: 8px;
+        }
+
+        .education-photo-slide {
+            height: 200px;
+            background-position: center;
+            background-size: cover;
+            position: relative;
+        }
+
+        .swiper-pagination-bullet {
+            background-color: var(--primary-color);
+        }
+
+        .swiper-button-next, .swiper-button-prev {
+            color: var(--primary-color);
+        }
+
+        @media (max-width: 768px) {
+            .education-photos-container {
+                height: 150px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -1486,6 +1851,27 @@
                         <div class="project-links">
                             <a href="https://github.com/Om-Singh-45/Food-Recipe-Suggestor.git" class="github-link"><i class="fab fa-github"></i> GitHub</a>
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Add Education Section after the Skills section and before the Projects section -->
+    <section id="education" class="education">
+        <div class="container">
+            <h2 class="section-title">Education Journey</h2>
+            <p class="section-subtitle">Explore my academic voyage through the cosmos of knowledge</p>
+            
+            <div class="space-library-container">
+                <div id="space-library"></div>
+                <div class="education-details" id="education-details">
+                    <div class="education-placeholder">
+                        <div class="orbit-icon">
+                            <i class="fas fa-book-open"></i>
+                        </div>
+                        <h3>Select a book to view details</h3>
+                        <p>Explore my educational journey by clicking on the floating books</p>
                     </div>
                 </div>
             </div>
@@ -1893,6 +2279,9 @@
             
             // Initialize simple skill bubbles instead of galaxy
             setupSkillBubbles();
+            
+            // Initialize 3D planets
+            initPlanets();
         });
 
         // Recreate cosmic elements on resize
@@ -2650,6 +3039,532 @@
                     }
                 });
             }
+            
+            // Initialize 3D planets
+            initPlanets();
+        });
+
+        // Function to initialize 3D planets
+        function initPlanets() {
+            // Planet texture URLs
+            const textures = {
+                sun: 'https://www.solarsystemscope.com/textures/download/2k_sun.jpg',
+                mercury: 'https://www.solarsystemscope.com/textures/download/2k_mercury.jpg',
+                venus: 'https://www.solarsystemscope.com/textures/download/2k_venus_atmosphere.jpg',
+                earth: 'https://www.solarsystemscope.com/textures/download/2k_earth_daymap.jpg',
+                mars: 'https://www.solarsystemscope.com/textures/download/2k_mars.jpg',
+                jupiter: 'https://www.solarsystemscope.com/textures/download/2k_jupiter.jpg',
+                saturn: 'https://www.solarsystemscope.com/textures/download/2k_saturn.jpg',
+                uranus: 'https://www.solarsystemscope.com/textures/download/2k_uranus.jpg',
+                neptune: 'https://www.solarsystemscope.com/textures/download/2k_neptune.jpg'
+            };
+            
+            // Add Saturn rings texture
+            const saturnRings = 'https://www.solarsystemscope.com/textures/download/2k_saturn_ring_alpha.png';
+            
+            // Create a texture loader
+            const textureLoader = new THREE.TextureLoader();
+            
+            // Function to create a planet
+            function createPlanet(skill, container) {
+                // Clear existing content and add a canvas
+                container.innerHTML = '';
+                const canvas = document.createElement('canvas');
+                canvas.className = 'planet-canvas';
+                canvas.style.width = '100%';
+                canvas.style.height = '100%';
+                canvas.style.borderRadius = '50%';
+                container.appendChild(canvas);
+                
+                // Set up the scene
+                const scene = new THREE.Scene();
+                
+                // Set up the camera
+                const camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
+                camera.position.z = 2;
+                
+                // Set up the renderer
+                const renderer = new THREE.WebGLRenderer({ 
+                    canvas: canvas,
+                    alpha: true,
+                    antialias: true
+                });
+                renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+                renderer.setClearColor(0x000000, 0);
+                
+                // Add ambient light
+                const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+                scene.add(ambientLight);
+                
+                // Add directional light (sun)
+                const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+                directionalLight.position.set(5, 3, 5);
+                scene.add(directionalLight);
+                
+                // Create planet
+                const planetName = skill.name.toLowerCase();
+                const textureURL = textures[planetName] || textures.earth;
+                
+                // Load texture and create sphere
+                textureLoader.load(textureURL, function(texture) {
+                    const geometry = new THREE.SphereGeometry(1, 32, 32);
+                    const material = new THREE.MeshPhongMaterial({ 
+                        map: texture,
+                        bumpScale: 0.05,
+                        specular: new THREE.Color(0x333333),
+                        shininess: 5
+                    });
+                    
+                    const planet = new THREE.Mesh(geometry, material);
+                    scene.add(planet);
+                    
+                    // Add rings for Saturn
+                    if (planetName === 'saturn') {
+                        textureLoader.load(saturnRings, function(ringsTexture) {
+                            const ringsGeometry = new THREE.RingGeometry(1.4, 2.0, 64);
+                            const ringsMaterial = new THREE.MeshBasicMaterial({
+                                map: ringsTexture,
+                                side: THREE.DoubleSide,
+                                transparent: true,
+                                opacity: 0.9
+                            });
+                            
+                            const rings = new THREE.Mesh(ringsGeometry, ringsMaterial);
+                            rings.rotation.x = Math.PI / 2;
+                            scene.add(rings);
+                        });
+                    }
+                    
+                    // Add text and icon
+                    const textElement = document.createElement('div');
+                    textElement.className = 'planet-label';
+                    textElement.innerHTML = `<i class="${skill.icon}"></i><div>${skill.name}</div>`;
+                    container.appendChild(textElement);
+                    
+                    // Handle animation
+                    let rotationSpeed = 0.005;
+                    
+                    // Animation function
+                    function animate() {
+                        requestAnimationFrame(animate);
+                        
+                        // Rotate planet
+                        planet.rotation.y += rotationSpeed;
+                        
+                        // Render scene
+                        renderer.render(scene, camera);
+                    }
+                    
+                    // Start animation
+                    animate();
+                    
+                    // Pause rotation on hover
+                    container.addEventListener('mouseenter', function() {
+                        rotationSpeed = 0;
+                    });
+                    
+                    // Resume rotation on mouse leave
+                    container.addEventListener('mouseleave', function() {
+                        rotationSpeed = 0.005;
+                    });
+                    
+                    // Handle click
+                    container.addEventListener('click', function() {
+                        showSkillDetail(skill);
+                    });
+                });
+            }
+            
+            // Update createSkillBubble function to use Three.js
+            window.createSkillBubble = function(skill) {
+                const bubble = document.createElement('div');
+                bubble.className = 'skill-bubble';
+                bubble.classList.add(`planet-${skill.name.toLowerCase()}`);
+                
+                // Create the 3D planet
+                createPlanet(skill, bubble);
+                
+                return bubble;
+            };
+        }
+
+        // Add Education Library Script
+        function initEducationLibrary() {
+            const libraryContainer = document.getElementById('space-library');
+            const educationDetails = document.getElementById('education-details');
+            
+            // Education data
+            const educationData = [
+                {
+                    id: 'elementary',
+                    title: 'Our Lady of Salvation High School',
+                    period: '2007 - 2015',
+                    icon: 'fas fa-child',
+                    color: '#ff7700',
+                    description: 'Built a strong foundation in core subjects and developed essential learning skills.',
+                    details: [
+                        {
+                            title: 'Primary Education',
+                            description: 'Completed primary schooling with excellence in mathematics and science.'
+                        },
+                        {
+                            title: 'Extracurricular Activities',
+                            description: 'Participated in school science fairs, sports events, and cultural activities.'
+                        }
+                    ],
+                    skills: ['Mathematics', 'Science', 'Language Arts', 'Social Studies'],
+                    photos: [
+                        'https://images.uniapply.com/uploads/college/image/500/4610/Building_UA_210503_131143.png',
+                        'https://www.travenix.com/wp-content/uploads/2018/05/Our_Lady_of_Salvation_Church_Dadar-520x260.jpg',
+                        'https://www.gwsportsapp.in/media/ground-images/gallery/MC4xNDIyNTkwMCAxNDg5OTkwMzky.jpeg'
+                    ]
+                },
+                {
+                    id: 'highschool',
+                    title: 'Guru Nanak Khalsa College',
+                    period: '2015 - 2019',
+                    icon: 'fas fa-school',
+                    color: '#3b82f6',
+                    description: 'Specialized in science and technology subjects, developed critical thinking and problem-solving skills.',
+                    details: [
+                        {
+                            title: 'Higher Secondary Education',
+                            description: 'Focused on physics, chemistry, and mathematics, laying a strong foundation for engineering studies.'
+                        },
+                        {
+                            title: 'Science Competitions',
+                            description: 'Participated in various regional and national science competitions and exhibitions.'
+                        }
+                    ],
+                    skills: ['Physics', 'Chemistry', 'Mathematics', 'Computer Science', 'Critical Thinking'],
+                    photos: [
+                        'https://s.yimg.com/zb/imgv1/73d24b85-1f27-3c43-a94d-dd1cdd9b8720/t_500x300',
+                        'images/education/highschool/2.jpg',
+                        'images/education/highschool/3.jpg'
+                    ]
+                },
+                {
+                    id: 'bachelors',
+                    title: 'Vidyalankar Institute of Technology',
+                    period: '2019 - 2023',
+                    icon: 'fas fa-university',
+                    color: '#8b5cf6',
+                    description: 'Completed Bachelor\'s degree in Computer Engineering with focus on software development, data science, and artificial intelligence.',
+                    details: [
+                        {
+                            title: 'Computer Engineering',
+                            description: 'Specialized in software development, data structures, algorithms, and machine learning applications.'
+                        },
+                        {
+                            title: 'Projects & Research',
+                            description: 'Developed multiple practical projects implementing various technologies including AI, web development, and database management.'
+                        },
+                        {
+                            title: 'Technical Clubs',
+                            description: 'Active member of coding clubs and participated in technical competitions and hackathons.'
+                        }
+                    ],
+                    skills: ['Web Development', 'Mobile App Development', 'Database Management', 'Cloud Computing', 'Machine Learning', 'UI/UX Design', 'Problem Solving'],
+                    photos: [
+                        'https://im.whatshot.in/img/2018/Feb/inst-1518599468.JPG',
+                        'images/education/bachelors/2.jpg',
+                        'images/education/bachelors/3.jpg'
+                    ]
+                },
+                {
+                    id: 'certifications',
+                    title: 'Professional Certifications',
+                    period: '2020 - Present',
+                    icon: 'fas fa-certificate',
+                    color: '#10b981',
+                    description: 'Earned various professional certifications to supplement formal education.',
+                    details: [
+                        {
+                            title: 'Web Development Certification',
+                            description: 'Complete front-end and back-end development with modern frameworks and tools.'
+                        },
+                        {
+                            title: 'Cloud Computing',
+                            description: 'Certified in cloud technologies and deployment strategies.'
+                        },
+                        {
+                            title: 'Data Science Fundamentals',
+                            description: 'Learned key concepts in data analysis, visualization, and machine learning.'
+                        }
+                    ],
+                    skills: ['React.js', 'Node.js', 'AWS', 'Azure', 'Python', 'TensorFlow', 'Data Visualization'],
+                    photos: [
+                        'https://www.psychologs.com/wp-content/uploads/2024/01/the-psychology-behind-achievement-960x520.jpg',
+                        'images/education/certifications/2.jpg',
+                        'images/education/certifications/3.jpg'
+                    ]
+                }
+            ];
+            
+            // Create 3D space background with stars
+            createSpaceBackground();
+            
+            // Create floating books
+            createFloatingBooks();
+            
+            // Create HTML for education details
+            createEducationDetails();
+            
+            function createSpaceBackground() {
+                // Add stars to the background
+                for (let i = 0; i < 100; i++) {
+                    const star = document.createElement('div');
+                    star.className = 'star';
+                    star.style.width = `${Math.random() * 2 + 1}px`;
+                    star.style.height = star.style.width;
+                    star.style.position = 'absolute';
+                    star.style.backgroundColor = 'white';
+                    star.style.borderRadius = '50%';
+                    star.style.opacity = Math.random() * 0.7 + 0.3;
+                    star.style.left = `${Math.random() * 100}%`;
+                    star.style.top = `${Math.random() * 100}%`;
+                    star.style.animation = `twinkle ${Math.random() * 3 + 2}s infinite alternate`;
+                    
+                    libraryContainer.appendChild(star);
+                }
+            }
+            
+            function createFloatingBooks() {
+                // Create a book for each education entry
+                educationData.forEach((edu, index) => {
+                    const book = document.createElement('div');
+                    book.className = 'book';
+                    book.id = `book-${edu.id}`;
+                    book.dataset.edu = edu.id;
+                    
+                    // Position books in a circular orbit
+                    const angle = (index / educationData.length) * Math.PI * 2;
+                    const radius = 150;
+                    const x = Math.cos(angle) * radius + libraryContainer.clientWidth / 2 - 25;
+                    const y = Math.sin(angle) * radius + libraryContainer.clientHeight / 2 - 35;
+                    
+                    book.style.left = `${x}px`;
+                    book.style.top = `${y}px`;
+                    book.style.backgroundColor = edu.color;
+                    book.style.animation = `float ${Math.random() * 3 + 4}s infinite`;
+                    book.style.animationDelay = `${index * 0.5}s`;
+                    
+                    // Add book title
+                    const title = document.createElement('div');
+                    title.className = 'book-title';
+                    title.textContent = edu.title.split(' ')[0];
+                    book.appendChild(title);
+                    
+                    // Add click event
+                    book.addEventListener('click', () => showEducationDetails(edu.id));
+                    
+                    libraryContainer.appendChild(book);
+                });
+            }
+            
+            function createEducationDetails() {
+                // Create HTML for each education item
+                educationData.forEach(edu => {
+                    const eduItem = document.createElement('div');
+                    eduItem.className = 'education-item';
+                    eduItem.id = `edu-${edu.id}`;
+                    
+                    // If there are photos, add a photo gallery
+                    if (edu.photos && edu.photos.length > 0) {
+                        const photosContainer = document.createElement('div');
+                        photosContainer.className = 'education-photos-container';
+                        
+                        // Check if we have Swiper loaded for carousel
+                        if (typeof Swiper !== 'undefined' && edu.photos.length > 1) {
+                            // Create Swiper container
+                            const swiperContainer = document.createElement('div');
+                            swiperContainer.className = 'swiper-container';
+                            
+                            const swiperWrapper = document.createElement('div');
+                            swiperWrapper.className = 'swiper-wrapper';
+                            
+                            // Add slides for each photo
+                            edu.photos.forEach((photo, index) => {
+                                const slide = document.createElement('div');
+                                slide.className = 'swiper-slide';
+                                
+                                const photoEl = document.createElement('div');
+                                photoEl.className = 'education-photo-slide';
+                                photoEl.style.backgroundImage = `url('${photo}')`;
+                                
+                                // Add caption with number
+                                const caption = document.createElement('div');
+                                caption.className = 'education-photo-caption';
+                                caption.textContent = `${edu.title} - Photo ${index + 1}`;
+                                
+                                photoEl.appendChild(caption);
+                                slide.appendChild(photoEl);
+                                swiperWrapper.appendChild(slide);
+                            });
+                            
+                            swiperContainer.appendChild(swiperWrapper);
+                            
+                            // Add pagination
+                            const pagination = document.createElement('div');
+                            pagination.className = 'swiper-pagination';
+                            swiperContainer.appendChild(pagination);
+                            
+                            // Add navigation
+                            const prevBtn = document.createElement('div');
+                            prevBtn.className = 'swiper-button-prev';
+                            
+                            const nextBtn = document.createElement('div');
+                            nextBtn.className = 'swiper-button-next';
+                            
+                            swiperContainer.appendChild(prevBtn);
+                            swiperContainer.appendChild(nextBtn);
+                            
+                            photosContainer.appendChild(swiperContainer);
+                            
+                            // Initialize swiper after DOM is ready
+                            setTimeout(() => {
+                                new Swiper(swiperContainer, {
+                                    loop: true,
+                                    pagination: {
+                                        el: pagination,
+                                        clickable: true
+                                    },
+                                    navigation: {
+                                        prevEl: prevBtn,
+                                        nextEl: nextBtn
+                                    },
+                                    autoplay: {
+                                        delay: 5000,
+                                        disableOnInteraction: false
+                                    }
+                                });
+                            }, 100);
+                        } else {
+                            // Simple photo display if no Swiper or just one photo
+                            const photoEl = document.createElement('div');
+                            photoEl.className = 'education-photo';
+                            
+                            const img = document.createElement('img');
+                            img.src = edu.photos[0];
+                            img.alt = edu.title;
+                            
+                            const caption = document.createElement('div');
+                            caption.className = 'education-photo-caption';
+                            caption.textContent = edu.title;
+                            
+                            photoEl.appendChild(img);
+                            photoEl.appendChild(caption);
+                            photosContainer.appendChild(photoEl);
+                        }
+                        
+                        eduItem.appendChild(photosContainer);
+                    }
+                    
+                    // Header with icon and title
+                    const header = document.createElement('div');
+                    header.className = 'education-item-header';
+                    
+                    const icon = document.createElement('div');
+                    icon.className = 'education-icon';
+                    icon.innerHTML = `<i class="${edu.icon}"></i>`;
+                    icon.style.background = `linear-gradient(145deg, ${edu.color}, ${adjustColor(edu.color, -20)})`;
+                    
+                    const title = document.createElement('div');
+                    title.className = 'education-title';
+                    title.innerHTML = `<h3>${edu.title}</h3><span>${edu.period}</span>`;
+                    
+                    header.appendChild(icon);
+                    header.appendChild(title);
+                    eduItem.appendChild(header);
+                    
+                    // Body with description and details
+                    const body = document.createElement('div');
+                    body.className = 'education-body';
+                    
+                    const description = document.createElement('p');
+                    description.textContent = edu.description;
+                    description.style.marginBottom = '20px';
+                    body.appendChild(description);
+                    
+                    // Details
+                    edu.details.forEach(detail => {
+                        const detailEl = document.createElement('div');
+                        detailEl.className = 'education-detail';
+                        
+                        const detailTitle = document.createElement('h4');
+                        detailTitle.textContent = detail.title;
+                        
+                        const detailDesc = document.createElement('p');
+                        detailDesc.textContent = detail.description;
+                        
+                        detailEl.appendChild(detailTitle);
+                        detailEl.appendChild(detailDesc);
+                        body.appendChild(detailEl);
+                    });
+                    
+                    // Skills
+                    if (edu.skills && edu.skills.length > 0) {
+                        const skillsContainer = document.createElement('div');
+                        skillsContainer.className = 'education-skills';
+                        
+                        edu.skills.forEach(skill => {
+                            const badge = document.createElement('span');
+                            badge.className = 'education-skill-badge';
+                            badge.textContent = skill;
+                            skillsContainer.appendChild(badge);
+                        });
+                        
+                        body.appendChild(skillsContainer);
+                    }
+                    
+                    eduItem.appendChild(body);
+                    educationDetails.appendChild(eduItem);
+                });
+            }
+            
+            function showEducationDetails(eduId) {
+                // Hide placeholder
+                const placeholder = document.querySelector('.education-placeholder');
+                if (placeholder) {
+                    placeholder.style.display = 'none';
+                }
+                
+                // Hide all education items
+                document.querySelectorAll('.education-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                
+                // Show selected education item
+                const selectedItem = document.getElementById(`edu-${eduId}`);
+                if (selectedItem) {
+                    selectedItem.classList.add('active');
+                }
+                
+                // Highlight selected book
+                document.querySelectorAll('.book').forEach(book => {
+                    book.style.transform = '';
+                    book.style.zIndex = '1';
+                });
+                
+                const selectedBook = document.getElementById(`book-${eduId}`);
+                if (selectedBook) {
+                    selectedBook.style.transform = 'scale(1.2) rotateY(30deg)';
+                    selectedBook.style.zIndex = '100';
+                }
+            }
+            
+            // Helper function to adjust color brightness
+            function adjustColor(color, amount) {
+                return color;
+            }
+        }
+
+        // Call education library initialization after DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // ... existing code ...
+            
+            // Initialize education library
+            initEducationLibrary();
         });
     </script>
 </body>
