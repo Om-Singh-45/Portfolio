@@ -3349,10 +3349,23 @@
                     book.style.animation = `float ${Math.random() * 3 + 4}s infinite`;
                     book.style.animationDelay = `${index * 0.5}s`;
                     
-                    // Add book title
+                    // Add book title based on the ID
                     const title = document.createElement('div');
                     title.className = 'book-title';
-                    title.textContent = edu.title.split(' ')[0];
+                    
+                    // Set specific names for each education type
+                    if (edu.id === 'elementary') {
+                        title.textContent = 'Secondary';
+                    } else if (edu.id === 'highschool') {
+                        title.textContent = 'Higher Secondary';
+                    } else if (edu.id === 'bachelors') {
+                        title.textContent = 'Degree College';
+                    } else if (edu.id === 'certifications') {
+                        title.textContent = 'Professional';
+                    } else {
+                        title.textContent = edu.title.split(' ')[0];
+                    }
+                    
                     book.appendChild(title);
                     
                     // Add click event
